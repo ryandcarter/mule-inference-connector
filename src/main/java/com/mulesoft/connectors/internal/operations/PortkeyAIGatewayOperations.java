@@ -3,6 +3,8 @@ package com.mulesoft.connectors.internal.operations;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 import static com.mulesoft.connectors.internal.helpers.ResponseHelper.createLLMResponse;
 import com.mulesoft.connectors.internal.constants.PortkeyConstants;
+import com.mulesoft.connectors.internal.helpers.TokenHelper;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,22 +50,24 @@ public class PortkeyAIGatewayOperations {
                             String input) {
     try {
       JSONObject payload = new JSONObject();
-      payload.put("model", "");
-      payload.put("input", input);
+      payload.put("model", "gpt-4o");
+      payload.put("messages", input);
       String apiKey = configuration.getApiKey();
       String virtualApiKey = configuration.getVirtualKey();
 
       String response = executeREST(apiKey, virtualApiKey, payload.toString());
+      TokenUsage tokenUsage = TokenHelper.parseUsageFromResponse(response);
       JSONObject jsonObject = new JSONObject();
       jsonObject.put(PortkeyConstants.RESPONSE, response);
+      System.out.println(response);
+      LOGGER.debug("Chat completions result {}", response);
+      Map<String, String> responseAttributes = null;
 
-      LOGGER.debug("Toxicity detection result {}", response);
-      Map<String, String> responseAttributes;
-
-      TokenUsage tokenUsage = null;
       return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
     } catch (Exception e) {
       //throw new ModuleException("Unable to perform toxicity detection", MuleChainErrorType.AI_SERVICES_FAILURE, e);
+      System.out.println(e.getMessage());
+
       return null;
 
     }
