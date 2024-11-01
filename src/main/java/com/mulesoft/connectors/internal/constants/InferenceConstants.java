@@ -3,14 +3,19 @@
  */
 package com.mulesoft.connectors.internal.constants;
 
-public class PortkeyConstants {
+public class InferenceConstants {
 
-  private PortkeyConstants() {}
+  private InferenceConstants() {}
 
   public static final String BASE_URL = "https://api.portkey.ai/v1";
   public static final String CHAT_COMPLETIONS = "/chat/completions";
-
   public static final String RESPONSE = "response";
- 
+  public static final String FINISH_REASON = "finish_reason";
+  public static final String MODEL = "model";
+  public static final String OBJECT_STRING = "object";
+  public static final String ID_STRING = "id";
+  public static final String SYSTEM_FINGERPRINT = "system_fingerprint";
+  public static final String MESSAGES = "messages";
+
 }
 

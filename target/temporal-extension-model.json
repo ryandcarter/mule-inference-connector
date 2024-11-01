@@ -1,15 +1,15 @@
 {
-  "name": "Portkey AI Gateway",
+  "name": "MAC Inference",
   "description": "This is the main class of an extension, is the entry point from which configurations, connection providers, operations and sources are going to be declared.",
-  "version": "0.0.1-SNAPSHOT",
+  "version": "0.0.22-SNAPSHOT",
   "vendor": "Mulesoft",
   "category": "COMMUNITY",
   "xmlDsl": {
-    "prefix": "portkey-ai-gateway",
-    "namespace": "http://www.mulesoft.org/schema/mule/portkey-ai-gateway",
-    "schemaLocation": "http://www.mulesoft.org/schema/mule/portkey-ai-gateway/current/mule-portkey-ai-gateway.xsd",
-    "schemaVersion": "0.0.1-SNAPSHOT",
-    "xsdFileName": "mule-portkey-ai-gateway.xsd"
+    "prefix": "mac-inference",
+    "namespace": "http://www.mulesoft.org/schema/mule/mac-inference",
+    "schemaLocation": "http://www.mulesoft.org/schema/mule/mac-inference/current/mule-mac-inference.xsd",
+    "schemaVersion": "0.0.22-SNAPSHOT",
+    "xsdFileName": "mule-mac-inference.xsd"
   },
   "resources": [],
   "subTypes": [],
@@ -21,7 +21,7 @@
     {
       "stereotype": {
         "type": "CONFIG",
-        "namespace": "PORTKEY-AI-GATEWAY",
+        "namespace": "MAC-INFERENCE",
         "parent": {
           "type": "MODULE_CONFIG",
           "namespace": "MULE"
@@ -281,7 +281,23 @@
                 {
                   "type": {
                     "format": "java",
-                    "type": "String"
+                    "type": "Binary",
+                    "annotations": {
+                      "classInformation": {
+                        "classname": "java.io.InputStream",
+                        "hasDefaultConstructor": true,
+                        "isInterface": false,
+                        "isInstantiable": false,
+                        "isAbstract": true,
+                        "isFinal": false,
+                        "implementedInterfaces": [
+                          "java.io.Closeable"
+                        ],
+                        "parent": "",
+                        "genericTypes": [],
+                        "isMap": false
+                      }
+                    }
                   },
                   "hasDynamicType": false,
                   "required": true,
@@ -602,12 +618,12 @@
   "notifications": [],
   "errors": [
     {
-      "error": "PORTKEY-AI-GATEWAY:RETRY_EXHAUSTED",
-      "parent": "MULE:RETRY_EXHAUSTED",
+      "error": "MAC-INFERENCE:CONNECTIVITY",
+      "parent": "MULE:CONNECTIVITY",
       "handleable": true
     },
     {
-      "error": "MULE:RETRY_EXHAUSTED",
+      "error": "MULE:CONNECTIVITY",
       "parent": "MULE:ANY",
       "handleable": true
     },
@@ -616,13 +632,13 @@
       "handleable": true
     },
     {
-      "error": "PORTKEY-AI-GATEWAY:CONNECTIVITY",
-      "parent": "MULE:CONNECTIVITY",
+      "error": "MULE:RETRY_EXHAUSTED",
+      "parent": "MULE:ANY",
       "handleable": true
     },
     {
-      "error": "MULE:CONNECTIVITY",
-      "parent": "MULE:ANY",
+      "error": "MAC-INFERENCE:RETRY_EXHAUSTED",
+      "parent": "MULE:RETRY_EXHAUSTED",
       "handleable": true
     }
   ],

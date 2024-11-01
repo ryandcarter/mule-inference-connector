@@ -18,7 +18,7 @@ public class TokenHelper {
 
         // Create and populate the Usage object
         TokenUsage usage = new TokenUsage(promptTokens, completionTokens, totalTokens);
-    
+
         return usage;
     }
 }

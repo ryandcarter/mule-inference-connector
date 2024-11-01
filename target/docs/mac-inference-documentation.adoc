@@ -1,5 +1,5 @@
 :toc:               left
-:toc-title:         Portkey AI Gateway Module
+:toc-title:         MAC Inference Module
 :toclevels:         2
 :last-update-label!:
 :docinfo:
@@ -7,7 +7,7 @@
 :icons: font
 
 
-= Portkey AI Gateway Module Documentation Reference
+= MAC Inference Module Documentation Reference
 
 +++
 This is the main class of an extension, is the entry point from which configurations, connection providers, operations and sources are going to be declared.
@@ -43,7 +43,7 @@ Default configuration
 
 [[Chat-completions]]
 === Chat Completions
-`<portkey-ai-gateway:chat-completions>`
+`<mac-inference:chat-completions>`
 
 +++
 Use OpenAI Moderation models to moderate the input (any, from user or llm)
@@ -54,7 +54,7 @@ Use OpenAI Moderation models to moderate the input (any, from user or llm)
 |======================
 | Name | Type | Description | Default Value | Required
 | Configuration | String | The name of the configuration to use. | | *x*{nbsp}
-| Input a| String |  |  | *x*{nbsp}
+| Input a| Binary |  |  | *x*{nbsp}
 | Streaming Strategy a| * <<repeatable-in-memory-stream>>
 * <<repeatable-file-store-stream>>
 * <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}

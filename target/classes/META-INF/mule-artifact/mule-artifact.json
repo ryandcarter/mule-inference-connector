@@ -2,11 +2,11 @@
   "extensionModelLoaderDescriptor": {
     "id": "java",
     "attributes": {
-      "type": "com.mulesoft.connectors.internal.extension.PortkeyAIGatewayExtension",
-      "version": "0.0.1-SNAPSHOT"
+      "type": "com.mulesoft.connectors.internal.extension.InferenceExtension",
+      "version": "0.0.22-SNAPSHOT"
     }
   },
-  "name": "Portkey AI Gateway",
+  "name": "MAC Inference",
   "requiredProduct": "MULE",
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
