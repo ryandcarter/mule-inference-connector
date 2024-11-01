@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 public enum InferenceType {
-  PORTKEY("PORTKEY", getOpenAIModelNameStream(), LangchainLLMInitializerUtil::createOpenAiChatModel), GROQ("GROQ",
+  PORTKEY("PORTKEY", getPortkeyModelNameStream(), LangchainLLMInitializerUtil::createOpenAiChatModel), GROQ("GROQ",
       OPENAI.getModelNameStream(), LangchainLLMInitializerUtil::createGroqOpenAiChatModel));
 
   private final String value;
@@ -35,7 +35,7 @@ public enum InferenceType {
     return configBiFunction;
   }
 
-  private static Stream<String> getOpenAIModelNameStream() {
+  private static Stream<String> getPortkeyModelNameStream() {
     return Stream.concat(Arrays.stream(OpenAiChatModelName.values()), Arrays.stream(OpenAiImageModelName.values()))
         .map(String::valueOf);
   }
