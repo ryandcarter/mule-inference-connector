@@ -1,4 +1,4 @@
-# Portkey AI Gateway Extension
+# MAC INFERENCE CONNECTOR
 
 Add description ...
 
