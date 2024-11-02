@@ -7,15 +7,24 @@ public class InferenceConstants {
 
   private InferenceConstants() {}
 
-  public static final String BASE_URL = "https://api.portkey.ai/v1";
+  public static final String PORTKEY_URL = "https://api.portkey.ai/v1";
+  public static final String HUGGINGFACE_URL = "https://api-inference.huggingface.co";
+  public static final String GROQ_URL = "https://api.groq.com/openai/v1";
+
+  // Configuration Parameters
+  public static final String MAX_TOKENS = "max_tokens";
+  public static final String TEMPERATURE = "temperature";
+  public static final String TOP_P = "top_p";
+
   public static final String CHAT_COMPLETIONS = "/chat/completions";
   public static final String RESPONSE = "response";
   public static final String FINISH_REASON = "finish_reason";
   public static final String MODEL = "model";
-  public static final String OBJECT_STRING = "object";
   public static final String ID_STRING = "id";
-  public static final String SYSTEM_FINGERPRINT = "system_fingerprint";
   public static final String MESSAGES = "messages";
+
+  
+
 
 }
 

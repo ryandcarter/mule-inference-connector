@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -30,6 +31,8 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICAT
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
 
 import org.mule.runtime.extension.api.annotation.param.Config;
+import org.mule.runtime.extension.api.annotation.param.Content;
+
 import static org.apache.commons.io.IOUtils.toInputStream;
 
 
@@ -39,40 +42,34 @@ import static org.apache.commons.io.IOUtils.toInputStream;
 public class InferenceOperations {
   private static final Logger LOGGER = LoggerFactory.getLogger(InferenceOperations.class);
 
-  
-  /**
-   * Use OpenAI Moderation models to moderate the input (any, from user or llm)
-      * @throws Exception 
-         */
-        @MediaType(value = APPLICATION_JSON, strict = false)
-        @Alias("Chat-completions")
-        @OutputJsonType(schema = "api/response/Response.json")
-        public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMResponseAttributes> moderateInput(
-                                  @Config InferenceConfiguration configuration,
-                                  InputStream input) throws Exception {
+
+/**
+ * Chat completions by messages array including system, users messages i.e. conversation history
+ * @throws Exception 
+*/
+@MediaType(value = APPLICATION_JSON, strict = false)
+@Alias("Chat-completions")
+@OutputJsonType(schema = "api/response/Response.json")
+public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMResponseAttributes> chatCompletion(
+                            @Config InferenceConfiguration configuration,
+                            @Content InputStream messages) throws Exception {
    try {
-      InputStreamReader reader = new InputStreamReader(input);
-      StringBuilder inputStringBuilder = new StringBuilder();
-      int c;
-      while ((c = reader.read()) != -1) {
-          inputStringBuilder.append((char) c);
-      }
-      String inputString = inputStringBuilder.toString();
-      JSONArray messagesArray = new JSONArray(inputString);
+      JSONArray messagesArray = getInputString(messages);
+      URL chatCompUrl = getConnectionURLChatCompletion(configuration);
 
       JSONObject payload = new JSONObject();
-      payload.put(InferenceConstants.MODEL, "gpt-4o");
+      payload.put(InferenceConstants.MODEL, configuration.getModelName());
       payload.put(InferenceConstants.MESSAGES, messagesArray);
+      payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
+      payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
+      payload.put(InferenceConstants.TOP_P, configuration.getTopP());
 
-      String apiKey = configuration.getApiKey();
-      String virtualApiKey = configuration.getVirtualKey();
+      String response = executeREST(chatCompUrl,configuration, payload.toString());
 
-      String response = executeREST(apiKey, virtualApiKey, payload.toString());
+
       JSONObject root = new JSONObject(response);
       String model = root.getString("model");      
-      String object = root.getString("object");
       String id = root.getString("id");
-      String system_fingerprint = root.getString("system_fingerprint");
       JSONArray choicesArray = root.getJSONArray("choices");
       JSONObject firstChoice = choicesArray.getJSONObject(0);
       String finishReason = firstChoice.getString("finish_reason");
@@ -85,9 +82,7 @@ public class InferenceOperations {
       Map<String, String> responseAttributes = new HashMap<>();;
       responseAttributes.put(InferenceConstants.FINISH_REASON, finishReason); 
       responseAttributes.put(InferenceConstants.MODEL, model); 
-      responseAttributes.put(InferenceConstants.OBJECT_STRING, object); 
       responseAttributes.put(InferenceConstants.ID_STRING, id); 
-      responseAttributes.put(InferenceConstants.SYSTEM_FINGERPRINT, system_fingerprint); 
 
       LOGGER.debug("Chat completions result {}", response);
 
@@ -101,24 +96,177 @@ public class InferenceOperations {
     }
   }
 
-  private static HttpURLConnection getConnectionObject(URL url, String apiKey, String virtualApiKey) throws IOException {
+/**
+ * Simple chat answer prompt
+ * @throws Exception 
+*/
+@MediaType(value = APPLICATION_JSON, strict = false)
+@Alias("Chat-answer-prompt")
+@OutputJsonType(schema = "api/response/Response.json")
+public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMResponseAttributes> chatAnswerPrompt(
+                            @Config InferenceConfiguration configuration,
+                            @Content String prompt) throws Exception {
+   try {
+      JSONArray messagesArray = new JSONArray();
+      JSONObject usersPrompt = new JSONObject();
+      usersPrompt.put("role", "user");
+      usersPrompt.put("content", prompt);
+      messagesArray.put(usersPrompt);
+
+      URL chatCompUrl = getConnectionURLChatCompletion(configuration);
+
+      JSONObject payload = new JSONObject();
+      payload.put(InferenceConstants.MODEL, configuration.getModelName());
+      payload.put(InferenceConstants.MESSAGES, messagesArray);
+      payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
+      payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
+      payload.put(InferenceConstants.TOP_P, configuration.getTopP());
+
+      String response = executeREST(chatCompUrl,configuration, payload.toString());
+
+
+      JSONObject root = new JSONObject(response);
+      String model = root.getString("model");      
+      String id = root.getString("id");
+      JSONArray choicesArray = root.getJSONArray("choices");
+      JSONObject firstChoice = choicesArray.getJSONObject(0);
+      String finishReason = firstChoice.getString("finish_reason");
+      JSONObject message = firstChoice.getJSONObject("message");
+      String content = message.getString("content");
+
+      TokenUsage tokenUsage = TokenHelper.parseUsageFromResponse(response);
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put(InferenceConstants.RESPONSE, content);
+      Map<String, String> responseAttributes = new HashMap<>();;
+      responseAttributes.put(InferenceConstants.FINISH_REASON, finishReason); 
+      responseAttributes.put(InferenceConstants.MODEL, model); 
+      responseAttributes.put(InferenceConstants.ID_STRING, id); 
+
+      LOGGER.debug("Chat completions result {}", response);
+
+      return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
+     } catch (Exception e) {
+      //throw new ModuleException("Unable to perform toxicity detection", MuleChainErrorType.AI_SERVICES_FAILURE, e);
+      System.out.println(e.getMessage());
+
+      return null;
+
+    }
+  }
+
+/**
+ * Define a prompt template
+ * @throws Exception 
+*/
+@MediaType(value = APPLICATION_JSON, strict = false)
+@Alias("Agent-define-prompt-template")
+@OutputJsonType(schema = "api/response/Response.json")
+public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMResponseAttributes> promptTemplate(
+                            @Config InferenceConfiguration configuration,
+                            @Content String template, @Content String instructions, 
+                            @Content(primary = true) String data ) 
+                            throws Exception {
+   try {
+      JSONArray messagesArray = new JSONArray();
+      JSONObject systemMessage = new JSONObject();
+      systemMessage.put("role", "system");
+      systemMessage.put("content", template + " - " + instructions);
+
+      JSONObject usersPrompt = new JSONObject();
+      usersPrompt.put("role", "user");
+      usersPrompt.put("content", data);
+      messagesArray.put(usersPrompt);
+
+      URL chatCompUrl = getConnectionURLChatCompletion(configuration);
+
+      JSONObject payload = new JSONObject();
+      payload.put(InferenceConstants.MODEL, configuration.getModelName());
+      payload.put(InferenceConstants.MESSAGES, messagesArray);
+      payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
+      payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
+      payload.put(InferenceConstants.TOP_P, configuration.getTopP());
+
+      String response = executeREST(chatCompUrl,configuration, payload.toString());
+
+
+      JSONObject root = new JSONObject(response);
+      String model = root.getString("model");      
+      String id = root.getString("id");
+      JSONArray choicesArray = root.getJSONArray("choices");
+      JSONObject firstChoice = choicesArray.getJSONObject(0);
+      String finishReason = firstChoice.getString("finish_reason");
+      JSONObject message = firstChoice.getJSONObject("message");
+      String content = message.getString("content");
+
+      TokenUsage tokenUsage = TokenHelper.parseUsageFromResponse(response);
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put(InferenceConstants.RESPONSE, content);
+      Map<String, String> responseAttributes = new HashMap<>();;
+      responseAttributes.put(InferenceConstants.FINISH_REASON, finishReason); 
+      responseAttributes.put(InferenceConstants.MODEL, model); 
+      responseAttributes.put(InferenceConstants.ID_STRING, id); 
+
+      LOGGER.debug("Chat completions result {}", response);
+
+      return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
+     } catch (Exception e) {
+      //throw new ModuleException("Unable to perform toxicity detection", MuleChainErrorType.AI_SERVICES_FAILURE, e);
+      System.out.println(e.getMessage());
+
+      return null;
+
+    }
+  }
+
+  private static HttpURLConnection getConnectionObject(URL url, InferenceConfiguration configuration) throws IOException {
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     conn.setDoOutput(true);
     conn.setRequestMethod("POST");
-    conn.setRequestProperty("x-portkey-api-key", apiKey);
-    conn.setRequestProperty("x-portkey-virtual-key", virtualApiKey);
     conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
     conn.setRequestProperty("User-Agent", "Mozilla/5.0");  
     conn.setRequestProperty("Accept", "application/json");  
-return conn;
+    switch (configuration.getInferenceType()) {
+        case "PORTKEY":
+            conn.setRequestProperty("x-portkey-api-key", configuration.getApiKey());
+            conn.setRequestProperty("x-portkey-virtual-key", configuration.getVirtualKey());
+        default:
+            conn.setRequestProperty("Authorization", "Bearer " + configuration.getApiKey());;
+    
+    }
+
+    return conn;
   }
 
-  private static String executeREST(String apiKey, String virtualApiKey, String payload) {
+  private static URL getConnectionURLChatCompletion(InferenceConfiguration configuration) throws MalformedURLException {
+    switch (configuration.getInferenceType()) {
+        case "PORTKEY":
+            return new URL(InferenceConstants.PORTKEY_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "GROQ":
+            return new URL(InferenceConstants.GROQ_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "HUGGING_FACE": 
+            return new URL(InferenceConstants.HUGGINGFACE_URL + "/models/" + configuration.getModelName() + "/v1" + InferenceConstants.CHAT_COMPLETIONS);
+        default:
+            return new URL ("");
+        }
+  }
+
+  private static JSONArray getInputString(InputStream inputString) throws IOException {
+    InputStreamReader reader = new InputStreamReader(inputString);
+    StringBuilder inputStringBuilder = new StringBuilder();
+    int c;
+    while ((c = reader.read()) != -1) {
+        inputStringBuilder.append((char) c);
+    }
+    return new JSONArray(inputStringBuilder.toString());
+
+  }
+
+  private static String executeREST(URL ressourceUrl, InferenceConfiguration configuration, String payload) {
 
     try {
-        URL url = new URL(InferenceConstants.BASE_URL + InferenceConstants.CHAT_COMPLETIONS);
+        URL url = ressourceUrl;
 
-        HttpURLConnection conn = getConnectionObject(url, apiKey, virtualApiKey);
+        HttpURLConnection conn = getConnectionObject(url, configuration);
 
 
         // Send the payload

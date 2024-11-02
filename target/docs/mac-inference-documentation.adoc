@@ -28,25 +28,32 @@ Default configuration
 |======================
 | Name | Type | Description | Default Value | Required
 |Name | String | The name for this configuration. Connectors reference the configuration with this name. | | *x*{nbsp}
-| Api Key a| String |  |  | *x*{nbsp}
-| Virtual Key a| String |  |  | *x*{nbsp}
+| Inference Type a| String |  |  | *x*{nbsp}
+| API Key a| String |  |  | *x*{nbsp}
+| Virtual Key a| String |  |  +++Valid-for-portkey-only+++ | {nbsp}
+| Model Name a| String |  |  +++LLaMA3 70b+++ | {nbsp}
+| Max Tokens a| Number |  |  +++500+++ | {nbsp}
+| Temperature a| Number |  |  +++0.9+++ | {nbsp}
+| Top P a| Number |  |  +++0.9+++ | {nbsp}
 | Expiration Policy a| <<ExpirationPolicy>> |  +++Configures the minimum amount of time that a dynamic configuration instance can remain idle before the runtime considers it eligible for expiration. This does not mean that the platform will expire the instance at the exact moment that it becomes eligible. The runtime will actually purge the instances when it sees it fit.+++ |  | {nbsp}
 |======================
 
 
 ==== Associated Operations
+* <<Agent-define-prompt-template>> {nbsp}
+* <<Chat-answer-prompt>> {nbsp}
 * <<Chat-completions>> {nbsp}
 
 
 
 == Operations
 
-[[Chat-completions]]
-=== Chat Completions
-`<mac-inference:chat-completions>`
+[[Agent-define-prompt-template]]
+=== Agent Define Prompt Template
+`<mac-inference:agent-define-prompt-template>`
 
 +++
-Use OpenAI Moderation models to moderate the input (any, from user or llm)
+Define a prompt template
 +++
 
 ==== Parameters
@@ -54,7 +61,75 @@ Use OpenAI Moderation models to moderate the input (any, from user or llm)
 |======================
 | Name | Type | Description | Default Value | Required
 | Configuration | String | The name of the configuration to use. | | *x*{nbsp}
-| Input a| Binary |  |  | *x*{nbsp}
+| Template a| String |  |  | *x*{nbsp}
+| Instructions a| String |  |  | *x*{nbsp}
+| Data a| String |  |  +++#[payload]+++ | {nbsp}
+| Streaming Strategy a| * <<repeatable-in-memory-stream>>
+* <<repeatable-file-store-stream>>
+* <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| Any
+| *Attributes Type* a| <<LLMResponseAttributes>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+
+
+[[Chat-answer-prompt]]
+=== Chat Answer Prompt
+`<mac-inference:chat-answer-prompt>`
+
++++
+Simple chat answer prompt
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Prompt a| String |  |  +++#[payload]+++ | {nbsp}
+| Streaming Strategy a| * <<repeatable-in-memory-stream>>
+* <<repeatable-file-store-stream>>
+* <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| Any
+| *Attributes Type* a| <<LLMResponseAttributes>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+
+
+[[Chat-completions]]
+=== Chat Completions
+`<mac-inference:chat-completions>`
+
++++
+Chat completions by messages array including system, users messages i.e. conversation history
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Messages a| Binary |  |  | *x*{nbsp}
 | Streaming Strategy a| * <<repeatable-in-memory-stream>>
 * <<repeatable-file-store-stream>>
 * <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}

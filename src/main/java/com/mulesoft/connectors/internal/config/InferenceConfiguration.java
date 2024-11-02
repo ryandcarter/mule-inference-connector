@@ -1,43 +1,92 @@
 package com.mulesoft.connectors.internal.config;
 
+import org.mule.runtime.api.meta.ExpressionSupport;
+import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.Operations;
+import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
-import org.slf4j.LoggerFactory;
 
-import com.mulesoft.connectors.internal.inference.InferenceTypeProvider;
+import com.mulesoft.connectors.internal.models.ModelNameProvider;
+import com.mulesoft.connectors.internal.models.ModelTypeProvider;
 import com.mulesoft.connectors.internal.operations.InferenceOperations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * This class represents an extension configuration, values set in this class are commonly used across multiple
- * operations since they represent something core from the extension.
- */
 @Operations(InferenceOperations.class)
 public class InferenceConfiguration {
-  private static final Logger LOGGER = LoggerFactory.getLogger(InferenceConfiguration.class);
 
-  @Parameter
-  @Placement(order = 1, tab = Placement.DEFAULT_TAB)
-  @DisplayName("Inference Type")
-  @OfValues(InferenceTypeProvider.class)
-  private String llmType;
+    @Parameter
+    @Placement(order = 1, tab = Placement.DEFAULT_TAB)
+    @Expression(ExpressionSupport.SUPPORTED)
+    @DisplayName("Inference Type")
+    @OfValues(ModelTypeProvider.class)
+    private String inferenceType;
 
-  @Parameter
-  private String apiKey;
+    @Parameter
+    @Expression(ExpressionSupport.SUPPORTED)
+    @DisplayName("API Key")
+    private String apiKey;
 
-  public String getApiKey(){
-    return apiKey;
-  }
+    @Parameter
+    @Optional(defaultValue = "Valid-for-portkey-only")
+    @Expression(ExpressionSupport.SUPPORTED)
+    @DisplayName("Virtual Key")
+    private String virtualKey;
 
-  @Parameter
-  private String virtualKey;
+    public String getApiKey() {
+        return apiKey;
+    }
 
-  public String getVirtualKey(){
-    return virtualKey;
-  }
+    public String getVirtualKey() {
+        return virtualKey;
+    }
+
+    public String getInferenceType() {
+        return inferenceType;
+    }
+
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@OfValues(ModelNameProvider.class)
+	@Optional(defaultValue = "LLaMA3 70b")
+	private String modelName;
+
+	public String getModelName() {
+		return modelName;
+	}
+
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional(defaultValue = "500")
+	private Number maxTokens;
+
+	public Number getMaxTokens() {
+		return maxTokens;
+	}
+
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional(defaultValue = "0.9")
+	private Number temperature;
+
+	public Number getTemperature() {
+		return temperature;
+	}
+
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional(defaultValue = "0.9")
+	private Number topP;
+
+	public Number getTopP() {
+		return topP;
+	}
+
 
 }
+
+
+
+
+
