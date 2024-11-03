@@ -91,7 +91,7 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
      } catch (Exception e) {
       //throw new ModuleException("Unable to perform toxicity detection", MuleChainErrorType.AI_SERVICES_FAILURE, e);
       LOGGER.debug("Error in chat completions {}", e.getMessage());
-
+      System.out.println(e.getMessage());
       return null;
 
     }

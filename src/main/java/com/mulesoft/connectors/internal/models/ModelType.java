@@ -14,7 +14,6 @@ public enum ModelType {
        GROQ("GROQ", getGroqModelNameStream()),
        PORTKEY("PORTKEY", getPortkeyModelNameStream()),
        OPENROUTER("OPENROUTER", getOpenRouterModelNameStream());
-
   private final String value;
   private final Stream<String> modelNameStream;
 
@@ -175,4 +174,6 @@ public enum ModelType {
       return this.value;
     }
   }
+
+
 }
