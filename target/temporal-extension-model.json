@@ -1,14 +1,14 @@
 {
   "name": "MAC Inference",
   "description": "This is the main class of an extension, is the entry point from which configurations, connection providers, operations and sources are going to be declared.",
-  "version": "0.0.29-SNAPSHOT",
+  "version": "0.0.35-SNAPSHOT",
   "vendor": "Mulesoft",
   "category": "COMMUNITY",
   "xmlDsl": {
     "prefix": "mac-inference",
     "namespace": "http://www.mulesoft.org/schema/mule/mac-inference",
     "schemaLocation": "http://www.mulesoft.org/schema/mule/mac-inference/current/mule-mac-inference.xsd",
-    "schemaVersion": "0.0.29-SNAPSHOT",
+    "schemaVersion": "0.0.35-SNAPSHOT",
     "xsdFileName": "mule-mac-inference.xsd"
   },
   "resources": [],
@@ -146,7 +146,7 @@
                 "isOpen": true
               },
               "expressionSupport": "SUPPORTED",
-              "defaultValue": "LLaMA3 70b",
+              "defaultValue": "gpt-3.5-turbo",
               "role": "BEHAVIOUR",
               "dslConfiguration": {
                 "allowsInlineDefinition": true,
@@ -1307,13 +1307,14 @@
                     }
                   },
                   "hasDynamicType": false,
-                  "required": true,
+                  "required": false,
                   "isConfigOverride": false,
                   "expressionSupport": "SUPPORTED",
-                  "role": "BEHAVIOUR",
+                  "defaultValue": "#[payload]",
+                  "role": "PRIMARY_CONTENT",
                   "dslConfiguration": {
                     "allowsInlineDefinition": true,
-                    "allowsReferences": true,
+                    "allowsReferences": false,
                     "allowTopLevelDefinition": false
                   },
                   "layoutModel": {

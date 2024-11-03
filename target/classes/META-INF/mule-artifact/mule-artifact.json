@@ -3,7 +3,7 @@
     "id": "java",
     "attributes": {
       "type": "com.mulesoft.connectors.internal.extension.InferenceExtension",
-      "version": "0.0.29-SNAPSHOT"
+      "version": "0.0.35-SNAPSHOT"
     }
   },
   "name": "MAC Inference",

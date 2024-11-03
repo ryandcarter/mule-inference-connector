@@ -49,7 +49,7 @@ public class InferenceConfiguration {
 	@Parameter
 	@Expression(ExpressionSupport.SUPPORTED)
 	@OfValues(ModelNameProvider.class)
-	@Optional(defaultValue = "LLaMA3 70b")
+	@Optional(defaultValue = "gpt-3.5-turbo")
 	private String modelName;
 
 	public String getModelName() {

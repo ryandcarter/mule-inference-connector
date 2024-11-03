@@ -66,6 +66,7 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
 
       String response = executeREST(chatCompUrl,configuration, payload.toString());
 
+      
 
       JSONObject root = new JSONObject(response);
       String model = root.getString("model");      
@@ -89,7 +90,7 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
      } catch (Exception e) {
       //throw new ModuleException("Unable to perform toxicity detection", MuleChainErrorType.AI_SERVICES_FAILURE, e);
-      System.out.println(e.getMessage());
+      LOGGER.debug("Error in chat completions {}", e.getMessage());
 
       return null;
 
@@ -142,12 +143,12 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       responseAttributes.put(InferenceConstants.MODEL, model); 
       responseAttributes.put(InferenceConstants.ID_STRING, id); 
 
-      LOGGER.debug("Chat completions result {}", response);
+      LOGGER.debug("Chat answer prompt result {}", response);
 
       return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
      } catch (Exception e) {
       //throw new ModuleException("Unable to perform toxicity detection", MuleChainErrorType.AI_SERVICES_FAILURE, e);
-      System.out.println(e.getMessage());
+      LOGGER.debug("Error in chat answer prompt {}", e.getMessage());
 
       return null;
 
@@ -206,12 +207,12 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       responseAttributes.put(InferenceConstants.MODEL, model); 
       responseAttributes.put(InferenceConstants.ID_STRING, id); 
 
-      LOGGER.debug("Chat completions result {}", response);
+      LOGGER.debug("Agent define prompt template result {}", response);
 
       return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
      } catch (Exception e) {
       //throw new ModuleException("Unable to perform toxicity detection", MuleChainErrorType.AI_SERVICES_FAILURE, e);
-      System.out.println(e.getMessage());
+      LOGGER.debug("Error in Agent define prompt template {}", e.getMessage());
 
       return null;
 
@@ -245,6 +246,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
             return new URL(InferenceConstants.GROQ_URL + InferenceConstants.CHAT_COMPLETIONS);
         case "HUGGING_FACE": 
             return new URL(InferenceConstants.HUGGINGFACE_URL + "/models/" + configuration.getModelName() + "/v1" + InferenceConstants.CHAT_COMPLETIONS);
+        case "OPENROUTER": 
+            return new URL(InferenceConstants.OPENROUTER_URL + InferenceConstants.CHAT_COMPLETIONS);
         default:
             return new URL ("");
         }
