@@ -11,9 +11,12 @@ public class InferenceConstants {
   public static final String HUGGINGFACE_URL = "https://api-inference.huggingface.co";
   public static final String GROQ_URL = "https://api.groq.com/openai/v1";
   public static final String OPENROUTER_URL ="https://openrouter.ai/api/v1";
+  public static final String GITHUB_MODELS_URL = "https://models.inference.ai.azure.com";
 
   // Ressources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
+  public static final String CHAT_COMPLETIONS_OLLAMA = "/chat";
+  public static final String GENERATION_OLLAMA = "/generate";
 
   // Configuration Parameters
   public static final String MAX_TOKENS = "max_tokens";

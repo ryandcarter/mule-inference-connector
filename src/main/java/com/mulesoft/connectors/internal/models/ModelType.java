@@ -13,7 +13,9 @@ public enum ModelType {
        HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
        GROQ("GROQ", getGroqModelNameStream()),
        PORTKEY("PORTKEY", getPortkeyModelNameStream()),
-       OPENROUTER("OPENROUTER", getOpenRouterModelNameStream());
+       OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
+       GITHUB("GITHUB", getGithubModelNameStream()),
+       OLLAMA("OLLAMA", getOllamaModelNameStream());
   private final String value;
   private final Stream<String> modelNameStream;
 
@@ -47,6 +49,14 @@ public enum ModelType {
     return Arrays.stream(OpenRouterModelName.values()).map(String::valueOf);
   }
 
+
+  private static Stream<String> getGithubModelNameStream() {
+    return Arrays.stream(GithubModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getOllamaModelNameStream() {
+    return Arrays.stream(OllamaModelName.values()).map(String::valueOf);
+  }
 
 
   public static ModelType fromValue(String value) {
@@ -128,6 +138,26 @@ public enum ModelType {
     }
   }
 
+  enum GithubModelName {
+    GPT_4O("gpt-4o"),
+    PHI_3_5_MOE_INSTRUCT("Phi-3.5-MoE-instruct"),
+    MISTRAL_LARGE("Mistral-large"),
+    MISTRAL_SMALL("Mistral-small"),
+    GPT_4_TURBO("gpt-4-turbo"),
+    AI21_JAMBA_1_5_LARGE("AI21-Jamba-1.5-Large"),
+    COHERE_COMMAND_R("Cohere-command-r");
+    
+    private final String value;
+
+    GithubModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
 
   enum OpenRouterModelName {
     ANTHROPIC_CLAUDE_3_5_SONNET("anthropic/claude-3.5-sonnet"),
@@ -175,5 +205,19 @@ public enum ModelType {
     }
   }
 
+  enum OllamaModelName {
+    MISTRAL("mistral"), PHI3("phi3"), ORCA_MINI("orca-mini"), LLAMA2("llama2"), CODE_LLAMA("codellama"), TINY_LLAMA("tinyllama");
+
+    private final String value;
+
+    OllamaModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
 
 }

@@ -57,16 +57,9 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       JSONArray messagesArray = getInputString(messages);
       URL chatCompUrl = getConnectionURLChatCompletion(configuration);
 
-      JSONObject payload = new JSONObject();
-      payload.put(InferenceConstants.MODEL, configuration.getModelName());
-      payload.put(InferenceConstants.MESSAGES, messagesArray);
-      payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
-      payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
-      payload.put(InferenceConstants.TOP_P, configuration.getTopP());
+      JSONObject payload = getPayload(configuration, messagesArray);
 
       String response = executeREST(chatCompUrl,configuration, payload.toString());
-
-      
 
       JSONObject root = new JSONObject(response);
       String model = root.getString("model");      
@@ -116,12 +109,7 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
 
       URL chatCompUrl = getConnectionURLChatCompletion(configuration);
 
-      JSONObject payload = new JSONObject();
-      payload.put(InferenceConstants.MODEL, configuration.getModelName());
-      payload.put(InferenceConstants.MESSAGES, messagesArray);
-      payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
-      payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
-      payload.put(InferenceConstants.TOP_P, configuration.getTopP());
+      JSONObject payload = getPayload(configuration, messagesArray);
 
       String response = executeREST(chatCompUrl,configuration, payload.toString());
 
@@ -180,12 +168,7 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
 
       URL chatCompUrl = getConnectionURLChatCompletion(configuration);
 
-      JSONObject payload = new JSONObject();
-      payload.put(InferenceConstants.MODEL, configuration.getModelName());
-      payload.put(InferenceConstants.MESSAGES, messagesArray);
-      payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
-      payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
-      payload.put(InferenceConstants.TOP_P, configuration.getTopP());
+      JSONObject payload = getPayload(configuration, messagesArray);
 
       String response = executeREST(chatCompUrl,configuration, payload.toString());
 
@@ -248,9 +231,25 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
             return new URL(InferenceConstants.HUGGINGFACE_URL + "/models/" + configuration.getModelName() + "/v1" + InferenceConstants.CHAT_COMPLETIONS);
         case "OPENROUTER": 
             return new URL(InferenceConstants.OPENROUTER_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "GITHUB": 
+            return new URL(InferenceConstants.GITHUB_MODELS_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "OLLAMA": 
+            return new URL(configuration.getOllamaUrl() + InferenceConstants.CHAT_COMPLETIONS_OLLAMA);
         default:
             return new URL ("");
         }
+  }
+
+  private static JSONObject getPayload(InferenceConfiguration configuration, JSONArray messagesArray){
+    JSONObject payload = new JSONObject();
+    payload.put(InferenceConstants.MODEL, configuration.getModelName());
+    payload.put(InferenceConstants.MESSAGES, messagesArray);
+    payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
+    payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
+    payload.put(InferenceConstants.TOP_P, configuration.getTopP());
+
+    return payload;
+
   }
 
   private static JSONArray getInputString(InputStream inputString) throws IOException {

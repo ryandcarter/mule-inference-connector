@@ -25,6 +25,9 @@
                 <parameter name="topP">
                     <description><![CDATA[]]></description>
                 </parameter>
+                <parameter name="ollamaUrl">
+                    <description><![CDATA[]]></description>
+                </parameter>
                 <parameter name="expirationPolicy">
                     <description><![CDATA[Configures the minimum amount of time that a dynamic configuration instance can remain idle before the runtime considers it eligible for expiration. This does not mean that the platform will expire the instance at the exact moment that it becomes eligible. The runtime will actually purge the instances when it sees it fit.]]></description>
                 </parameter>

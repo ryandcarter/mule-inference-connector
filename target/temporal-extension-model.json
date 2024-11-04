@@ -1,14 +1,14 @@
 {
   "name": "MAC Inference",
   "description": "This is the main class of an extension, is the entry point from which configurations, connection providers, operations and sources are going to be declared.",
-  "version": "0.0.37-SNAPSHOT",
+  "version": "0.0.41-SNAPSHOT",
   "vendor": "Mulesoft",
   "category": "COMMUNITY",
   "xmlDsl": {
     "prefix": "mac-inference",
     "namespace": "http://www.mulesoft.org/schema/mule/mac-inference",
     "schemaLocation": "http://www.mulesoft.org/schema/mule/mac-inference/current/mule-mac-inference.xsd",
-    "schemaVersion": "0.0.37-SNAPSHOT",
+    "schemaVersion": "0.0.41-SNAPSHOT",
     "xsdFileName": "mule-mac-inference.xsd"
   },
   "resources": [],
@@ -87,7 +87,7 @@
                 "password": false,
                 "text": false,
                 "query": false,
-                "order": 2
+                "order": 3
               },
               "allowedStereotypeModels": [],
               "name": "apiKey",
@@ -117,7 +117,8 @@
                 "password": false,
                 "text": false,
                 "query": false,
-                "order": 3
+                "order": 1,
+                "tabName": "Advanced"
               },
               "allowedStereotypeModels": [],
               "name": "virtualKey",
@@ -290,6 +291,50 @@
               },
               "allowedStereotypeModels": [],
               "name": "topP",
+              "description": "",
+              "modelProperties": {}
+            },
+            {
+              "type": {
+                "format": "java",
+                "type": "Number",
+                "annotations": {
+                  "classInformation": {
+                    "classname": "java.lang.Number",
+                    "hasDefaultConstructor": true,
+                    "isInterface": false,
+                    "isInstantiable": false,
+                    "isAbstract": true,
+                    "isFinal": false,
+                    "implementedInterfaces": [
+                      "java.io.Serializable"
+                    ],
+                    "parent": "",
+                    "genericTypes": [],
+                    "isMap": false
+                  }
+                }
+              },
+              "hasDynamicType": false,
+              "required": false,
+              "isConfigOverride": false,
+              "expressionSupport": "SUPPORTED",
+              "defaultValue": "http://localhost:11434/api",
+              "role": "BEHAVIOUR",
+              "dslConfiguration": {
+                "allowsInlineDefinition": true,
+                "allowsReferences": true,
+                "allowTopLevelDefinition": false
+              },
+              "layoutModel": {
+                "password": false,
+                "text": false,
+                "query": false,
+                "order": 2,
+                "tabName": "Advanced"
+              },
+              "allowedStereotypeModels": [],
+              "name": "ollamaUrl",
               "description": "",
               "modelProperties": {}
             },

@@ -29,6 +29,7 @@ public class InferenceConfiguration {
     private String apiKey;
 
     @Parameter
+	@Placement(order = 1, tab = Placement.ADVANCED_TAB)
     @Optional(defaultValue = "Valid-for-portkey-only")
     @Expression(ExpressionSupport.SUPPORTED)
     @DisplayName("Virtual Key")
@@ -81,6 +82,16 @@ public class InferenceConfiguration {
 
 	public Number getTopP() {
 		return topP;
+	}
+
+	@Parameter
+	@Placement(order = 2, tab = Placement.ADVANCED_TAB)
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional(defaultValue = "http://localhost:11434/api")
+	private Number ollamaUrl;
+
+	public Number getOllamaUrl() {
+		return ollamaUrl;
 	}
 
 
