@@ -17,24 +17,14 @@ public class TokenHelper {
         if (root.has("usage")) {
             JSONObject usageNode = root.getJSONObject("usage");
             
-            if (usageNode.has("prompt_tokens") && usageNode.has("completion_tokens")) {
-                promptTokens = usageNode.getInt("prompt_tokens");
-                completionTokens = usageNode.getInt("completion_tokens");
-                totalTokens = usageNode.getInt("total_tokens");
-            } 
-            else if (root.has("prompt_eval_count") && root.has("eval_count")) {
-                promptTokens = root.getInt("prompt_eval_count");
-                completionTokens = root.getInt("eval_count");
-                totalTokens = promptTokens + completionTokens;
-            } else {
-                promptTokens = 0;
-                completionTokens = 0;
-                totalTokens = 0;
-            }
+            promptTokens = usageNode.getInt("prompt_tokens");
+            completionTokens = usageNode.getInt("completion_tokens");
+            totalTokens = usageNode.getInt("total_tokens");
+
         } else {
-            promptTokens = 0;
-            completionTokens = 0;
-            totalTokens = 0;
+            promptTokens = root.getInt("prompt_eval_count");
+            completionTokens = root.getInt("eval_count");
+            totalTokens = promptTokens + completionTokens;
         }
 
         // Create and populate the Usage object

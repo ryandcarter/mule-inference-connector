@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
+import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,7 @@ public class InferenceOperations {
 @Alias("Chat-completions")
 @OutputJsonType(schema = "api/response/Response.json")
 public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMResponseAttributes> chatCompletion(
-                            @Config InferenceConfiguration configuration,
+                            @Config InferenceConfiguration configuration, 
                             @Content InputStream messages) throws Exception {
    try {
       JSONArray messagesArray = getInputString(messages);
