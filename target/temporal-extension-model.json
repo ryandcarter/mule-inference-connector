@@ -369,9 +369,7 @@
                           "isAbstract": false,
                           "isFinal": true,
                           "implementedInterfaces": [
-                            "java.lang.Comparable",
-                            "java.lang.constant.Constable",
-                            "java.lang.constant.ConstantDesc"
+                            "java.lang.Comparable"
                           ],
                           "parent": "java.lang.Number",
                           "genericTypes": [],
