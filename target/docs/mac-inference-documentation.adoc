@@ -35,7 +35,7 @@ Default configuration
 | Max Tokens a| Number |  |  +++500+++ | {nbsp}
 | Temperature a| Number |  |  +++0.9+++ | {nbsp}
 | Top P a| Number |  |  +++0.9+++ | {nbsp}
-| Ollama Url a| Number |  |  +++http://localhost:11434/api+++ | {nbsp}
+| Ollama Url a| String |  |  +++http://localhost:11434/api+++ | {nbsp}
 | Expiration Policy a| <<ExpirationPolicy>> |  +++Configures the minimum amount of time that a dynamic configuration instance can remain idle before the runtime considers it eligible for expiration. This does not mean that the platform will expire the instance at the exact moment that it becomes eligible. The runtime will actually purge the instances when it sees it fit.+++ |  | {nbsp}
 |======================
 

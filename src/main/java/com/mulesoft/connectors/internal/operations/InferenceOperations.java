@@ -63,12 +63,23 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
 
       JSONObject root = new JSONObject(response);
       String model = root.getString("model");      
-      String id = root.getString("id");
-      JSONArray choicesArray = root.getJSONArray("choices");
-      JSONObject firstChoice = choicesArray.getJSONObject(0);
-      String finishReason = firstChoice.getString("finish_reason");
-      JSONObject message = firstChoice.getJSONObject("message");
+      String id = !"OLLAMA".equals(configuration.getInferenceType()) ? root.getString("id") : null;
+      JSONObject message;
+      String finishReason;
+
+      if (!"OLLAMA".equals(configuration.getInferenceType())) {
+        JSONArray choicesArray = root.getJSONArray("choices");
+        JSONObject firstChoice = choicesArray.getJSONObject(0);
+        finishReason = firstChoice.getString("finish_reason");
+        message = firstChoice.getJSONObject("message");
+
+      } else {
+        message = root.getJSONObject("message");
+        finishReason = root.getString("done_reason");
+      }
+
       String content = message.getString("content");
+
 
       TokenUsage tokenUsage = TokenHelper.parseUsageFromResponse(response);
       JSONObject jsonObject = new JSONObject();
@@ -116,11 +127,21 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
 
       JSONObject root = new JSONObject(response);
       String model = root.getString("model");      
-      String id = root.getString("id");
-      JSONArray choicesArray = root.getJSONArray("choices");
-      JSONObject firstChoice = choicesArray.getJSONObject(0);
-      String finishReason = firstChoice.getString("finish_reason");
-      JSONObject message = firstChoice.getJSONObject("message");
+      String id = !"OLLAMA".equals(configuration.getInferenceType()) ? root.getString("id") : null;
+      JSONObject message;
+      String finishReason;
+
+      if (!"OLLAMA".equals(configuration.getInferenceType())) {
+        JSONArray choicesArray = root.getJSONArray("choices");
+        JSONObject firstChoice = choicesArray.getJSONObject(0);
+        finishReason = firstChoice.getString("finish_reason");
+        message = firstChoice.getJSONObject("message");
+
+      } else {
+        message = root.getJSONObject("message");
+        finishReason = root.getString("done_reason");
+      }
+
       String content = message.getString("content");
 
       TokenUsage tokenUsage = TokenHelper.parseUsageFromResponse(response);
@@ -175,11 +196,21 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
 
       JSONObject root = new JSONObject(response);
       String model = root.getString("model");      
-      String id = root.getString("id");
-      JSONArray choicesArray = root.getJSONArray("choices");
-      JSONObject firstChoice = choicesArray.getJSONObject(0);
-      String finishReason = firstChoice.getString("finish_reason");
-      JSONObject message = firstChoice.getJSONObject("message");
+      String id = !"OLLAMA".equals(configuration.getInferenceType()) ? root.getString("id") : null;
+      JSONObject message;
+      String finishReason;
+
+      if (!"OLLAMA".equals(configuration.getInferenceType())) {
+        JSONArray choicesArray = root.getJSONArray("choices");
+        JSONObject firstChoice = choicesArray.getJSONObject(0);
+        finishReason = firstChoice.getString("finish_reason");
+        message = firstChoice.getJSONObject("message");
+
+      } else {
+        message = root.getJSONObject("message");
+        finishReason = root.getString("done_reason");
+      }
+
       String content = message.getString("content");
 
       TokenUsage tokenUsage = TokenHelper.parseUsageFromResponse(response);
@@ -247,6 +278,7 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
     payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
     payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
     payload.put(InferenceConstants.TOP_P, configuration.getTopP());
+    payload.put("stream", "OLLAMA".equals(configuration.getInferenceType()) ? false : null);
 
     return payload;
 

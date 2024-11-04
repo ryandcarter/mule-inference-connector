@@ -1,14 +1,14 @@
 {
   "name": "MAC Inference",
   "description": "This is the main class of an extension, is the entry point from which configurations, connection providers, operations and sources are going to be declared.",
-  "version": "0.0.41-SNAPSHOT",
+  "version": "0.0.45-SNAPSHOT",
   "vendor": "Mulesoft",
   "category": "COMMUNITY",
   "xmlDsl": {
     "prefix": "mac-inference",
     "namespace": "http://www.mulesoft.org/schema/mule/mac-inference",
     "schemaLocation": "http://www.mulesoft.org/schema/mule/mac-inference/current/mule-mac-inference.xsd",
-    "schemaVersion": "0.0.41-SNAPSHOT",
+    "schemaVersion": "0.0.45-SNAPSHOT",
     "xsdFileName": "mule-mac-inference.xsd"
   },
   "resources": [],
@@ -297,23 +297,7 @@
             {
               "type": {
                 "format": "java",
-                "type": "Number",
-                "annotations": {
-                  "classInformation": {
-                    "classname": "java.lang.Number",
-                    "hasDefaultConstructor": true,
-                    "isInterface": false,
-                    "isInstantiable": false,
-                    "isAbstract": true,
-                    "isFinal": false,
-                    "implementedInterfaces": [
-                      "java.io.Serializable"
-                    ],
-                    "parent": "",
-                    "genericTypes": [],
-                    "isMap": false
-                  }
-                }
+                "type": "String"
               },
               "hasDynamicType": false,
               "required": false,
@@ -369,7 +353,9 @@
                           "isAbstract": false,
                           "isFinal": true,
                           "implementedInterfaces": [
-                            "java.lang.Comparable"
+                            "java.lang.Comparable",
+                            "java.lang.constant.Constable",
+                            "java.lang.constant.ConstantDesc"
                           ],
                           "parent": "java.lang.Number",
                           "genericTypes": [],

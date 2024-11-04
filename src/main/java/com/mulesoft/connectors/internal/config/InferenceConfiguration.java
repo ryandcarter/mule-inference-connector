@@ -88,9 +88,9 @@ public class InferenceConfiguration {
 	@Placement(order = 2, tab = Placement.ADVANCED_TAB)
 	@Expression(ExpressionSupport.SUPPORTED)
 	@Optional(defaultValue = "http://localhost:11434/api")
-	private Number ollamaUrl;
+	private String ollamaUrl;
 
-	public Number getOllamaUrl() {
+	public String getOllamaUrl() {
 		return ollamaUrl;
 	}
 
