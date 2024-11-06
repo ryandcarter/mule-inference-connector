@@ -44,6 +44,7 @@ Default configuration
 * <<Agent-define-prompt-template>> {nbsp}
 * <<Chat-answer-prompt>> {nbsp}
 * <<Chat-completions>> {nbsp}
+* <<Tools-native-template>> {nbsp}
 
 
 
@@ -131,6 +132,42 @@ Chat completions by messages array including system, users messages i.e. convers
 | Name | Type | Description | Default Value | Required
 | Configuration | String | The name of the configuration to use. | | *x*{nbsp}
 | Messages a| Binary |  |  +++#[payload]+++ | {nbsp}
+| Streaming Strategy a| * <<repeatable-in-memory-stream>>
+* <<repeatable-file-store-stream>>
+* <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| Any
+| *Attributes Type* a| <<LLMResponseAttributes>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+
+
+[[Tools-native-template]]
+=== Tools Native Template
+`<mac-inference:tools-native-template>`
+
++++
+Define a tools template
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Template a| String |  |  | *x*{nbsp}
+| Instructions a| String |  |  | *x*{nbsp}
+| Data a| String |  |  +++#[payload]+++ | {nbsp}
+| Tools a| Binary |  |  | *x*{nbsp}
 | Streaming Strategy a| * <<repeatable-in-memory-stream>>
 * <<repeatable-file-store-stream>>
 * <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}

@@ -28,6 +28,9 @@ public class InferenceConstants {
   public static final String MODEL = "model";
   public static final String ID_STRING = "id";
   public static final String MESSAGES = "messages";
+  public static final String TOOLS = "tools";
+  public static final String TOOL_CALLS = "tool_calls";
+  
 
   
 
