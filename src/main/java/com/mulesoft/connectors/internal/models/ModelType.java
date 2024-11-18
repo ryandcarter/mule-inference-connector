@@ -15,7 +15,8 @@ public enum ModelType {
        PORTKEY("PORTKEY", getPortkeyModelNameStream()),
        OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
        GITHUB("GITHUB", getGithubModelNameStream()),
-       OLLAMA("OLLAMA", getOllamaModelNameStream());
+       OLLAMA("OLLAMA", getOllamaModelNameStream()),
+       CEREBRAS("CEREBRAS", getCerebrasModelNameStream());
   private final String value;
   private final Stream<String> modelNameStream;
 
@@ -57,6 +58,11 @@ public enum ModelType {
   private static Stream<String> getOllamaModelNameStream() {
     return Arrays.stream(OllamaModelName.values()).map(String::valueOf);
   }
+
+  private static Stream<String> getCerebrasModelNameStream() {
+    return Arrays.stream(CerebrasModelName.values()).map(String::valueOf);
+  }
+
 
 
   public static ModelType fromValue(String value) {
@@ -211,6 +217,21 @@ public enum ModelType {
     private final String value;
 
     OllamaModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum CerebrasModelName {
+    LLAMA3_1_8B("llama3.1-8b"), LLAMA3_1_70B("llama3.1-70b");
+
+    private final String value;
+
+    CerebrasModelName(String value) {
       this.value = value;
     }
 

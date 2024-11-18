@@ -361,6 +361,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
             return new URL(InferenceConstants.GITHUB_MODELS_URL + InferenceConstants.CHAT_COMPLETIONS);
         case "OLLAMA": 
             return new URL(configuration.getOllamaUrl() + InferenceConstants.CHAT_COMPLETIONS_OLLAMA);
+        case "CEREBRAS": 
+            return new URL(InferenceConstants.CEREBRAS_URL + InferenceConstants.CHAT_COMPLETIONS);
         default:
             return new URL ("");
         }

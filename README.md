@@ -6,12 +6,13 @@ MAC Inference Connector provides access to Inference Offering for Large Language
 ## Supported Inference Providers
 The MAC Inference Connector supports the following Inference Offerings:
 
-- GitHub Models
-- Hugging Face
-- Ollama
-- Groq AI
-- Portkey
-- OpenRouter
+- [GitHub Models](https://docs.github.com/en/github-models)
+- [Hugging Face](https://huggingface.co/)
+- [Ollama](https://ollama.com/)
+- [Groq AI](https://console.groq.com/)
+- [Portkey](https://portkey.ai/)
+- [OpenRouter](https://openrouter.ai/)
+- [Cerebras](https://cerebras.ai/inference)
 
 
 ### Installation (building locally)

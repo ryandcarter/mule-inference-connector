@@ -12,6 +12,7 @@ public class InferenceConstants {
   public static final String GROQ_URL = "https://api.groq.com/openai/v1";
   public static final String OPENROUTER_URL ="https://openrouter.ai/api/v1";
   public static final String GITHUB_MODELS_URL = "https://models.inference.ai.azure.com";
+  public static final String CEREBRAS_URL = "https://api.cerebras.ai/v1";
 
   // Ressources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
