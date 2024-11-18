@@ -14,6 +14,7 @@ The MAC Inference Connector supports the following Inference Offerings:
 - [OpenRouter](https://openrouter.ai/)
 - [Cerebras](https://cerebras.ai/inference)
 
+
 ### Installation (building locally)
 
 To use this connector, first [build and install](https://mac-project.ai/docs/mac-inference/getting-started) the connector into your local maven repository.
@@ -41,7 +42,7 @@ Then, follow the MuleSoft [documentation](https://docs.mulesoft.com/exchange/to-
 - Check out the complete documentation in [mac-project.ai](https://mac-project.ai/docs/mulechain-vectors)
 - Learn from the [Getting Started YouTube Playlist](https://www.youtube.com/playlist?list=PLnuJGpEBF6ZAV1JfID1SRKN6OmGORvgv6)
 
----
+----
 
 ### Stay tuned!
 
