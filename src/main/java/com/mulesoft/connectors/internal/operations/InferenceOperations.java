@@ -266,6 +266,7 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       JSONObject payload = getPayload(configuration, messagesArray, toolsArray);
       String response = executeREST(chatCompUrl,configuration, payload.toString());
 
+
       JSONObject root = new JSONObject(response);
       String model = root.getString("model");      
       String id = !"OLLAMA".equals(configuration.getInferenceType()) ? root.getString("id") : null;
@@ -332,7 +333,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     conn.setDoOutput(true);
     conn.setRequestMethod("POST");
-    conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+    //conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");    
+    conn.setRequestProperty("Content-Type", "application/json");
     conn.setRequestProperty("User-Agent", "Mozilla/5.0");  
     conn.setRequestProperty("Accept", "application/json");  
     switch (configuration.getInferenceType()) {
@@ -363,6 +365,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
             return new URL(configuration.getOllamaUrl() + InferenceConstants.CHAT_COMPLETIONS_OLLAMA);
         case "CEREBRAS": 
             return new URL(InferenceConstants.CEREBRAS_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "NVIDIA": 
+            return new URL(InferenceConstants.NVIDIA_URL + InferenceConstants.CHAT_COMPLETIONS);
         default:
             return new URL ("");
         }

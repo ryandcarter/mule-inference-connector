@@ -16,7 +16,9 @@ public enum ModelType {
        OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
        GITHUB("GITHUB", getGithubModelNameStream()),
        OLLAMA("OLLAMA", getOllamaModelNameStream()),
-       CEREBRAS("CEREBRAS", getCerebrasModelNameStream());
+       CEREBRAS("CEREBRAS", getCerebrasModelNameStream()),
+       NVIDIA("NVIDIA", getNVidiaModelNameStream());
+
   private final String value;
   private final Stream<String> modelNameStream;
 
@@ -61,6 +63,10 @@ public enum ModelType {
 
   private static Stream<String> getCerebrasModelNameStream() {
     return Arrays.stream(CerebrasModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getNVidiaModelNameStream() {
+    return Arrays.stream(NVidiaModelName.values()).map(String::valueOf);
   }
 
 
@@ -232,6 +238,22 @@ public enum ModelType {
     private final String value;
 
     CerebrasModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+
+  enum NVidiaModelName {
+    MISTRAL_7B_INSTRUCT_v0_3("mistralai/mistral-7b-instruct-v0.3"), AI_YI_LARGE("01-ai/yi-large");
+
+    private final String value;
+
+    NVidiaModelName(String value) {
       this.value = value;
     }
 
