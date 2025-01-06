@@ -370,6 +370,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
             return new URL(InferenceConstants.NVIDIA_URL + InferenceConstants.CHAT_COMPLETIONS);
         case "FIREWORKS": 
             return new URL(InferenceConstants.FIREWORKS_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "TOGETHER": 
+            return new URL(InferenceConstants.TOGETHER_URL + InferenceConstants.CHAT_COMPLETIONS);
         default:
             return new URL ("");
         }
