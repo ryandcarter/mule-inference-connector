@@ -7,5 +7,6 @@ import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 
 public enum InferenceErrorType implements ErrorTypeDefinition<InferenceErrorType> {
 
-  CHAT_COMPLETION
+  //aw CHAT_COMPLETION
+  VALIDATION_FAILURE
 }
