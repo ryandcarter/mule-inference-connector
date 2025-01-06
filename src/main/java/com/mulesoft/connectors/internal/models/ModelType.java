@@ -17,7 +17,9 @@ public enum ModelType {
        GITHUB("GITHUB", getGithubModelNameStream()),
        OLLAMA("OLLAMA", getOllamaModelNameStream()),
        CEREBRAS("CEREBRAS", getCerebrasModelNameStream()),
-       NVIDIA("NVIDIA", getNVidiaModelNameStream());
+       NVIDIA("NVIDIA", getNVidiaModelNameStream()),
+       FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
+       TOGETHER("TOGETHER", getTOGETHERModelNameStream());
 
   private final String value;
   private final Stream<String> modelNameStream;
@@ -70,12 +72,52 @@ public enum ModelType {
   }
 
 
+  private static Stream<String> getFireworksModelNameStream() {
+    return Arrays.stream(FireworksModelName.values()).map(String::valueOf);
+  }
+
+
+  private static Stream<String> getTOGETHERModelNameStream() {
+    return Arrays.stream(TogetherModelName.values()).map(String::valueOf);
+  }
+
 
   public static ModelType fromValue(String value) {
     return Arrays.stream(ModelType.values())
         .filter(langchainLLMType -> langchainLLMType.value.equals(value))
         .findFirst()
         .orElseThrow(() -> new ConfigValidationException("Unsupported LLM Type: " + value));
+  }
+
+  enum TogetherModelName {
+    
+    LLAMA_3_1_8B_INSTRUCT_TURBO("meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo");
+    
+    private final String value;
+  
+    TogetherModelName(String value) {
+      this.value = value;
+    }
+  
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum FireworksModelName {
+    LLAMA_V3P1_405B_INSTRUCT("accounts/fireworks/models/llama-v3p1-405b-instruct");
+    
+    private final String value;
+  
+    FireworksModelName(String value) {
+      this.value = value;
+    }
+  
+    @Override
+    public String toString() {
+      return this.value;
+    }
   }
 
   enum GroqModelName {

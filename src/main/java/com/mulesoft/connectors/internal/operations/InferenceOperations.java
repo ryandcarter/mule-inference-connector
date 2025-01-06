@@ -72,7 +72,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       if (!"OLLAMA".equals(configuration.getInferenceType())) {
         JSONArray choicesArray = root.getJSONArray("choices");
         JSONObject firstChoice = choicesArray.getJSONObject(0);
-        finishReason = firstChoice.getString("finish_reason");
+        // aw add/nim finishReason = firstChoice.getString("finish_reason");
+        finishReason = !"NVIDIA".equals(configuration.getInferenceType()) ? firstChoice.getString("finish_reason") : "";
         message = firstChoice.getJSONObject("message");
 
       } else {
@@ -135,7 +136,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       if (!"OLLAMA".equals(configuration.getInferenceType())) {
         JSONArray choicesArray = root.getJSONArray("choices");
         JSONObject firstChoice = choicesArray.getJSONObject(0);
-        finishReason = firstChoice.getString("finish_reason");
+        // aw add/nim finishReason = firstChoice.getString("finish_reason");
+        finishReason = !"NVIDIA".equals(configuration.getInferenceType()) ? firstChoice.getString("finish_reason") : "";
         message = firstChoice.getJSONObject("message");
 
       } else {
@@ -205,7 +207,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       if (!"OLLAMA".equals(configuration.getInferenceType())) {
         JSONArray choicesArray = root.getJSONArray("choices");
         JSONObject firstChoice = choicesArray.getJSONObject(0);
-        finishReason = firstChoice.getString("finish_reason");
+        // aw add/nim finishReason = firstChoice.getString("finish_reason");
+        finishReason = !"NVIDIA".equals(configuration.getInferenceType()) ? firstChoice.getString("finish_reason") : "";
         message = firstChoice.getJSONObject("message");
 
       } else {
@@ -274,7 +277,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       if (!"OLLAMA".equals(configuration.getInferenceType())) {
         JSONArray choicesArray = root.getJSONArray("choices");
         JSONObject firstChoice = choicesArray.getJSONObject(0);
-        finishReason = firstChoice.getString("finish_reason");
+        // aw add/nim finishReason = firstChoice.getString("finish_reason");
+        finishReason = !"NVIDIA".equals(configuration.getInferenceType()) ? firstChoice.getString("finish_reason") : "";
         message = firstChoice.getJSONObject("message");
 
       } else {
@@ -364,6 +368,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
             return new URL(InferenceConstants.CEREBRAS_URL + InferenceConstants.CHAT_COMPLETIONS);
         case "NVIDIA": 
             return new URL(InferenceConstants.NVIDIA_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "FIREWORKS": 
+            return new URL(InferenceConstants.FIREWORKS_URL + InferenceConstants.CHAT_COMPLETIONS);
         default:
             return new URL ("");
         }
