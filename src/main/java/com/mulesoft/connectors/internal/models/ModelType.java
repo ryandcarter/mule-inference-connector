@@ -19,7 +19,8 @@ public enum ModelType {
        CEREBRAS("CEREBRAS", getCerebrasModelNameStream()),
        NVIDIA("NVIDIA", getNVidiaModelNameStream()),
        FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
-       TOGETHER("TOGETHER", getTOGETHERModelNameStream());
+       TOGETHER("TOGETHER", getTOGETHERModelNameStream()),
+       DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream());
 
   private final String value;
   private final Stream<String> modelNameStream;
@@ -82,11 +83,32 @@ public enum ModelType {
   }
 
 
+  private static Stream<String> getDEEPINFRAModelNameStream() {
+    return Arrays.stream(DeepinfraModelName.values()).map(String::valueOf);
+  }
+
+
   public static ModelType fromValue(String value) {
     return Arrays.stream(ModelType.values())
         .filter(langchainLLMType -> langchainLLMType.value.equals(value))
         .findFirst()
         .orElseThrow(() -> new ConfigValidationException("Unsupported LLM Type: " + value));
+  }
+
+  enum DeepinfraModelName {
+    
+    LLAMA_3_8B_INSTRUCT("meta-llama/Meta-Llama-3-8B-Instruct");
+    
+    private final String value;
+  
+    DeepinfraModelName(String value) {
+      this.value = value;
+    }
+  
+    @Override
+    public String toString() {
+      return this.value;
+    }
   }
 
   enum TogetherModelName {

@@ -16,6 +16,7 @@ public class InferenceConstants {
   public static final String NVIDIA_URL = "https://integrate.api.nvidia.com/v1";
   public static final String FIREWORKS_URL = "https://api.fireworks.ai/inference/v1";
   public static final String TOGETHER_URL = "https://api.together.xyz/v1";
+  public static final String DEEPINFRA_URL = "https://api.deepinfra.com/v1/openai";
 
   // Ressources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
