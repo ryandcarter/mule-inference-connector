@@ -16,7 +16,12 @@ public enum ModelType {
        OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
        GITHUB("GITHUB", getGithubModelNameStream()),
        OLLAMA("OLLAMA", getOllamaModelNameStream()),
-       CEREBRAS("CEREBRAS", getCerebrasModelNameStream());
+       CEREBRAS("CEREBRAS", getCerebrasModelNameStream()),
+       NVIDIA("NVIDIA", getNVidiaModelNameStream()),
+       FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
+       TOGETHER("TOGETHER", getTOGETHERModelNameStream()),
+       DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream());
+
   private final String value;
   private final Stream<String> modelNameStream;
 
@@ -63,6 +68,24 @@ public enum ModelType {
     return Arrays.stream(CerebrasModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getNVidiaModelNameStream() {
+    return Arrays.stream(NVidiaModelName.values()).map(String::valueOf);
+  }
+
+
+  private static Stream<String> getFireworksModelNameStream() {
+    return Arrays.stream(FireworksModelName.values()).map(String::valueOf);
+  }
+
+
+  private static Stream<String> getTOGETHERModelNameStream() {
+    return Arrays.stream(TogetherModelName.values()).map(String::valueOf);
+  }
+
+
+  private static Stream<String> getDEEPINFRAModelNameStream() {
+    return Arrays.stream(DeepinfraModelName.values()).map(String::valueOf);
+  }
 
 
   public static ModelType fromValue(String value) {
@@ -70,6 +93,53 @@ public enum ModelType {
         .filter(langchainLLMType -> langchainLLMType.value.equals(value))
         .findFirst()
         .orElseThrow(() -> new ConfigValidationException("Unsupported LLM Type: " + value));
+  }
+
+  enum DeepinfraModelName {
+    
+    LLAMA_3_8B_INSTRUCT("meta-llama/Meta-Llama-3-8B-Instruct");
+    
+    private final String value;
+  
+    DeepinfraModelName(String value) {
+      this.value = value;
+    }
+  
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum TogetherModelName {
+    
+    LLAMA_3_1_8B_INSTRUCT_TURBO("meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo");
+    
+    private final String value;
+  
+    TogetherModelName(String value) {
+      this.value = value;
+    }
+  
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum FireworksModelName {
+    LLAMA_V3P1_405B_INSTRUCT("accounts/fireworks/models/llama-v3p1-405b-instruct");
+    
+    private final String value;
+  
+    FireworksModelName(String value) {
+      this.value = value;
+    }
+  
+    @Override
+    public String toString() {
+      return this.value;
+    }
   }
 
   enum GroqModelName {
@@ -232,6 +302,22 @@ public enum ModelType {
     private final String value;
 
     CerebrasModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+
+  enum NVidiaModelName {
+    MISTRAL_7B_INSTRUCT_v0_3("mistralai/mistral-7b-instruct-v0.3"), AI_YI_LARGE("01-ai/yi-large");
+
+    private final String value;
+
+    NVidiaModelName(String value) {
       this.value = value;
     }
 

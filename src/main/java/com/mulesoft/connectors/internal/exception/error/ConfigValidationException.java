@@ -9,6 +9,7 @@ import com.mulesoft.connectors.internal.exception.InferenceErrorType;
 public class ConfigValidationException extends ModuleException {
 
   public ConfigValidationException(String message) {
-    super(message, InferenceErrorType.VALIDATION_FAILURE);
+//aw    super(message, InferenceErrorType.VALIDATION_FAILURE);
+    super(message, InferenceErrorType.CHAT_COMPLETION);
   }
 }

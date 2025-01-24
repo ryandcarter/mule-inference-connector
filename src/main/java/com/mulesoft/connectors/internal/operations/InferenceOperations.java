@@ -2,6 +2,7 @@ package com.mulesoft.connectors.internal.operations;
 
 import static com.mulesoft.connectors.internal.helpers.ResponseHelper.createLLMResponse;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
+import com.mulesoft.connectors.internal.exception.InferenceErrorType;
 import com.mulesoft.connectors.internal.helpers.TokenHelper;
 
 import java.io.BufferedReader;
@@ -71,7 +72,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       if (!"OLLAMA".equals(configuration.getInferenceType())) {
         JSONArray choicesArray = root.getJSONArray("choices");
         JSONObject firstChoice = choicesArray.getJSONObject(0);
-        finishReason = firstChoice.getString("finish_reason");
+        // aw add/nim finishReason = firstChoice.getString("finish_reason");
+        finishReason = !"NVIDIA".equals(configuration.getInferenceType()) ? firstChoice.getString("finish_reason") : "";
         message = firstChoice.getJSONObject("message");
 
       } else {
@@ -94,10 +96,9 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
 
       return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
      } catch (Exception e) {
-      //throw new ModuleException("Unable to perform toxicity detection", MuleChainErrorType.AI_SERVICES_FAILURE, e);
-      LOGGER.debug("Error in chat completions {}", e.getMessage());
-      System.out.println(e.getMessage());
-      return null;
+      throw new org.mule.runtime.extension.api.exception.ModuleException("Chat completions result {}", InferenceErrorType.CHAT_COMPLETION, e);
+      //LOGGER.debug("Error in chat completions {}", e.getMessage());
+      //System.out.println(e.getMessage());
 
     }
   }
@@ -135,7 +136,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       if (!"OLLAMA".equals(configuration.getInferenceType())) {
         JSONArray choicesArray = root.getJSONArray("choices");
         JSONObject firstChoice = choicesArray.getJSONObject(0);
-        finishReason = firstChoice.getString("finish_reason");
+        // aw add/nim finishReason = firstChoice.getString("finish_reason");
+        finishReason = !"NVIDIA".equals(configuration.getInferenceType()) ? firstChoice.getString("finish_reason") : "";
         message = firstChoice.getJSONObject("message");
 
       } else {
@@ -157,10 +159,9 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
 
       return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
      } catch (Exception e) {
-      //throw new ModuleException("Unable to perform toxicity detection", MuleChainErrorType.AI_SERVICES_FAILURE, e);
-      LOGGER.debug("Error in chat answer prompt {}", e.getMessage());
-
-      return null;
+      throw new org.mule.runtime.extension.api.exception.ModuleException("Chat answer prompt result {}", InferenceErrorType.CHAT_COMPLETION, e);
+      //LOGGER.debug("Error in chat completions {}", e.getMessage());
+      //System.out.println(e.getMessage());
 
     }
   }
@@ -206,7 +207,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       if (!"OLLAMA".equals(configuration.getInferenceType())) {
         JSONArray choicesArray = root.getJSONArray("choices");
         JSONObject firstChoice = choicesArray.getJSONObject(0);
-        finishReason = firstChoice.getString("finish_reason");
+        // aw add/nim finishReason = firstChoice.getString("finish_reason");
+        finishReason = !"NVIDIA".equals(configuration.getInferenceType()) ? firstChoice.getString("finish_reason") : "";
         message = firstChoice.getJSONObject("message");
 
       } else {
@@ -228,10 +230,9 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
 
       return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
      } catch (Exception e) {
-      //throw new ModuleException("Unable to perform toxicity detection", MuleChainErrorType.AI_SERVICES_FAILURE, e);
-      LOGGER.debug("Error in Agent define prompt template {}", e.getMessage());
-
-      return null;
+      throw new org.mule.runtime.extension.api.exception.ModuleException("Agent define prompt template result {}", InferenceErrorType.CHAT_COMPLETION, e);
+      //LOGGER.debug("Error in chat completions {}", e.getMessage());
+      //System.out.println(e.getMessage());
 
     }
   }
@@ -266,6 +267,7 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       JSONObject payload = getPayload(configuration, messagesArray, toolsArray);
       String response = executeREST(chatCompUrl,configuration, payload.toString());
 
+
       JSONObject root = new JSONObject(response);
       String model = root.getString("model");      
       String id = !"OLLAMA".equals(configuration.getInferenceType()) ? root.getString("id") : null;
@@ -275,7 +277,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       if (!"OLLAMA".equals(configuration.getInferenceType())) {
         JSONArray choicesArray = root.getJSONArray("choices");
         JSONObject firstChoice = choicesArray.getJSONObject(0);
-        finishReason = firstChoice.getString("finish_reason");
+        // aw add/nim finishReason = firstChoice.getString("finish_reason");
+        finishReason = !"NVIDIA".equals(configuration.getInferenceType()) ? firstChoice.getString("finish_reason") : "";
         message = firstChoice.getJSONObject("message");
 
       } else {
@@ -315,14 +318,13 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       responseAttributes.put(InferenceConstants.MODEL, model); 
       responseAttributes.put(InferenceConstants.ID_STRING, id); 
 
-      LOGGER.debug("Agent define prompt template result {}", response);
+      LOGGER.debug("Tools use native template result {}", response);
 
       return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
      } catch (Exception e) {
-      //throw new ModuleException("Unable to perform toxicity detection", MuleChainErrorType.AI_SERVICES_FAILURE, e);
-      LOGGER.debug("Error in Agent define prompt template {}", e.getMessage());
-
-      return null;
+      throw new org.mule.runtime.extension.api.exception.ModuleException("Tools use native template result {}", InferenceErrorType.CHAT_COMPLETION, e);
+      //LOGGER.debug("Error in chat completions {}", e.getMessage());
+      //System.out.println(e.getMessage());
 
     }
   }
@@ -332,7 +334,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     conn.setDoOutput(true);
     conn.setRequestMethod("POST");
-    conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+    //conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");    
+    conn.setRequestProperty("Content-Type", "application/json");
     conn.setRequestProperty("User-Agent", "Mozilla/5.0");  
     conn.setRequestProperty("Accept", "application/json");  
     switch (configuration.getInferenceType()) {
@@ -363,6 +366,14 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
             return new URL(configuration.getOllamaUrl() + InferenceConstants.CHAT_COMPLETIONS_OLLAMA);
         case "CEREBRAS": 
             return new URL(InferenceConstants.CEREBRAS_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "NVIDIA": 
+            return new URL(InferenceConstants.NVIDIA_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "FIREWORKS": 
+            return new URL(InferenceConstants.FIREWORKS_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "TOGETHER": 
+            return new URL(InferenceConstants.TOGETHER_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "DEEPINFRA": 
+            return new URL(InferenceConstants.DEEPINFRA_URL + InferenceConstants.CHAT_COMPLETIONS);
         default:
             return new URL ("");
         }
