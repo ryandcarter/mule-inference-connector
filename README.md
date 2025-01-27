@@ -1,9 +1,13 @@
-# MAC INFERENCE CONNECTOR
-[MAC Inference Connector Overview](https://mac-project.ai/docs/mac-inference/connector-overview)
+# <img src="icon/icon.svg" width="6%" alt="banner"> MuleSoft Inference Connector
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.mulesoft-ai-chain-project/mule4-inference-connector)](https://central.sonatype.com/artifact/io.github.mulesoft-ai-chain-project/mule4-inference-connector/overview)
 
-MAC Inference Connector provides access to Inference Offering for Large Language Models i.e. Groq, Hugging Face, Github Models, etc.
+## <img src="https://raw.githubusercontent.com/MuleSoft-AI-Chain-Project/.github/main/profile/assets/mulechain-project-logo.png" width="6%" alt="banner">   [MuleSoft AI Chain (MAC) Project](https://mac-project.ai/docs/)
 
-## Supported Inference Providers
+### <img src="icon/icon.svg" width="6%" alt="banner"> MuleSoft Inference Connector
+
+MuleSoft Inference Connector provides access to Inference Offering for Large Language Models i.e. Groq, Hugging Face, Github Models, etc.
+
+#### Supported Inference Providers
 The MAC Inference Connector supports the following Inference Offerings:
 
 - [GitHub Models](https://docs.github.com/en/github-models)
@@ -14,6 +18,21 @@ The MAC Inference Connector supports the following Inference Offerings:
 - [OpenRouter](https://openrouter.ai/)
 - [Cerebras](https://cerebras.ai/inference)
 
+### Requirements
+
+- The maximum supported version for Java SDK is JDK 17. You can use JDK 17 only for running your application.
+- Compilation with Java SDK must be done with JDK 8.
+
+### Installation (using maven central dependency)
+
+```xml
+<dependency>
+   <groupId>io.github.mulesoft-ai-chain-project</groupId>
+   <artifactId>mule4-inference-connector</artifactId>
+   <version>0.2.0</version>
+   <classifier>mule-plugin</classifier>
+</dependency>
+```
 
 ### Installation (building locally)
 
@@ -23,8 +42,8 @@ Then add the following dependency to your application's `pom.xml`:
 ```xml
 <dependency>
     <groupId>com.mulesoft.connectors</groupId>
-    <artifactId>mac-inference-chain</artifactId>
-    <version>0.1.0</version>
+    <artifactId>mule4-inference-connector</artifactId>
+    <version>0.2.0</version>
     <classifier>mule-plugin</classifier>
 </dependency>
 ```
