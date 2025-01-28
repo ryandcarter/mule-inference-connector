@@ -17,6 +17,10 @@ The MAC Inference Connector supports the following Inference Offerings:
 - [Portkey](https://portkey.ai/)
 - [OpenRouter](https://openrouter.ai/)
 - [Cerebras](https://cerebras.ai/inference)
+- [Nvidia](https://www.nvidia.com/en-sg/ai)
+- [Together.ai](https://www.together.ai)
+- [Fireworks](https://fireworks.ai)
+- [DeepInfra](https://deepinfra.com)
 
 ### Requirements
 
