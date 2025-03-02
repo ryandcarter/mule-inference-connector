@@ -4,10 +4,10 @@
 package com.mulesoft.connectors.internal.models;
 
 
+import com.mulesoft.connectors.internal.exception.error.ConfigValidationException;
+
 import java.util.Arrays;
 import java.util.stream.Stream;
-
-import com.mulesoft.connectors.internal.exception.error.ConfigValidationException;
 
 public enum ModelType {
        HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
@@ -20,7 +20,8 @@ public enum ModelType {
        NVIDIA("NVIDIA", getNVidiaModelNameStream()),
        FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
        TOGETHER("TOGETHER", getTOGETHERModelNameStream()),
-       DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream());
+       DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream()),
+       PERPLEXITY("PERPLEXITY", getPERPLEXITYModelNameStream());
 
   private final String value;
   private final Stream<String> modelNameStream;
@@ -87,12 +88,36 @@ public enum ModelType {
     return Arrays.stream(DeepinfraModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getPERPLEXITYModelNameStream() {
+    return Arrays.stream(PerplexityModelName.values()).map(String::valueOf);
+  }
+
 
   public static ModelType fromValue(String value) {
     return Arrays.stream(ModelType.values())
         .filter(langchainLLMType -> langchainLLMType.value.equals(value))
         .findFirst()
         .orElseThrow(() -> new ConfigValidationException("Unsupported LLM Type: " + value));
+  }
+
+  enum PerplexityModelName {
+
+    sonar("sonar"),
+    sonar_pro("sonar-pro"),
+    sonar_reasoning("sonar-reasoning"),
+    sonar_reasoning_pro("sonar-reasoning-pro"),
+    sonar_deep_research("sonar-deep-research");
+
+    private final String value;
+
+    PerplexityModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
   }
 
   enum DeepinfraModelName {

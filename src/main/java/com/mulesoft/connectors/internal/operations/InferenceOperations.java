@@ -1,15 +1,22 @@
 package com.mulesoft.connectors.internal.operations;
 
-import static com.mulesoft.connectors.internal.helpers.ResponseHelper.createLLMResponse;
+import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
+import com.mulesoft.connectors.internal.api.metadata.TokenUsage;
+import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
 import com.mulesoft.connectors.internal.helpers.TokenHelper;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.mule.runtime.extension.api.annotation.Alias;
+import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
+import org.mule.runtime.extension.api.annotation.param.Config;
+import org.mule.runtime.extension.api.annotation.param.Content;
+import org.mule.runtime.extension.api.annotation.param.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,25 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.mule.runtime.extension.api.annotation.Alias;
-import org.mule.runtime.extension.api.annotation.param.MediaType;
-import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
-import com.mulesoft.connectors.internal.api.metadata.TokenUsage;
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
-
+import static com.mulesoft.connectors.internal.helpers.ResponseHelper.createLLMResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
-import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
-
-import org.mule.runtime.extension.api.annotation.param.Config;
-import org.mule.runtime.extension.api.annotation.param.Content;
-
-import static org.apache.commons.io.IOUtils.toInputStream;
 
 
 /**
@@ -374,6 +364,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
             return new URL(InferenceConstants.TOGETHER_URL + InferenceConstants.CHAT_COMPLETIONS);
         case "DEEPINFRA": 
             return new URL(InferenceConstants.DEEPINFRA_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "PERPLEXITY":
+            return new URL(InferenceConstants.PERPLEXITY_URL + InferenceConstants.CHAT_COMPLETIONS);
         default:
             return new URL ("");
         }
