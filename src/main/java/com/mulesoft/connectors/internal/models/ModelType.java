@@ -21,7 +21,8 @@ public enum ModelType {
        FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
        TOGETHER("TOGETHER", getTOGETHERModelNameStream()),
        DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream()),
-       PERPLEXITY("PERPLEXITY", getPERPLEXITYModelNameStream());
+       PERPLEXITY("PERPLEXITY", getPERPLEXITYModelNameStream()),
+       XAI("XAI", getXAIModelNameStream());
 
   private final String value;
   private final Stream<String> modelNameStream;
@@ -92,12 +93,33 @@ public enum ModelType {
     return Arrays.stream(PerplexityModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getXAIModelNameStream() {
+    return Arrays.stream(XAIModelName.values()).map(String::valueOf);
+  }
+
 
   public static ModelType fromValue(String value) {
     return Arrays.stream(ModelType.values())
         .filter(langchainLLMType -> langchainLLMType.value.equals(value))
         .findFirst()
         .orElseThrow(() -> new ConfigValidationException("Unsupported LLM Type: " + value));
+  }
+
+  enum XAIModelName {
+
+    grok_2_1212("grok-2-1212"),
+    grok_2_vision_1212("grok-2-vision-1212");
+
+    private final String value;
+
+    XAIModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
   }
 
   enum PerplexityModelName {

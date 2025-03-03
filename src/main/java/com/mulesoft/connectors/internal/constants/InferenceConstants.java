@@ -18,6 +18,7 @@ public class InferenceConstants {
   public static final String TOGETHER_URL = "https://api.together.xyz/v1";
   public static final String DEEPINFRA_URL = "https://api.deepinfra.com/v1/openai";
   public static final String PERPLEXITY_URL = "https://api.perplexity.ai";
+  public static final String X_AI_URL = "https://api.x.ai/v1";
 
   // Ressources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
