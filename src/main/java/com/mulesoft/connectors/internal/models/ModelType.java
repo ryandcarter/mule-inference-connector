@@ -157,8 +157,7 @@ public enum ModelType {
     mistral_large_latest("mistral-large-latest"),
     mistral_small_latest("mistral-small-latest"),
     open_mistral_nemo("open-mistral-nemo"),
-    pixtral_large_latest("pixtral-large-latest"),
-    gpt_4o_mini("gpt-4o-mini");
+    pixtral_large_latest("pixtral-large-latest");
 
     private final String value;
 
