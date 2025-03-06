@@ -23,6 +23,7 @@ public enum ModelType {
        DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream()),
        PERPLEXITY("PERPLEXITY", getPERPLEXITYModelNameStream()),
        OPENAI("OPENAI", getOpenAIModelNameStream()),
+       MISTRAL("MISTRAL", getMistralModelNameStream()),
        XAI("XAI", getXAIModelNameStream());
 
   private final String value;
@@ -98,6 +99,10 @@ public enum ModelType {
     return Arrays.stream(OpenAIModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getMistralModelNameStream() {
+    return Arrays.stream(MistralModelName.values()).map(String::valueOf);
+  }
+
   private static Stream<String> getXAIModelNameStream() {
     return Arrays.stream(XAIModelName.values()).map(String::valueOf);
   }
@@ -138,6 +143,26 @@ public enum ModelType {
     private final String value;
 
     OpenAIModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum MistralModelName {
+
+    mistral_large_latest("mistral-large-latest"),
+    mistral_small_latest("mistral-small-latest"),
+    open_mistral_nemo("open-mistral-nemo"),
+    pixtral_large_latest("pixtral-large-latest"),
+    gpt_4o_mini("gpt-4o-mini");
+
+    private final String value;
+
+    MistralModelName(String value) {
       this.value = value;
     }
 

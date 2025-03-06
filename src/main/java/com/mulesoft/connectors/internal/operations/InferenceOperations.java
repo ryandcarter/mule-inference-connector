@@ -370,6 +370,8 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
             return new URL(InferenceConstants.X_AI_URL + InferenceConstants.CHAT_COMPLETIONS);
         case "OPENAI":
             return new URL(InferenceConstants.OPEN_AI_URL + InferenceConstants.CHAT_COMPLETIONS);
+        case "MISTRAL":
+            return new URL(InferenceConstants.MISTRAL_AI_URL + InferenceConstants.CHAT_COMPLETIONS);
         default:
             return new URL ("");
         }

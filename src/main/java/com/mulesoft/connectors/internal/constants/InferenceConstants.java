@@ -20,6 +20,7 @@ public class InferenceConstants {
   public static final String PERPLEXITY_URL = "https://api.perplexity.ai";
   public static final String X_AI_URL = "https://api.x.ai/v1";
   public static final String OPEN_AI_URL = "https://api.openai.com/v1";
+  public static final String MISTRAL_AI_URL = "https://api.mistral.ai/v1";
 
   // Ressources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
