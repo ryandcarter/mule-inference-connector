@@ -22,6 +22,7 @@ public enum ModelType {
        TOGETHER("TOGETHER", getTOGETHERModelNameStream()),
        DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream()),
        PERPLEXITY("PERPLEXITY", getPERPLEXITYModelNameStream()),
+       OPENAI("OPENAI", getOpenAIModelNameStream()),
        XAI("XAI", getXAIModelNameStream());
 
   private final String value;
@@ -93,6 +94,10 @@ public enum ModelType {
     return Arrays.stream(PerplexityModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getOpenAIModelNameStream() {
+    return Arrays.stream(OpenAIModelName.values()).map(String::valueOf);
+  }
+
   private static Stream<String> getXAIModelNameStream() {
     return Arrays.stream(XAIModelName.values()).map(String::valueOf);
   }
@@ -121,6 +126,27 @@ public enum ModelType {
       return this.value;
     }
   }
+
+  enum OpenAIModelName {
+
+    gpt_4_5_preview("gpt-4.5-preview"),
+    o1_mini("o1-mini"),
+    chatgpt_4o_latest("chatgpt-4o-latest"),
+    gpt_4o("gpt-4o"),
+    gpt_4o_mini("gpt-4o-mini");
+
+    private final String value;
+
+    OpenAIModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
 
   enum PerplexityModelName {
 
