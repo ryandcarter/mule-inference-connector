@@ -22,13 +22,14 @@ public class InferenceConstants {
   public static final String OPEN_AI_URL = "https://api.openai.com/v1";
   public static final String MISTRAL_AI_URL = "https://api.mistral.ai/v1";
 
-  // Ressources
+  // Resources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
   public static final String CHAT_COMPLETIONS_OLLAMA = "/chat";
   public static final String GENERATION_OLLAMA = "/generate";
 
   // Configuration Parameters
   public static final String MAX_TOKENS = "max_tokens";
+  public static final String MAX_COMPLETION_TOKENS = "max_completion_tokens";
   public static final String TEMPERATURE = "temperature";
   public static final String TOP_P = "top_p";
   

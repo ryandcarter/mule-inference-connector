@@ -21,8 +21,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static com.mulesoft.connectors.internal.helpers.ResponseHelper.createLLMResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
@@ -49,9 +51,12 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
       JSONArray messagesArray = getInputString(messages);
       URL chatCompUrl = getConnectionURLChatCompletion(configuration);
 
+      System.out.println(configuration.getInferenceType());
       JSONObject payload = getPayload(configuration, messagesArray, null);
+      System.out.println(payload);
 
       String response = executeREST(chatCompUrl,configuration, payload.toString());
+      System.out.println(response);
 
       JSONObject root = new JSONObject(response);
       String model = root.getString("model");      
@@ -381,9 +386,19 @@ public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMR
     JSONObject payload = new JSONObject();
     payload.put(InferenceConstants.MODEL, configuration.getModelName());
     payload.put(InferenceConstants.MESSAGES, messagesArray);
-    payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
-    payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
-    payload.put(InferenceConstants.TOP_P, configuration.getTopP());
+
+    if ("GROQ".equalsIgnoreCase(configuration.getInferenceType()) || "OPENAI".equalsIgnoreCase(configuration.getInferenceType())) {
+      payload.put(InferenceConstants.MAX_COMPLETION_TOKENS, configuration.getMaxTokens());
+    } else {
+      payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
+    }
+
+    String[] noTemperatureModels = {"o3-mini", "o1", "o1-mini"};
+    if (!Arrays.asList(noTemperatureModels).contains(configuration.getModelName())) {
+      payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
+      payload.put(InferenceConstants.TOP_P, configuration.getTopP());
+    }
+
     payload.put(InferenceConstants.TOOLS, toolsArray != null ? toolsArray : null);
     payload.put("stream", "OLLAMA".equals(configuration.getInferenceType()) ? false : null);
 
