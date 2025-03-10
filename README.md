@@ -7,20 +7,26 @@
 
 MuleSoft Inference Connector provides access to Inference Offering for Large Language Models i.e. Groq, Hugging Face, Github Models, etc.
 
-#### Supported Inference Providers
-The MAC Inference Connector supports the following Inference Offerings:
+## Supported Inference Providers
+The MuleSoft Inference Connector supports the following Inference Offerings:
 
 - [GitHub Models](https://docs.github.com/en/github-models)
 - [Hugging Face](https://huggingface.co/)
 - [Ollama](https://ollama.com/)
 - [Groq AI](https://console.groq.com/)
 - [Portkey](https://portkey.ai/)
+- [OpenAI](https://openai.com/)
+- [Anthropic](https://www.anthropic.com/)
+- [XAI](https://x.ai/)
+- [Perplexity](https://www.perplexity.ai/)
+- [Mistral](https://www.mistral.ai/)
 - [OpenRouter](https://openrouter.ai/)
 - [Cerebras](https://cerebras.ai/inference)
-- [Nvidia](https://www.nvidia.com/en-sg/ai)
-- [Together.ai](https://www.together.ai)
-- [Fireworks](https://fireworks.ai)
-- [DeepInfra](https://deepinfra.com)
+- [NVIDIA](https://www.nvidia.com/en-sg/ai)
+- [Together.ai](https://www.together.ai/)
+- [Fireworks](https://fireworks.ai/)
+- [DeepInfra](https://deepinfra.com/)
+
 
 ### Requirements
 

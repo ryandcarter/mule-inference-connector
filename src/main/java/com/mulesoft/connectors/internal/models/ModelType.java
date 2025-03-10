@@ -4,23 +4,28 @@
 package com.mulesoft.connectors.internal.models;
 
 
+import com.mulesoft.connectors.internal.exception.error.ConfigValidationException;
+
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import com.mulesoft.connectors.internal.exception.error.ConfigValidationException;
-
 public enum ModelType {
-       HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
-       GROQ("GROQ", getGroqModelNameStream()),
-       PORTKEY("PORTKEY", getPortkeyModelNameStream()),
-       OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
-       GITHUB("GITHUB", getGithubModelNameStream()),
-       OLLAMA("OLLAMA", getOllamaModelNameStream()),
-       CEREBRAS("CEREBRAS", getCerebrasModelNameStream()),
-       NVIDIA("NVIDIA", getNVidiaModelNameStream()),
-       FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
-       TOGETHER("TOGETHER", getTOGETHERModelNameStream()),
-       DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream());
+      HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
+      GROQ("GROQ", getGroqModelNameStream()),
+      PORTKEY("PORTKEY", getPortkeyModelNameStream()),
+      OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
+      GITHUB("GITHUB", getGithubModelNameStream()),
+      OLLAMA("OLLAMA", getOllamaModelNameStream()),
+      CEREBRAS("CEREBRAS", getCerebrasModelNameStream()),
+      NVIDIA("NVIDIA", getNVidiaModelNameStream()),
+      FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
+      TOGETHER("TOGETHER", getTOGETHERModelNameStream()),
+      DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream()),
+      PERPLEXITY("PERPLEXITY", getPERPLEXITYModelNameStream()),
+      OPENAI("OPENAI", getOpenAIModelNameStream()),
+      MISTRAL("MISTRAL", getMistralModelNameStream()),
+      ANTHROPIC("ANTHROPIC", getAnthropicModelNameStream()),
+      XAI("XAI", getXAIModelNameStream());
 
   private final String value;
   private final Stream<String> modelNameStream;
@@ -87,12 +92,128 @@ public enum ModelType {
     return Arrays.stream(DeepinfraModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getPERPLEXITYModelNameStream() {
+    return Arrays.stream(PerplexityModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getOpenAIModelNameStream() {
+    return Arrays.stream(OpenAIModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getMistralModelNameStream() {
+    return Arrays.stream(MistralModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getAnthropicModelNameStream() {
+    return Arrays.stream(AnthropicModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getXAIModelNameStream() {
+    return Arrays.stream(XAIModelName.values()).map(String::valueOf);
+  }
+
 
   public static ModelType fromValue(String value) {
     return Arrays.stream(ModelType.values())
         .filter(langchainLLMType -> langchainLLMType.value.equals(value))
         .findFirst()
         .orElseThrow(() -> new ConfigValidationException("Unsupported LLM Type: " + value));
+  }
+
+  enum XAIModelName {
+
+    grok_2_1212("grok-2-1212"),
+    grok_2_vision_1212("grok-2-vision-1212");
+
+    private final String value;
+
+    XAIModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum OpenAIModelName {
+
+    gpt_4_5_preview("gpt-4.5-preview"),
+    o1_mini("o1-mini"),
+    chatgpt_4o_latest("chatgpt-4o-latest"),
+    gpt_4o("gpt-4o"),
+    gpt_4o_mini("gpt-4o-mini");
+
+    private final String value;
+
+    OpenAIModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum MistralModelName {
+
+    mistral_large_latest("mistral-large-latest"),
+    mistral_small_latest("mistral-small-latest"),
+    open_mistral_nemo("open-mistral-nemo"),
+    pixtral_large_latest("pixtral-large-latest");
+
+    private final String value;
+
+    MistralModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum AnthropicModelName {
+
+    claude_3_7_sonnet_latest("claude-3-7-sonnet-latest"),
+    claude_3_5_haiku_latest("claude-3-5-haiku-latest"),
+    claude_3_5_sonnet_latest("claude-3-5-sonnet-latest"),
+    claude_3_opus_latest("claude-3-opus-latest");
+
+    private final String value;
+
+    AnthropicModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+
+  enum PerplexityModelName {
+
+    sonar("sonar"),
+    sonar_pro("sonar-pro"),
+    sonar_reasoning("sonar-reasoning"),
+    sonar_reasoning_pro("sonar-reasoning-pro"),
+    sonar_deep_research("sonar-deep-research");
+
+    private final String value;
+
+    PerplexityModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
   }
 
   enum DeepinfraModelName {
