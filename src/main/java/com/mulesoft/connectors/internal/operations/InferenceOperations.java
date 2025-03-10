@@ -14,6 +14,7 @@ import org.mule.runtime.extension.api.annotation.param.Config;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +49,13 @@ public class InferenceOperations {
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Chat-completions")
     @OutputJsonType(schema = "api/response/Response.json")
-    public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMResponseAttributes> chatCompletion(
+    public Result<InputStream, LLMResponseAttributes> chatCompletion(
             @Config InferenceConfiguration configuration,
             @Content InputStream messages) throws ModuleException {
         try {
             JSONArray messagesArray = parseInputStreamToJsonArray(messages);
             URL chatCompUrl = getConnectionURLChatCompletion(configuration);
+
             JSONObject payload = buildPayload(configuration, messagesArray, null);
             String response = executeREST(chatCompUrl, configuration, payload.toString());
 
@@ -76,7 +78,7 @@ public class InferenceOperations {
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Chat-answer-prompt")
     @OutputJsonType(schema = "api/response/Response.json")
-    public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMResponseAttributes> chatAnswerPrompt(
+    public Result<InputStream, LLMResponseAttributes> chatAnswerPrompt(
             @Config InferenceConfiguration configuration,
             @Content String prompt) throws ModuleException {
         try {
@@ -111,7 +113,7 @@ public class InferenceOperations {
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Agent-define-prompt-template")
     @OutputJsonType(schema = "api/response/Response.json")
-    public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMResponseAttributes> promptTemplate(
+    public Result<InputStream, LLMResponseAttributes> promptTemplate(
             @Config InferenceConfiguration configuration,
             @Content String template,
             @Content String instructions,
@@ -119,7 +121,12 @@ public class InferenceOperations {
         try {
             JSONArray messagesArray = new JSONArray();
             JSONObject systemMessage = new JSONObject();
-            systemMessage.put("role", "system");
+            if (isAnthropic(configuration)) {
+                systemMessage.put("role", "assistant");
+            } else {
+                systemMessage.put("role", "system");
+            }
+
             systemMessage.put("content", template + " - " + instructions);
             messagesArray.put(systemMessage);
 
@@ -154,7 +161,7 @@ public class InferenceOperations {
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Tools-native-template")
     @OutputJsonType(schema = "api/response/Response.json")
-    public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMResponseAttributes> toolsTemplate(
+    public Result<InputStream, LLMResponseAttributes> toolsTemplate(
             @Config InferenceConfiguration configuration,
             @Content String template,
             @Content String instructions,
@@ -165,7 +172,11 @@ public class InferenceOperations {
             JSONArray messagesArray = new JSONArray();
 
             JSONObject systemMessage = new JSONObject();
-            systemMessage.put("role", "system");
+            if (isAnthropic(configuration)) {
+                systemMessage.put("role", "assistant");
+            } else {
+                systemMessage.put("role", "system");
+            }
             systemMessage.put("content", template + " - " + instructions);
             messagesArray.put(systemMessage);
 
@@ -194,16 +205,16 @@ public class InferenceOperations {
      * @return result containing the LLM response
      * @throws Exception if an error occurs during processing
      */
-    private org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMResponseAttributes> processLLMResponse(
+    private Result<InputStream, LLMResponseAttributes> processLLMResponse(
             String response, InferenceConfiguration configuration) throws Exception {
 
         JSONObject root = new JSONObject(response);
         String model = root.getString("model");
         String id = isOllama(configuration) ? null : root.getString("id");
-        JSONObject message;
+        JSONObject message = new JSONObject();
         String finishReason;
-
-        if (!isOllama(configuration)) {
+        String varText = "";
+        /*if (!isOllama(configuration)) {
             JSONArray choicesArray = root.getJSONArray("choices");
             JSONObject firstChoice = choicesArray.getJSONObject(0);
             finishReason = isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
@@ -211,6 +222,23 @@ public class InferenceOperations {
         } else {
             message = root.getJSONObject("message");
             finishReason = root.getString("done_reason");
+        }*/
+
+        if (isOllama(configuration)) {
+            message = root.getJSONObject("message");
+            finishReason = root.getString("done_reason");
+        } else if (isAnthropic(configuration)) {
+            JSONArray contentArray = root.getJSONArray("content");
+            if (contentArray.length() > 0) {
+                varText = contentArray.getJSONObject(0).getString("text");
+            }
+            message.put("content", varText);
+            finishReason = root.getString("stop_reason");
+        } else {
+            JSONArray choicesArray = root.getJSONArray("choices");
+            JSONObject firstChoice = choicesArray.getJSONObject(0);
+            finishReason = isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
+            message = firstChoice.getJSONObject("message");
         }
 
         String content = message.getString("content");
@@ -234,23 +262,67 @@ public class InferenceOperations {
      * @return result containing the LLM response
      * @throws Exception if an error occurs during processing
      */
-    private org.mule.runtime.extension.api.runtime.operation.Result<InputStream, LLMResponseAttributes> processToolsResponse(
+    private Result<InputStream, LLMResponseAttributes> processToolsResponse(
             String response, InferenceConfiguration configuration) throws Exception {
 
         JSONObject root = new JSONObject(response);
         String model = root.getString("model");
         String id = isOllama(configuration) ? null : root.getString("id");
-        JSONObject message;
+        JSONObject message = new JSONObject();
         String finishReason;
+        String varText = "";
+        JSONArray toolsCallAnthropic = new JSONArray();
+        boolean hasToolUse = false;
 
-        if (!isOllama(configuration)) {
+        if (isOllama(configuration)) {
+            message = root.getJSONObject("message");
+            finishReason = root.getString("done_reason");
+        }else if (isAnthropic(configuration)) {
+            JSONArray contentArray = root.getJSONArray("content");
+            /*if (contentArray.length() > 0) {
+                varText = contentArray.getJSONObject(0).getString("text");
+            }
+            message.put("content", varText);
+            finishReason = root.getString("stop_reason");*/
+            for (int i = 0; i < contentArray.length(); i++) {
+                JSONObject contentItem = contentArray.getJSONObject(i);
+                String type = contentItem.getString("type");
+                if ("tool_use".equals(type)) {
+                    hasToolUse = true;
+
+                    JSONObject functionObject = new JSONObject();
+                    functionObject.put("name", contentItem.getString("name"));
+                    functionObject.put("arguments", contentItem.getJSONObject("input").toString());
+
+                    JSONObject toolItem = new JSONObject();
+                    toolItem.put("function", functionObject);
+                    toolItem.put("id", contentItem.getString("id"));
+                    toolItem.put("type", "function");
+
+                    toolsCallAnthropic.put(toolItem);
+
+
+                } else if ("text".equals(type) && varText.isEmpty()) {
+                    // If it's text, store it (prioritizing the first text content)
+                    varText = contentItem.getString("text");
+                }
+            }
+
+            // If "tool_use" was found, build the final tools JSON
+
+            if (hasToolUse) {
+                message.put("tool_calls", toolsCallAnthropic);
+                message.put("content", varText);
+            } else {
+                // Otherwise, just store the extracted text
+                message.put("content", varText);
+            }
+            finishReason = root.getString("stop_reason");
+        } else {
             JSONArray choicesArray = root.getJSONArray("choices");
             JSONObject firstChoice = choicesArray.getJSONObject(0);
             finishReason = isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
             message = firstChoice.getJSONObject("message");
-        } else {
-            message = root.getJSONObject("message");
-            finishReason = root.getString("done_reason");
         }
 
         String content = message.has("content") && !message.isNull("content") ? message.getString("content") : null;
@@ -282,7 +354,6 @@ public class InferenceOperations {
 
             if (toolCall.has("function")) {
                 JSONObject functionObject = toolCall.getJSONObject("function");
-
                 if (functionObject.has("arguments")) {
                     // Convert "arguments" from a string to a JSON object
                     JSONObject arguments = new JSONObject(functionObject.getString("arguments"));
@@ -311,7 +382,10 @@ public class InferenceOperations {
         conn.setRequestProperty("User-Agent", "Mozilla/5.0");
         conn.setRequestProperty("Accept", "application/json");
 
-        if ("PORTKEY".equals(configuration.getInferenceType())) {
+        if ("ANTHROPIC".equals(configuration.getInferenceType())) {
+            conn.setRequestProperty("x-api-key", configuration.getApiKey());
+            conn.setRequestProperty("anthropic-version", "2023-06-01");
+        } else if ("PORTKEY".equals(configuration.getInferenceType())) {
             conn.setRequestProperty("x-portkey-api-key", configuration.getApiKey());
             conn.setRequestProperty("x-portkey-virtual-key", configuration.getVirtualKey());
         } else {
@@ -362,6 +436,8 @@ public class InferenceOperations {
                 return new URL(InferenceConstants.OPEN_AI_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "MISTRAL":
                 return new URL(InferenceConstants.MISTRAL_AI_URL + InferenceConstants.CHAT_COMPLETIONS);
+            case "ANTHROPIC":
+                return new URL(InferenceConstants.ANTHROPIC_URL + "/" + InferenceConstants.MESSAGES);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
         }
@@ -480,6 +556,15 @@ public class InferenceOperations {
      */
     private boolean isOllama(InferenceConfiguration configuration) {
         return "OLLAMA".equals(configuration.getInferenceType());
+    }
+
+    /**
+     * Check if the inference type is Anthropic
+     * @param configuration the connector configuration
+     * @return true if the inference type is Anthropic, false otherwise
+     */
+    private boolean isAnthropic(InferenceConfiguration configuration) {
+        return "ANTHROPIC".equals(configuration.getInferenceType());
     }
 
     /**

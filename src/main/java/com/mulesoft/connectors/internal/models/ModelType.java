@@ -10,21 +10,22 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 public enum ModelType {
-       HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
-       GROQ("GROQ", getGroqModelNameStream()),
-       PORTKEY("PORTKEY", getPortkeyModelNameStream()),
-       OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
-       GITHUB("GITHUB", getGithubModelNameStream()),
-       OLLAMA("OLLAMA", getOllamaModelNameStream()),
-       CEREBRAS("CEREBRAS", getCerebrasModelNameStream()),
-       NVIDIA("NVIDIA", getNVidiaModelNameStream()),
-       FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
-       TOGETHER("TOGETHER", getTOGETHERModelNameStream()),
-       DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream()),
-       PERPLEXITY("PERPLEXITY", getPERPLEXITYModelNameStream()),
-       OPENAI("OPENAI", getOpenAIModelNameStream()),
-       MISTRAL("MISTRAL", getMistralModelNameStream()),
-       XAI("XAI", getXAIModelNameStream());
+      HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
+      GROQ("GROQ", getGroqModelNameStream()),
+      PORTKEY("PORTKEY", getPortkeyModelNameStream()),
+      OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
+      GITHUB("GITHUB", getGithubModelNameStream()),
+      OLLAMA("OLLAMA", getOllamaModelNameStream()),
+      CEREBRAS("CEREBRAS", getCerebrasModelNameStream()),
+      NVIDIA("NVIDIA", getNVidiaModelNameStream()),
+      FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
+      TOGETHER("TOGETHER", getTOGETHERModelNameStream()),
+      DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream()),
+      PERPLEXITY("PERPLEXITY", getPERPLEXITYModelNameStream()),
+      OPENAI("OPENAI", getOpenAIModelNameStream()),
+      MISTRAL("MISTRAL", getMistralModelNameStream()),
+      ANTHROPIC("ANTHROPIC", getAnthropicModelNameStream()),
+      XAI("XAI", getXAIModelNameStream());
 
   private final String value;
   private final Stream<String> modelNameStream;
@@ -103,6 +104,10 @@ public enum ModelType {
     return Arrays.stream(MistralModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getAnthropicModelNameStream() {
+    return Arrays.stream(AnthropicModelName.values()).map(String::valueOf);
+  }
+
   private static Stream<String> getXAIModelNameStream() {
     return Arrays.stream(XAIModelName.values()).map(String::valueOf);
   }
@@ -162,6 +167,25 @@ public enum ModelType {
     private final String value;
 
     MistralModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum AnthropicModelName {
+
+    claude_3_7_sonnet_latest("claude-3-7-sonnet-latest"),
+    claude_3_5_haiku_latest("claude-3-5-haiku-latest"),
+    claude_3_5_sonnet_latest("claude-3-5-sonnet-latest"),
+    claude_3_opus_latest("claude-3-opus-latest");
+
+    private final String value;
+
+    AnthropicModelName(String value) {
       this.value = value;
     }
 
