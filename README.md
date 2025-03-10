@@ -16,6 +16,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Groq AI](https://console.groq.com/)
 - [Portkey](https://portkey.ai/)
 - [OpenAI](https://openai.com/)
+- [Anthropic](https://www.anthropic.com/)
 - [XAI](https://x.ai/)
 - [Perplexity](https://www.perplexity.ai/)
 - [Mistral](https://www.mistral.ai/)
