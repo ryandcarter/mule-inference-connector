@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.mulesoft.connectors.internal.helpers.ResponseHelper.createLLMResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
@@ -119,21 +120,8 @@ public class InferenceOperations {
             @Content String instructions,
             @Content(primary = true) String data) throws ModuleException {
         try {
-            JSONArray messagesArray = new JSONArray();
-            JSONObject systemMessage = new JSONObject();
-            if (isAnthropic(configuration)) {
-                systemMessage.put("role", "assistant");
-            } else {
-                systemMessage.put("role", "system");
-            }
-
-            systemMessage.put("content", template + " - " + instructions);
-            messagesArray.put(systemMessage);
-
-            JSONObject usersPrompt = new JSONObject();
-            usersPrompt.put("role", "user");
-            usersPrompt.put("content", data);
-            messagesArray.put(usersPrompt);
+            JSONArray messagesArray = createMessagesArrayWithSystemPrompt(
+                    configuration, template + " - " + instructions, data);
 
             URL chatCompUrl = getConnectionURLChatCompletion(configuration);
             JSONObject payload = buildPayload(configuration, messagesArray, null);
@@ -169,33 +157,100 @@ public class InferenceOperations {
             @Content InputStream tools) throws ModuleException {
         try {
             JSONArray toolsArray = parseInputStreamToJsonArray(tools);
-            JSONArray messagesArray = new JSONArray();
-
-            JSONObject systemMessage = new JSONObject();
-            if (isAnthropic(configuration)) {
-                systemMessage.put("role", "assistant");
-            } else {
-                systemMessage.put("role", "system");
-            }
-            systemMessage.put("content", template + " - " + instructions);
-            messagesArray.put(systemMessage);
-
-            JSONObject usersPrompt = new JSONObject();
-            usersPrompt.put("role", "user");
-            usersPrompt.put("content", data);
-            messagesArray.put(usersPrompt);
+            JSONArray messagesArray = createMessagesArrayWithSystemPrompt(
+                    configuration, template + " - " + instructions, data);
 
             URL chatCompUrl = getConnectionURLChatCompletion(configuration);
             JSONObject payload = buildPayload(configuration, messagesArray, toolsArray);
             String response = executeREST(chatCompUrl, configuration, payload.toString());
 
             LOGGER.debug("Tools use native template result {}", response);
-            return processToolsResponse(response, configuration);
+            return processResponse(response, configuration, true);
         } catch (Exception e) {
             LOGGER.error("Error in tools use native template: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Tools use native template"),
                     InferenceErrorType.CHAT_COMPLETION, e);
         }
+    }
+
+    /**
+     * Creates a messages array with system prompt and user message
+     * @param configuration the connector configuration
+     * @param systemContent content for the system/assistant message
+     * @param userContent content for the user message
+     * @return JSONArray containing the messages
+     */
+    private JSONArray createMessagesArrayWithSystemPrompt(
+            InferenceConfiguration configuration, String systemContent, String userContent) {
+        JSONArray messagesArray = new JSONArray();
+
+        // Create system/assistant message based on provider
+        JSONObject systemMessage = new JSONObject();
+        systemMessage.put("role", isAnthropic(configuration) ? "assistant" : "system");
+        systemMessage.put("content", systemContent);
+        messagesArray.put(systemMessage);
+
+        // Create user message
+        JSONObject userMessage = new JSONObject();
+        userMessage.put("role", "user");
+        userMessage.put("content", userContent);
+        messagesArray.put(userMessage);
+
+        return messagesArray;
+    }
+
+    /**
+     * Process the response from the LLM API
+     * @param response the response string from the API
+     * @param configuration the connector configuration
+     * @param isToolsResponse whether this is a tools response
+     * @return result containing the LLM response
+     * @throws Exception if an error occurs during processing
+     */
+    private Result<InputStream, LLMResponseAttributes> processResponse(
+            String response, InferenceConfiguration configuration, boolean isToolsResponse) throws Exception {
+
+        JSONObject root = new JSONObject(response);
+        ResponseInfo responseInfo = extractResponseInfo(root, configuration);
+
+        // Process tool calls if needed
+        JSONArray toolCalls = new JSONArray();
+        if (isToolsResponse && responseInfo.message.has("tool_calls")) {
+            toolCalls = processToolCalls(responseInfo.message.getJSONArray("tool_calls"));
+        }
+
+        // Handle Anthropic tool_use for tools responses
+        if (isToolsResponse && isAnthropic(configuration)) {
+            JSONArray toolsCallAnthropic = extractAnthropicToolCalls(root.getJSONArray("content"));
+            if (!toolsCallAnthropic.isEmpty()) {
+                responseInfo.message.put("tool_calls", toolsCallAnthropic);
+            }
+        }
+
+        // Extract content 
+        String content = responseInfo.message.has("content") && !responseInfo.message.isNull("content")
+                ? responseInfo.message.getString("content") : null;
+
+        // Build response
+        TokenUsage tokenUsage = TokenHelper.parseUsageFromResponse(response);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(InferenceConstants.RESPONSE, content);
+
+        if (isToolsResponse) {
+            JSONArray finalToolCalls = toolCalls;
+            // Check if we have tool calls in the message from Anthropic
+            if (responseInfo.message.has("tool_calls") && !responseInfo.message.getJSONArray("tool_calls").isEmpty()) {
+                finalToolCalls = responseInfo.message.getJSONArray("tool_calls");
+            }
+            jsonObject.put(InferenceConstants.TOOLS, finalToolCalls);
+        }
+
+        Map<String, String> responseAttributes = new HashMap<>();
+        responseAttributes.put(InferenceConstants.FINISH_REASON, responseInfo.finishReason);
+        responseAttributes.put(InferenceConstants.MODEL, responseInfo.model);
+        responseAttributes.put(InferenceConstants.ID_STRING, responseInfo.id);
+
+        return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
     }
 
     /**
@@ -207,52 +262,7 @@ public class InferenceOperations {
      */
     private Result<InputStream, LLMResponseAttributes> processLLMResponse(
             String response, InferenceConfiguration configuration) throws Exception {
-
-        JSONObject root = new JSONObject(response);
-        String model = root.getString("model");
-        String id = isOllama(configuration) ? null : root.getString("id");
-        JSONObject message = new JSONObject();
-        String finishReason;
-        String varText = "";
-        /*if (!isOllama(configuration)) {
-            JSONArray choicesArray = root.getJSONArray("choices");
-            JSONObject firstChoice = choicesArray.getJSONObject(0);
-            finishReason = isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
-            message = firstChoice.getJSONObject("message");
-        } else {
-            message = root.getJSONObject("message");
-            finishReason = root.getString("done_reason");
-        }*/
-
-        if (isOllama(configuration)) {
-            message = root.getJSONObject("message");
-            finishReason = root.getString("done_reason");
-        } else if (isAnthropic(configuration)) {
-            JSONArray contentArray = root.getJSONArray("content");
-            if (contentArray.length() > 0) {
-                varText = contentArray.getJSONObject(0).getString("text");
-            }
-            message.put("content", varText);
-            finishReason = root.getString("stop_reason");
-        } else {
-            JSONArray choicesArray = root.getJSONArray("choices");
-            JSONObject firstChoice = choicesArray.getJSONObject(0);
-            finishReason = isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
-            message = firstChoice.getJSONObject("message");
-        }
-
-        String content = message.getString("content");
-
-        TokenUsage tokenUsage = TokenHelper.parseUsageFromResponse(response);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(InferenceConstants.RESPONSE, content);
-
-        Map<String, String> responseAttributes = new HashMap<>();
-        responseAttributes.put(InferenceConstants.FINISH_REASON, finishReason);
-        responseAttributes.put(InferenceConstants.MODEL, model);
-        responseAttributes.put(InferenceConstants.ID_STRING, id);
-
-        return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
+        return processResponse(response, configuration, false);
     }
 
     /**
@@ -264,81 +274,88 @@ public class InferenceOperations {
      */
     private Result<InputStream, LLMResponseAttributes> processToolsResponse(
             String response, InferenceConfiguration configuration) throws Exception {
+        return processResponse(response, configuration, true);
+    }
 
-        JSONObject root = new JSONObject(response);
-        String model = root.getString("model");
-        String id = isOllama(configuration) ? null : root.getString("id");
-        JSONObject message = new JSONObject();
+    /**
+     * Container class for response information
+     */
+    private static class ResponseInfo {
+        String model;
+        String id;
+        JSONObject message;
         String finishReason;
-        String varText = "";
-        JSONArray toolsCallAnthropic = new JSONArray();
-        boolean hasToolUse = false;
+        String text = "";
+    }
+
+    /**
+     * Extract basic information from the response
+     * @param root the root JSON object of the response
+     * @param configuration the connector configuration
+     * @return ResponseInfo containing the extracted information
+     */
+    private ResponseInfo extractResponseInfo(JSONObject root, InferenceConfiguration configuration) {
+        ResponseInfo info = new ResponseInfo();
+        info.model = root.getString("model");
+        info.id = isOllama(configuration) ? null : root.getString("id");
+        info.message = new JSONObject();
 
         if (isOllama(configuration)) {
-            message = root.getJSONObject("message");
-            finishReason = root.getString("done_reason");
-        }else if (isAnthropic(configuration)) {
-            JSONArray contentArray = root.getJSONArray("content");
-            /*if (contentArray.length() > 0) {
-                varText = contentArray.getJSONObject(0).getString("text");
-            }
-            message.put("content", varText);
-            finishReason = root.getString("stop_reason");*/
-            for (int i = 0; i < contentArray.length(); i++) {
-                JSONObject contentItem = contentArray.getJSONObject(i);
-                String type = contentItem.getString("type");
-                if ("tool_use".equals(type)) {
-                    hasToolUse = true;
+            info.message = root.getJSONObject("message");
+            info.finishReason = root.getString("done_reason");
+        } else if (isAnthropic(configuration)) {
+            info.finishReason = root.getString("stop_reason");
 
-                    JSONObject functionObject = new JSONObject();
-                    functionObject.put("name", contentItem.getString("name"));
-                    functionObject.put("arguments", contentItem.getJSONObject("input").toString());
-
-                    JSONObject toolItem = new JSONObject();
-                    toolItem.put("function", functionObject);
-                    toolItem.put("id", contentItem.getString("id"));
-                    toolItem.put("type", "function");
-
-                    toolsCallAnthropic.put(toolItem);
-
-
-                } else if ("text".equals(type) && varText.isEmpty()) {
-                    // If it's text, store it (prioritizing the first text content)
-                    varText = contentItem.getString("text");
+            // Extract text from content array
+            if (root.has("content") && root.getJSONArray("content").length() > 0) {
+                JSONArray contentArray = root.getJSONArray("content");
+                for (int i = 0; i < contentArray.length(); i++) {
+                    JSONObject contentItem = contentArray.getJSONObject(i);
+                    if ("text".equals(contentItem.getString("type")) && info.text.isEmpty()) {
+                        info.text = contentItem.getString("text");
+                        break;
+                    }
                 }
             }
 
-            // If "tool_use" was found, build the final tools JSON
-
-            if (hasToolUse) {
-                message.put("tool_calls", toolsCallAnthropic);
-                message.put("content", varText);
-            } else {
-                // Otherwise, just store the extracted text
-                message.put("content", varText);
-            }
-            finishReason = root.getString("stop_reason");
+            info.message.put("content", info.text);
         } else {
             JSONArray choicesArray = root.getJSONArray("choices");
             JSONObject firstChoice = choicesArray.getJSONObject(0);
-            finishReason = isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
-            message = firstChoice.getJSONObject("message");
+            info.finishReason = isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
+            info.message = firstChoice.getJSONObject("message");
         }
 
-        String content = message.has("content") && !message.isNull("content") ? message.getString("content") : null;
-        JSONArray toolCalls = message.has("tool_calls") ? processToolCalls(message.getJSONArray("tool_calls")) : new JSONArray();
+        return info;
+    }
 
-        TokenUsage tokenUsage = TokenHelper.parseUsageFromResponse(response);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(InferenceConstants.RESPONSE, content);
-        jsonObject.put(InferenceConstants.TOOLS, toolCalls);
+    /**
+     * Extract tool calls from Anthropic format response
+     * @param contentArray the content array from Anthropic response
+     * @return JSONArray of tool calls in a standardized format
+     */
+    private JSONArray extractAnthropicToolCalls(JSONArray contentArray) {
+        JSONArray toolCalls = new JSONArray();
 
-        Map<String, String> responseAttributes = new HashMap<>();
-        responseAttributes.put(InferenceConstants.FINISH_REASON, finishReason);
-        responseAttributes.put(InferenceConstants.MODEL, model);
-        responseAttributes.put(InferenceConstants.ID_STRING, id);
+        for (int i = 0; i < contentArray.length(); i++) {
+            JSONObject contentItem = contentArray.getJSONObject(i);
+            String type = contentItem.getString("type");
 
-        return createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
+            if ("tool_use".equals(type)) {
+                JSONObject functionObject = new JSONObject();
+                functionObject.put("name", contentItem.getString("name"));
+                functionObject.put("arguments", contentItem.getJSONObject("input").toString());
+
+                JSONObject toolItem = new JSONObject();
+                toolItem.put("function", functionObject);
+                toolItem.put("id", contentItem.getString("id"));
+                toolItem.put("type", "function");
+
+                toolCalls.put(toolItem);
+            }
+        }
+
+        return toolCalls;
     }
 
     /**
@@ -355,9 +372,14 @@ public class InferenceOperations {
             if (toolCall.has("function")) {
                 JSONObject functionObject = toolCall.getJSONObject("function");
                 if (functionObject.has("arguments")) {
-                    // Convert "arguments" from a string to a JSON object
-                    JSONObject arguments = new JSONObject(functionObject.getString("arguments"));
-                    functionObject.put("arguments", arguments);
+                    // Try to convert "arguments" from a string to a JSON object
+                    try {
+                        JSONObject arguments = new JSONObject(functionObject.getString("arguments"));
+                        functionObject.put("arguments", arguments);
+                    } catch (Exception e) {
+                        // Keep original string if not valid JSON
+                        LOGGER.warn("Failed to parse function arguments as JSON: {}", e.getMessage());
+                    }
                 }
             }
 
@@ -382,14 +404,18 @@ public class InferenceOperations {
         conn.setRequestProperty("User-Agent", "Mozilla/5.0");
         conn.setRequestProperty("Accept", "application/json");
 
-        if ("ANTHROPIC".equals(configuration.getInferenceType())) {
-            conn.setRequestProperty("x-api-key", configuration.getApiKey());
-            conn.setRequestProperty("anthropic-version", "2023-06-01");
-        } else if ("PORTKEY".equals(configuration.getInferenceType())) {
-            conn.setRequestProperty("x-portkey-api-key", configuration.getApiKey());
-            conn.setRequestProperty("x-portkey-virtual-key", configuration.getVirtualKey());
-        } else {
-            conn.setRequestProperty("Authorization", "Bearer " + configuration.getApiKey());
+        switch (configuration.getInferenceType()) {
+            case "ANTHROPIC":
+                conn.setRequestProperty("x-api-key", configuration.getApiKey());
+                conn.setRequestProperty("anthropic-version", "2023-06-01");
+                break;
+            case "PORTKEY":
+                conn.setRequestProperty("x-portkey-api-key", configuration.getApiKey());
+                conn.setRequestProperty("x-portkey-virtual-key", configuration.getVirtualKey());
+                break;
+            default:
+                conn.setRequestProperty("Authorization", "Bearer " + configuration.getApiKey());
+                break;
         }
 
         return conn;
@@ -402,9 +428,6 @@ public class InferenceOperations {
      * @throws MalformedURLException if the URL is invalid
      */
     private static URL getConnectionURLChatCompletion(InferenceConfiguration configuration) throws MalformedURLException {
-        String baseUrl;
-        String path;
-
         switch (configuration.getInferenceType()) {
             case "PORTKEY":
                 return new URL(InferenceConstants.PORTKEY_URL + InferenceConstants.CHAT_COMPLETIONS);
@@ -456,20 +479,22 @@ public class InferenceOperations {
         payload.put(InferenceConstants.MESSAGES, messagesArray);
 
         // Different max token parameter names for different providers
-        if ("GROQ".equalsIgnoreCase(configuration.getInferenceType()) || "OPENAI".equalsIgnoreCase(configuration.getInferenceType())) {
+        if ("GROQ".equalsIgnoreCase(configuration.getInferenceType()) ||
+                "OPENAI".equalsIgnoreCase(configuration.getInferenceType())) {
             payload.put(InferenceConstants.MAX_COMPLETION_TOKENS, configuration.getMaxTokens());
         } else {
             payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
         }
 
         // Some models don't support temperature/top_p parameters
-        if (!Arrays.asList(NO_TEMPERATURE_MODELS).contains(configuration.getModelName())) {
+        String modelName = configuration.getModelName();
+        if (!Arrays.asList(NO_TEMPERATURE_MODELS).contains(modelName)) {
             payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
             payload.put(InferenceConstants.TOP_P, configuration.getTopP());
         }
 
         // Add tools array if provided
-        if (toolsArray != null) {
+        if (toolsArray != null && !toolsArray.isEmpty()) {
             payload.put(InferenceConstants.TOOLS, toolsArray);
         }
 
@@ -488,6 +513,10 @@ public class InferenceOperations {
      * @throws IOException if an error occurs during parsing
      */
     private static JSONArray parseInputStreamToJsonArray(InputStream inputStream) throws IOException {
+        if (inputStream == null) {
+            return new JSONArray();
+        }
+
         try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
 
@@ -497,7 +526,12 @@ public class InferenceOperations {
                 stringBuilder.append(line);
             }
 
-            return new JSONArray(stringBuilder.toString());
+            String jsonString = stringBuilder.toString().trim();
+            if (jsonString.isEmpty()) {
+                return new JSONArray();
+            }
+
+            return new JSONArray(jsonString);
         }
     }
 
@@ -512,6 +546,10 @@ public class InferenceOperations {
     private static String executeREST(URL resourceUrl, InferenceConfiguration configuration, String payload) throws IOException {
         HttpURLConnection conn = getConnectionObject(resourceUrl, configuration);
 
+        // Set appropriate timeouts
+        conn.setConnectTimeout(30000);  // 30 seconds
+        conn.setReadTimeout(120000);    // 2 minutes
+
         // Send the payload
         try (OutputStream os = conn.getOutputStream()) {
             byte[] input = payload.getBytes(StandardCharsets.UTF_8);
@@ -523,29 +561,35 @@ public class InferenceOperations {
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
             // Read successful response
-            try (BufferedReader br = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
-                StringBuilder response = new StringBuilder();
-                String responseLine;
-                while ((responseLine = br.readLine()) != null) {
-                    response.append(responseLine);
-                }
-                return response.toString();
-            }
+            return readResponseStream(conn.getInputStream());
         } else {
             // Read error response
-            StringBuilder errorResponse = new StringBuilder();
-            try (BufferedReader errorReader = new BufferedReader(
-                    new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
-                String errorLine;
-                while ((errorLine = errorReader.readLine()) != null) {
-                    errorResponse.append(errorLine);
-                }
-            }
+            String errorResponse = readResponseStream(conn.getErrorStream());
 
             LOGGER.error("API request failed with status code: {} and message: {}", responseCode, errorResponse);
             throw new IOException("API request failed with status code: " + responseCode +
                     " and message: " + errorResponse);
+        }
+    }
+
+    /**
+     * Read data from an input stream into a string
+     * @param stream the input stream to read from
+     * @return the stream contents as a string
+     * @throws IOException if an error occurs during reading
+     */
+    private static String readResponseStream(InputStream stream) throws IOException {
+        if (stream == null) {
+            return "";
+        }
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine);
+            }
+            return response.toString();
         }
     }
 
