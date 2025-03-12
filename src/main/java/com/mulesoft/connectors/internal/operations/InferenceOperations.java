@@ -60,6 +60,7 @@ public class InferenceOperations {
             JSONObject payload = buildPayload(configuration, messagesArray, null);
             String response = executeREST(chatCompUrl, configuration, payload.toString());
 
+
             LOGGER.debug("Chat completions result {}", response);
             return processLLMResponse(response, configuration);
         } catch (Exception e) {
@@ -296,7 +297,9 @@ public class InferenceOperations {
      */
     private ResponseInfo extractResponseInfo(JSONObject root, InferenceConfiguration configuration) {
         ResponseInfo info = new ResponseInfo();
-        info.model = root.getString("model");
+        //info.model = root.getString("model");
+        info.model = !"AI21LABS".equals(configuration.getInferenceType()) ? root.getString("model") : configuration.getModelName();
+
         info.id = isOllama(configuration) ? null : root.getString("id");
         info.message = new JSONObject();
 
@@ -461,6 +464,8 @@ public class InferenceOperations {
                 return new URL(InferenceConstants.MISTRAL_AI_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "ANTHROPIC":
                 return new URL(InferenceConstants.ANTHROPIC_URL + "/" + InferenceConstants.MESSAGES);
+            case "AI21LABS":
+                return new URL(InferenceConstants.AI21LABS_URL + InferenceConstants.CHAT_COMPLETIONS);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
         }

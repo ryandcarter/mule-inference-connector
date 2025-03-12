@@ -22,6 +22,8 @@ public class InferenceConstants {
   public static final String OPEN_AI_URL = "https://api.openai.com/v1";
   public static final String MISTRAL_AI_URL = "https://api.mistral.ai/v1";
   public static final String ANTHROPIC_URL = "https://api.anthropic.com/v1";
+  public static final String AI21LABS_URL = "https://api.ai21.com/studio/v1";
+
 
   // Resources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
