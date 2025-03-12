@@ -25,6 +25,7 @@ public enum ModelType {
       OPENAI("OPENAI", getOpenAIModelNameStream()),
       MISTRAL("MISTRAL", getMistralModelNameStream()),
       ANTHROPIC("ANTHROPIC", getAnthropicModelNameStream()),
+      AI21LABS("AI21LABS", getAI21LABSModelNameStream()),
       XAI("XAI", getXAIModelNameStream());
 
   private final String value;
@@ -108,6 +109,10 @@ public enum ModelType {
     return Arrays.stream(AnthropicModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getAI21LABSModelNameStream() {
+    return Arrays.stream(AI21LABSModelName.values()).map(String::valueOf);
+  }
+
   private static Stream<String> getXAIModelNameStream() {
     return Arrays.stream(XAIModelName.values()).map(String::valueOf);
   }
@@ -128,6 +133,23 @@ public enum ModelType {
     private final String value;
 
     XAIModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum AI21LABSModelName {
+
+    jamba_large("jamba-large"),
+    jamba_mini("jamba-mini");
+
+    private final String value;
+
+    AI21LABSModelName(String value) {
       this.value = value;
     }
 
