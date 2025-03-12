@@ -56,13 +56,9 @@ public class InferenceOperations {
         try {
             JSONArray messagesArray = parseInputStreamToJsonArray(messages);
             URL chatCompUrl = getConnectionURLChatCompletion(configuration);
-            System.out.println(chatCompUrl);
+
             JSONObject payload = buildPayload(configuration, messagesArray, null);
-
-            System.out.println(payload);
-
             String response = executeREST(chatCompUrl, configuration, payload.toString());
-            System.out.println(response);
 
 
             LOGGER.debug("Chat completions result {}", response);
