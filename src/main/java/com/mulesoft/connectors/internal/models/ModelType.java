@@ -26,6 +26,7 @@ public enum ModelType {
       MISTRAL("MISTRAL", getMistralModelNameStream()),
       ANTHROPIC("ANTHROPIC", getAnthropicModelNameStream()),
       AI21LABS("AI21LABS", getAI21LABSModelNameStream()),
+      COHERE("COHERE", getCohereModelNameStream()),
       XAI("XAI", getXAIModelNameStream());
 
   private final String value;
@@ -113,6 +114,10 @@ public enum ModelType {
     return Arrays.stream(AI21LABSModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getCohereModelNameStream() {
+    return Arrays.stream(CohereModelName.values()).map(String::valueOf);
+  }
+
   private static Stream<String> getXAIModelNameStream() {
     return Arrays.stream(XAIModelName.values()).map(String::valueOf);
   }
@@ -150,6 +155,28 @@ public enum ModelType {
     private final String value;
 
     AI21LABSModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+
+  enum CohereModelName {
+
+    command_r7b_12_2024("command-r7b-12-2024"),
+    command_r_plus_08_2024("command-r-plus-08-2024"),
+    command_r_plus("command-r-plus"),
+    command_r("command-r"),
+    command("command"),
+    command_r_plus_04_2024("command-r-plus-04-2024");
+
+    private final String value;
+
+    CohereModelName(String value) {
       this.value = value;
     }
 

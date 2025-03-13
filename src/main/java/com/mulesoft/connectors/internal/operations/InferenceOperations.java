@@ -60,7 +60,6 @@ public class InferenceOperations {
             JSONObject payload = buildPayload(configuration, messagesArray, null);
             String response = executeREST(chatCompUrl, configuration, payload.toString());
 
-
             LOGGER.debug("Chat completions result {}", response);
             return processLLMResponse(response, configuration);
         } catch (Exception e) {
@@ -213,6 +212,7 @@ public class InferenceOperations {
 
         JSONObject root = new JSONObject(response);
         ResponseInfo responseInfo = extractResponseInfo(root, configuration);
+        String content = null;
 
         // Process tool calls if needed
         JSONArray toolCalls = new JSONArray();
@@ -228,11 +228,22 @@ public class InferenceOperations {
             }
         }
 
-        // Extract content 
-        String content = responseInfo.message.has("content") && !responseInfo.message.isNull("content")
-                ? responseInfo.message.getString("content") : null;
+        if (isCohere(configuration)) {
+            JSONArray contentArray = responseInfo.message.has("content") && !responseInfo.message.isNull("content")
+                    ? responseInfo.message.getJSONArray("content")
+                    : null;
 
-        // Build response
+            if (contentArray != null && contentArray.length() > 0) {
+                JSONObject firstContent = contentArray.getJSONObject(0); // Get the first item in the array
+                if (firstContent.has("text") && !firstContent.isNull("text")) {
+                    content = firstContent.getString("text"); // Extract the "text" field
+                }
+            }
+        } else {
+            content = responseInfo.message.has("content") && !responseInfo.message.isNull("content")
+                    ? responseInfo.message.getString("content") : null;
+        }
+
         TokenUsage tokenUsage = TokenHelper.parseUsageFromResponse(response);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(InferenceConstants.RESPONSE, content);
@@ -297,8 +308,10 @@ public class InferenceOperations {
      */
     private ResponseInfo extractResponseInfo(JSONObject root, InferenceConfiguration configuration) {
         ResponseInfo info = new ResponseInfo();
-        //info.model = root.getString("model");
-        info.model = !"AI21LABS".equals(configuration.getInferenceType()) ? root.getString("model") : configuration.getModelName();
+        info.model = !("AI21LABS".equals(configuration.getInferenceType())
+                || "COHERE".equals(configuration.getInferenceType()))
+                ? root.getString("model")
+                : configuration.getModelName();
 
         info.id = isOllama(configuration) ? null : root.getString("id");
         info.message = new JSONObject();
@@ -306,6 +319,9 @@ public class InferenceOperations {
         if (isOllama(configuration)) {
             info.message = root.getJSONObject("message");
             info.finishReason = root.getString("done_reason");
+        } else if (isCohere(configuration)) {
+            info.message = root.getJSONObject("message");
+            info.finishReason = root.getString("finish_reason");
         } else if (isAnthropic(configuration)) {
             info.finishReason = root.getString("stop_reason");
 
@@ -321,8 +337,10 @@ public class InferenceOperations {
                 }
             }
 
+            info.message = new JSONObject();
             info.message.put("content", info.text);
         } else {
+            // Default case for other models (OpenAI, etc.)
             JSONArray choicesArray = root.getJSONArray("choices");
             JSONObject firstChoice = choicesArray.getJSONObject(0);
             info.finishReason = isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
@@ -466,6 +484,8 @@ public class InferenceOperations {
                 return new URL(InferenceConstants.ANTHROPIC_URL + "/" + InferenceConstants.MESSAGES);
             case "AI21LABS":
                 return new URL(InferenceConstants.AI21LABS_URL + InferenceConstants.CHAT_COMPLETIONS);
+            case "COHERE":
+                return new URL(InferenceConstants.COHERE_URL + InferenceConstants.CHAT_COMPLETIONS_OLLAMA);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
         }
@@ -623,5 +643,14 @@ public class InferenceOperations {
      */
     private boolean isNvidia(InferenceConfiguration configuration) {
         return "NVIDIA".equals(configuration.getInferenceType());
+    }
+
+    /**
+     * Check if the inference type is Cohere
+     * @param configuration the connector configuration
+     * @return true if the inference type is NVIDIA, false otherwise
+     */
+    private boolean isCohere(InferenceConfiguration configuration) {
+        return "COHERE".equals(configuration.getInferenceType());
     }
 }
