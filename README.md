@@ -27,7 +27,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Fireworks](https://fireworks.ai/)
 - [DeepInfra](https://deepinfra.com/)
 - [AI21Labs](https://studio.ai21.com/)
-
+- [Cohere](https://cohere.com/)
 
 ### Requirements
 
