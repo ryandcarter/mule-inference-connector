@@ -473,6 +473,8 @@ public class InferenceOperations {
                 return new URL(InferenceConstants.GITHUB_MODELS_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "OLLAMA":
                 return new URL(configuration.getOllamaUrl() + InferenceConstants.CHAT_COMPLETIONS_OLLAMA);
+            case "XINFERENCE":
+                return new URL(configuration.getxinferenceUrl() + InferenceConstants.CHAT_COMPLETIONS);
             case "CEREBRAS":
                 return new URL(InferenceConstants.CEREBRAS_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "NVIDIA":
