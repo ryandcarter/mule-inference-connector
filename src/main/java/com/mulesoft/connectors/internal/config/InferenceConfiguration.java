@@ -99,17 +99,6 @@ public class InferenceConfiguration {
 	@Placement(order = 1, tab = "Azure OpenAI Parameters")
 	@Expression(ExpressionSupport.SUPPORTED)
 	@Optional
-	@DisplayName("Endpoint")
-	private String azureOpenaiEndpoint;
-
-	public String getAzureOpenaiEndpoint() {
-		return azureOpenaiEndpoint	;
-	}
-
-	@Parameter
-	@Placement(order = 2, tab = "Azure OpenAI Parameters")
-	@Expression(ExpressionSupport.SUPPORTED)
-	@Optional
 	@DisplayName("Deployment ID")
 	private String azureOpenaiDeploymentId;
 
@@ -118,33 +107,15 @@ public class InferenceConfiguration {
 	}
     @Parameter
     @Expression(ExpressionSupport.SUPPORTED)
-	@Placement(order = 3, tab = "Azure OpenAI Parameters")
+	@Placement(order = 2, tab = "Azure OpenAI Parameters")
 	@Optional
     @DisplayName("Resource Name")
-    private String resourceName;
+    private String azureOpenaiResourceName;
 
-    @Parameter
-    @Expression(ExpressionSupport.SUPPORTED)
-	@Placement(order = 4, tab = "Azure OpenAI Parameters")
-	@Optional
-    @DisplayName("Deployment ID")
-    private String deploymentId;
-
-    public String getResourceName() {
-        return resourceName;
+    public String getAzureOpenaiResourceName() {
+        return azureOpenaiResourceName;
     }
 
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
-
-    public String getDeploymentId() {
-        return deploymentId;
-    }
-
-    public void setDeploymentId(String deploymentId) {
-        this.deploymentId = deploymentId;
-    }
 }
 
 

@@ -13,6 +13,7 @@ import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
 import org.mule.runtime.extension.api.annotation.param.Config;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.slf4j.Logger;
@@ -26,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.mulesoft.connectors.internal.helpers.ResponseHelper.createLLMResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
@@ -56,6 +56,7 @@ public class InferenceOperations {
         try {
             JSONArray messagesArray = parseInputStreamToJsonArray(messages);
             URL chatCompUrl = getConnectionURLChatCompletion(configuration);
+            
             LOGGER.debug("Chatting with {}", chatCompUrl);
             
 
@@ -151,12 +152,13 @@ public class InferenceOperations {
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Tools-native-template")
     @OutputJsonType(schema = "api/response/Response.json")
+    @Summary("Define a prompt template with instructions, data and tools")
     public Result<InputStream, LLMResponseAttributes> toolsTemplate(
             @Config InferenceConfiguration configuration,
             @Content String template,
             @Content String instructions,
             @Content(primary = true) String data,
-            @Content InputStream tools) throws ModuleException {
+            @Content @Summary("JSON Array defining the tools set to be used in the template so that the LLM can use them if required") InputStream tools) throws ModuleException {
         try {
             JSONArray toolsArray = parseInputStreamToJsonArray(tools);
             JSONArray messagesArray = createMessagesArrayWithSystemPrompt(
@@ -277,6 +279,7 @@ public class InferenceOperations {
      * @return result containing the LLM response
      * @throws Exception if an error occurs during processing
      */
+
     private Result<InputStream, LLMResponseAttributes> processLLMResponse(
             String response, InferenceConfiguration configuration) throws Exception {
         return processResponse(response, configuration, false);
@@ -495,9 +498,10 @@ public class InferenceOperations {
             case "COHERE":
                 return new URL(InferenceConstants.COHERE_URL + InferenceConstants.CHAT_COMPLETIONS_OLLAMA);
             case "AZURE_OPENAI":
-                String urlStr = InferenceConstants.AZURE_OPENAI_URL + InferenceConstants.CHAT_COMPLETIONS_AZURE
-                    .replace("{resource-name}", configuration.getResourceName())
-                    .replace("{deployment-id}", configuration.getDeploymentId());
+                String urlStr = InferenceConstants.AZURE_OPENAI_URL + InferenceConstants.CHAT_COMPLETIONS_AZURE;
+                urlStr = urlStr
+                    .replace("{resource-name}", configuration.getAzureOpenaiResourceName())
+                    .replace("{deployment-id}", configuration.getAzureOpenaiDeploymentId());
                 return new URL(urlStr);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
@@ -516,11 +520,7 @@ public class InferenceOperations {
         if (!"AZURE_OPENAI".equals(configuration.getInferenceType())) {
             payload.put(InferenceConstants.MODEL, configuration.getModelName());
         }
-        if ("AZURE_OPENAI".equals(configuration.getInferenceType())) {
-            payload.put(InferenceConstants.AZURE_PROMPT, messagesArray);
-        } else {
-            payload.put(InferenceConstants.MESSAGES, messagesArray);
-        }
+        payload.put(InferenceConstants.MESSAGES, messagesArray);
 
         // Different max token parameter names for different providers
         if ("GROQ".equalsIgnoreCase(configuration.getInferenceType()) ||
@@ -576,6 +576,7 @@ public class InferenceOperations {
             }
 
             return new JSONArray(jsonString);
+
         }
     }
 
