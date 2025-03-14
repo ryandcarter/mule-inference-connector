@@ -56,6 +56,8 @@ public class InferenceOperations {
         try {
             JSONArray messagesArray = parseInputStreamToJsonArray(messages);
             URL chatCompUrl = getConnectionURLChatCompletion(configuration);
+            LOGGER.debug("Chatting with {}", chatCompUrl);
+            
 
             JSONObject payload = buildPayload(configuration, messagesArray, null);
             String response = executeREST(chatCompUrl, configuration, payload.toString());
@@ -173,6 +175,9 @@ public class InferenceOperations {
         }
     }
 
+   
+
+    
     /**
      * Creates a messages array with system prompt and user message
      * @param configuration the connector configuration
@@ -434,6 +439,9 @@ public class InferenceOperations {
                 conn.setRequestProperty("x-portkey-api-key", configuration.getApiKey());
                 conn.setRequestProperty("x-portkey-virtual-key", configuration.getVirtualKey());
                 break;
+            case "AZURE_OPENAI":
+                conn.setRequestProperty("api-key", configuration.getApiKey());
+                break;
             default:
                 conn.setRequestProperty("Authorization", "Bearer " + configuration.getApiKey());
                 break;
@@ -486,6 +494,11 @@ public class InferenceOperations {
                 return new URL(InferenceConstants.AI21LABS_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "COHERE":
                 return new URL(InferenceConstants.COHERE_URL + InferenceConstants.CHAT_COMPLETIONS_OLLAMA);
+            case "AZURE_OPENAI":
+                String urlStr = InferenceConstants.AZURE_OPENAI_URL + InferenceConstants.CHAT_COMPLETIONS_AZURE
+                    .replace("{resource-name}", configuration.getResourceName())
+                    .replace("{deployment-id}", configuration.getDeploymentId());
+                return new URL(urlStr);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
         }
@@ -500,8 +513,14 @@ public class InferenceOperations {
      */
     private static JSONObject buildPayload(InferenceConfiguration configuration, JSONArray messagesArray, JSONArray toolsArray) {
         JSONObject payload = new JSONObject();
-        payload.put(InferenceConstants.MODEL, configuration.getModelName());
-        payload.put(InferenceConstants.MESSAGES, messagesArray);
+        if (!"AZURE_OPENAI".equals(configuration.getInferenceType())) {
+            payload.put(InferenceConstants.MODEL, configuration.getModelName());
+        }
+        if ("AZURE_OPENAI".equals(configuration.getInferenceType())) {
+            payload.put(InferenceConstants.AZURE_PROMPT, messagesArray);
+        } else {
+            payload.put(InferenceConstants.MESSAGES, messagesArray);
+        }
 
         // Different max token parameter names for different providers
         if ("GROQ".equalsIgnoreCase(configuration.getInferenceType()) ||
@@ -523,8 +542,8 @@ public class InferenceOperations {
             payload.put(InferenceConstants.TOOLS, toolsArray);
         }
 
-        // Special handling for Ollama's stream parameter
-        if ("OLLAMA".equals(configuration.getInferenceType())) {
+        // Special handling for Ollama's and Azure OpenAI's stream parameter
+        if ("OLLAMA".equals(configuration.getInferenceType()) || "AZURE_OPENAI".equals(configuration.getInferenceType())) {
             payload.put("stream", false);
         }
 
@@ -644,6 +663,7 @@ public class InferenceOperations {
     private boolean isNvidia(InferenceConfiguration configuration) {
         return "NVIDIA".equals(configuration.getInferenceType());
     }
+
 
     /**
      * Check if the inference type is Cohere
