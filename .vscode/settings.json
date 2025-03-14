@@ -17,7 +17,6 @@
         "**/.exchange_modules_tmp": true,
         ".mule": true
     },
-    "java.compile.nullAnalysis.mode": "automatic",
     "java.dependency.packagePresentation": "hierarchical",
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.compile.nullAnalysis.mode": "disabled"
 }
