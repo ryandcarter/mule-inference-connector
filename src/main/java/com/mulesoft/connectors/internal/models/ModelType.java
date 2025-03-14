@@ -16,6 +16,7 @@ public enum ModelType {
       OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
       GITHUB("GITHUB", getGithubModelNameStream()),
       OLLAMA("OLLAMA", getOllamaModelNameStream()),
+      XINFERENCE("XINFERENCE", getXinferenceModelNameStream()),
       CEREBRAS("CEREBRAS", getCerebrasModelNameStream()),
       NVIDIA("NVIDIA", getNVidiaModelNameStream()),
       FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
@@ -70,6 +71,11 @@ public enum ModelType {
   private static Stream<String> getOllamaModelNameStream() {
     return Arrays.stream(OllamaModelName.values()).map(String::valueOf);
   }
+
+  private static Stream<String> getXinferenceModelNameStream() {
+    return Arrays.stream(XinferenceModelName.values()).map(String::valueOf);
+  }
+
 
   private static Stream<String> getCerebrasModelNameStream() {
     return Arrays.stream(CerebrasModelName.values()).map(String::valueOf);
@@ -457,6 +463,25 @@ public enum ModelType {
     private final String value;
 
     OllamaModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum XinferenceModelName {
+    CHATGLM3_6("chatglm3-6b"),
+    Qwen25_72B_Instruct("Qwen2.5-72B-Instruct"),
+    Qwen25_32B_Instruct("Qwen2.5-32B-Instruct"),
+    Qwen25_Coder_7B_Instruct("Qwen2.5-Coder-7B-Instruct"),
+    glm_4_9b_chat("glm-4-9b-chat");
+
+    private final String value;
+
+    XinferenceModelName(String value) {
       this.value = value;
     }
 

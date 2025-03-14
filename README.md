@@ -28,6 +28,8 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [DeepInfra](https://deepinfra.com/)
 - [AI21Labs](https://studio.ai21.com/)
 - [Cohere](https://cohere.com/)
+- [Xinference](https://inference.readthedocs.io/)
+
 
 ### Requirements
 
@@ -40,7 +42,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 <dependency>
    <groupId>io.github.mulesoft-ai-chain-project</groupId>
    <artifactId>mule4-inference-connector</artifactId>
-   <version>0.2.0</version>
+   <version>{version}</version>
    <classifier>mule-plugin</classifier>
 </dependency>
 ```
@@ -54,7 +56,7 @@ Then add the following dependency to your application's `pom.xml`:
 <dependency>
     <groupId>com.mulesoft.connectors</groupId>
     <artifactId>mule4-inference-connector</artifactId>
-    <version>0.2.0</version>
+    <version>{version}</version>
     <classifier>mule-plugin</classifier>
 </dependency>
 ```

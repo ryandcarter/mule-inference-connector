@@ -29,17 +29,6 @@ public class InferenceConfiguration {
     @DisplayName("API Key")
     private String apiKey;
 
-    @Parameter
-	@Placement(order = 1, tab = "Inference Parameters")
-    @Optional(defaultValue = "Valid-for-portkey-only")
-    @Expression(ExpressionSupport.SUPPORTED)
-    @DisplayName("Virtual Key")
-    private String virtualKey;
-
-    public String getVirtualKey() {
-        return virtualKey;
-    }
-
     public String getApiKey() {
         return apiKey;
     }
@@ -85,8 +74,20 @@ public class InferenceConfiguration {
 		return topP;
 	}
 
-    @Parameter
-	@Placement(order = 2, tab = "Inference Parameters")
+
+	@Parameter
+	@Placement(order = 1, tab = "Portkey Parameters")
+	@Optional(defaultValue = "Valid-for-portkey-only")
+	@Expression(ExpressionSupport.SUPPORTED)
+	@DisplayName("Virtual Key")
+	private String virtualKey;
+
+	public String getVirtualKey() {
+		return virtualKey;
+	}
+
+	@Parameter
+	@Placement(order = 1, tab = "Ollama Parameters")
 	@Expression(ExpressionSupport.SUPPORTED)
 	@Optional(defaultValue = "http://localhost:11434/api")
     @DisplayName("Ollama Base URL")
@@ -94,6 +95,17 @@ public class InferenceConfiguration {
 
 	public String getOllamaUrl() {
 		return ollamaUrl;
+	}
+
+	@Parameter
+	@Placement(order = 1, tab = "Xinference Parameters")
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional(defaultValue = "http://127.0.0.1:9997/v1 or https://inference.top/api/v1")
+	@DisplayName("Xinference Base URL")
+	private String xnferenceUrl;
+
+	public String getxinferenceUrl() {
+		return xnferenceUrl;
 	}
 
 }
