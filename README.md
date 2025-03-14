@@ -29,6 +29,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [AI21Labs](https://studio.ai21.com/)
 - [Cohere](https://cohere.com/)
 - [Xinference](https://inference.readthedocs.io/)
+- [Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
 
 
 ### Requirements

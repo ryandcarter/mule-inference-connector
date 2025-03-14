@@ -28,7 +28,8 @@ public enum ModelType {
       ANTHROPIC("ANTHROPIC", getAnthropicModelNameStream()),
       AI21LABS("AI21LABS", getAI21LABSModelNameStream()),
       COHERE("COHERE", getCohereModelNameStream()),
-      XAI("XAI", getXAIModelNameStream());
+      XAI("XAI", getXAIModelNameStream()),
+      AZURE_OPENAI("AZURE_OPENAI", getAzureOpenAIModelNameStream());
 
   private final String value;
   private final Stream<String> modelNameStream;
@@ -128,6 +129,9 @@ public enum ModelType {
     return Arrays.stream(XAIModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getAzureOpenAIModelNameStream() {
+    return Arrays.stream(AzureOpenAIModelName.values()).map(String::valueOf);
+  }
 
   public static ModelType fromValue(String value) {
     return Arrays.stream(ModelType.values())
@@ -522,4 +526,19 @@ public enum ModelType {
     }
   }
 
+  enum AzureOpenAIModelName {
+    //The Model is not specified in the Azure OpenAI API but rather as part of the deployment configuration. In an ideal world we wouldn't need to specify a mdoel when using Azur OpenAI.
+    AZURE_OPENAI("azure-openai"); 
+
+    private final String value;
+
+    AzureOpenAIModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
 }

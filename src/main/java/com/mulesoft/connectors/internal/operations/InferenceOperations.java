@@ -13,6 +13,7 @@ import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
 import org.mule.runtime.extension.api.annotation.param.Config;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.slf4j.Logger;
@@ -26,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.mulesoft.connectors.internal.helpers.ResponseHelper.createLLMResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
@@ -56,6 +56,9 @@ public class InferenceOperations {
         try {
             JSONArray messagesArray = parseInputStreamToJsonArray(messages);
             URL chatCompUrl = getConnectionURLChatCompletion(configuration);
+            
+            LOGGER.debug("Chatting with {}", chatCompUrl);
+            
 
             JSONObject payload = buildPayload(configuration, messagesArray, null);
             String response = executeREST(chatCompUrl, configuration, payload.toString());
@@ -149,12 +152,13 @@ public class InferenceOperations {
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Tools-native-template")
     @OutputJsonType(schema = "api/response/Response.json")
+    @Summary("Define a prompt template with instructions, data and tools")
     public Result<InputStream, LLMResponseAttributes> toolsTemplate(
             @Config InferenceConfiguration configuration,
             @Content String template,
             @Content String instructions,
             @Content(primary = true) String data,
-            @Content InputStream tools) throws ModuleException {
+            @Content @Summary("JSON Array defining the tools set to be used in the template so that the LLM can use them if required") InputStream tools) throws ModuleException {
         try {
             JSONArray toolsArray = parseInputStreamToJsonArray(tools);
             JSONArray messagesArray = createMessagesArrayWithSystemPrompt(
@@ -173,6 +177,9 @@ public class InferenceOperations {
         }
     }
 
+   
+
+    
     /**
      * Creates a messages array with system prompt and user message
      * @param configuration the connector configuration
@@ -272,6 +279,7 @@ public class InferenceOperations {
      * @return result containing the LLM response
      * @throws Exception if an error occurs during processing
      */
+
     private Result<InputStream, LLMResponseAttributes> processLLMResponse(
             String response, InferenceConfiguration configuration) throws Exception {
         return processResponse(response, configuration, false);
@@ -434,6 +442,9 @@ public class InferenceOperations {
                 conn.setRequestProperty("x-portkey-api-key", configuration.getApiKey());
                 conn.setRequestProperty("x-portkey-virtual-key", configuration.getVirtualKey());
                 break;
+            case "AZURE_OPENAI":
+                conn.setRequestProperty("api-key", configuration.getApiKey());
+                break;
             default:
                 conn.setRequestProperty("Authorization", "Bearer " + configuration.getApiKey());
                 break;
@@ -488,6 +499,12 @@ public class InferenceOperations {
                 return new URL(InferenceConstants.AI21LABS_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "COHERE":
                 return new URL(InferenceConstants.COHERE_URL + InferenceConstants.CHAT_COMPLETIONS_OLLAMA);
+            case "AZURE_OPENAI":
+                String urlStr = InferenceConstants.AZURE_OPENAI_URL + InferenceConstants.CHAT_COMPLETIONS_AZURE;
+                urlStr = urlStr
+                    .replace("{resource-name}", configuration.getAzureOpenaiResourceName())
+                    .replace("{deployment-id}", configuration.getAzureOpenaiDeploymentId());
+                return new URL(urlStr);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
         }
@@ -502,7 +519,9 @@ public class InferenceOperations {
      */
     private static JSONObject buildPayload(InferenceConfiguration configuration, JSONArray messagesArray, JSONArray toolsArray) {
         JSONObject payload = new JSONObject();
-        payload.put(InferenceConstants.MODEL, configuration.getModelName());
+        if (!"AZURE_OPENAI".equals(configuration.getInferenceType())) {
+            payload.put(InferenceConstants.MODEL, configuration.getModelName());
+        }
         payload.put(InferenceConstants.MESSAGES, messagesArray);
 
         // Different max token parameter names for different providers
@@ -525,8 +544,8 @@ public class InferenceOperations {
             payload.put(InferenceConstants.TOOLS, toolsArray);
         }
 
-        // Special handling for Ollama's stream parameter
-        if ("OLLAMA".equals(configuration.getInferenceType())) {
+        // Special handling for Ollama's and Azure OpenAI's stream parameter
+        if ("OLLAMA".equals(configuration.getInferenceType()) || "AZURE_OPENAI".equals(configuration.getInferenceType())) {
             payload.put("stream", false);
         }
 
@@ -559,6 +578,7 @@ public class InferenceOperations {
             }
 
             return new JSONArray(jsonString);
+
         }
     }
 
@@ -646,6 +666,7 @@ public class InferenceOperations {
     private boolean isNvidia(InferenceConfiguration configuration) {
         return "NVIDIA".equals(configuration.getInferenceType());
     }
+
 
     /**
      * Check if the inference type is Cohere
