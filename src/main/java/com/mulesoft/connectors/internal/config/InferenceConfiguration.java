@@ -8,6 +8,7 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
+import com.mulesoft.connectors.internal.models.moderation.ModerationNameProvider;
 
 import com.mulesoft.connectors.internal.models.ModelNameProvider;
 import com.mulesoft.connectors.internal.models.ModelTypeProvider;
@@ -44,6 +45,16 @@ public class InferenceConfiguration {
 
 	public String getModelName() {
 		return modelName;
+	}
+
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@OfValues(ModerationNameProvider.class)
+	@Optional(defaultValue = "omni_moderation_latest")
+	private String moderationModelName;
+
+	public String getModerationModelName() {
+		return moderationModelName;
 	}
 
 	@Parameter

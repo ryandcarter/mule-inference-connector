@@ -1,11 +1,9 @@
 package com.mulesoft.connectors.internal.operations;
 
+import com.mulesoft.connectors.internal.api.delegate.Moderation;
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
-import com.mulesoft.connectors.internal.api.metadata.TokenUsage;
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
-import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
-import com.mulesoft.connectors.internal.helpers.TokenHelper;
 import com.mulesoft.connectors.internal.utils.ConnectionUtils;
 import com.mulesoft.connectors.internal.utils.PayloadUtils;
 import com.mulesoft.connectors.internal.utils.ProviderUtils;
@@ -24,13 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import static com.mulesoft.connectors.internal.helpers.ResponseHelper.createLLMResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
@@ -41,7 +34,6 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICAT
  */
 public class InferenceOperations {
     private static final Logger LOGGER = LoggerFactory.getLogger(InferenceOperations.class);
-    private static final String[] NO_TEMPERATURE_MODELS = {"o3-mini", "o1", "o1-mini"};
     private static final String ERROR_MSG_FORMAT = "%s result error";
 
     /**
@@ -176,6 +168,36 @@ public class InferenceOperations {
         } catch (Exception e) {
             LOGGER.error("Error in tools use native template: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Tools use native template"),
+                    InferenceErrorType.CHAT_COMPLETION, e);
+        }
+    }
+
+    /**
+     * The moderation oepration allows users to check whether text or images are potentially harmful
+     * @param configuration
+     * @param systemContent
+     * @param userContent
+     * @return
+     */
+    @MediaType(value = APPLICATION_JSON, strict = false)
+    @Alias("Text-Moderation")
+    @OutputJsonType(schema = "api/response/ResponseModeration.json")
+    public Result<InputStream, LLMResponseAttributes> textModeration(
+            @Config InferenceConfiguration configuration,
+            @Content(primary = true) @Summary("Text to moderate. Can be a single string or an array of strings") InputStream text) throws ModuleException {
+        try {
+            Moderation moderation =  Moderation.getInstance(configuration);
+            String payload = moderation.getRequestPayload(text, null);
+            System.out.println("De payload: " + payload);
+            // JSONObject payload = moderation.getRequestPayload();
+            // String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
+
+            // LOGGER.debug("Moderation result {}", response);
+            // return ResponseUtils.processLLMResponse(response, configuration);
+            return null;
+        } catch (Exception e) {
+            LOGGER.error("Error in moderation: {}", e.getMessage(), e); 
+            throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Moderation"),
                     InferenceErrorType.CHAT_COMPLETION, e);
         }
     }
