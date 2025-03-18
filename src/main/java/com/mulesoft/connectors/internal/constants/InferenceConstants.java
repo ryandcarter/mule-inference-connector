@@ -23,8 +23,13 @@ public class InferenceConstants {
   public static final String MISTRAL_AI_URL = "https://api.mistral.ai/v1";
   public static final String ANTHROPIC_URL = "https://api.anthropic.com/v1";
 
+  public static final String AI21LABS_URL = "https://api.ai21.com/studio/v1";
+  public static final String COHERE_URL = "https://api.cohere.com/v2";
+  public static final String AZURE_OPENAI_URL = "https://{resource-name}.openai.azure.com/openai/deployments/{deployment-id}";
+
   // Resources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
+  public static final String CHAT_COMPLETIONS_AZURE = "/chat/completions?api-version=2024-10-21";
   public static final String CHAT_COMPLETIONS_OLLAMA = "/chat";
   public static final String GENERATION_OLLAMA = "/generate";
 
@@ -39,6 +44,7 @@ public class InferenceConstants {
   public static final String MODEL = "model";
   public static final String ID_STRING = "id";
   public static final String MESSAGES = "messages";
+  public static final String AZURE_PROMPT = "prompt";
   public static final String TOOLS = "tools";
   public static final String TOOL_CALLS = "tool_calls";
   public static final String ASSISTANT = "assistant";

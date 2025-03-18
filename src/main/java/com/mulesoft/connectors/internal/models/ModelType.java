@@ -16,6 +16,7 @@ public enum ModelType {
       OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
       GITHUB("GITHUB", getGithubModelNameStream()),
       OLLAMA("OLLAMA", getOllamaModelNameStream()),
+      XINFERENCE("XINFERENCE", getXinferenceModelNameStream()),
       CEREBRAS("CEREBRAS", getCerebrasModelNameStream()),
       NVIDIA("NVIDIA", getNVidiaModelNameStream()),
       FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
@@ -25,7 +26,10 @@ public enum ModelType {
       OPENAI("OPENAI", getOpenAIModelNameStream()),
       MISTRAL("MISTRAL", getMistralModelNameStream()),
       ANTHROPIC("ANTHROPIC", getAnthropicModelNameStream()),
-      XAI("XAI", getXAIModelNameStream());
+      AI21LABS("AI21LABS", getAI21LABSModelNameStream()),
+      COHERE("COHERE", getCohereModelNameStream()),
+      XAI("XAI", getXAIModelNameStream()),
+      AZURE_OPENAI("AZURE_OPENAI", getAzureOpenAIModelNameStream());
 
   private final String value;
   private final Stream<String> modelNameStream;
@@ -69,6 +73,11 @@ public enum ModelType {
     return Arrays.stream(OllamaModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getXinferenceModelNameStream() {
+    return Arrays.stream(XinferenceModelName.values()).map(String::valueOf);
+  }
+
+
   private static Stream<String> getCerebrasModelNameStream() {
     return Arrays.stream(CerebrasModelName.values()).map(String::valueOf);
   }
@@ -108,10 +117,21 @@ public enum ModelType {
     return Arrays.stream(AnthropicModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getAI21LABSModelNameStream() {
+    return Arrays.stream(AI21LABSModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getCohereModelNameStream() {
+    return Arrays.stream(CohereModelName.values()).map(String::valueOf);
+  }
+
   private static Stream<String> getXAIModelNameStream() {
     return Arrays.stream(XAIModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getAzureOpenAIModelNameStream() {
+    return Arrays.stream(AzureOpenAIModelName.values()).map(String::valueOf);
+  }
 
   public static ModelType fromValue(String value) {
     return Arrays.stream(ModelType.values())
@@ -128,6 +148,45 @@ public enum ModelType {
     private final String value;
 
     XAIModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum AI21LABSModelName {
+
+    jamba_large("jamba-large"),
+    jamba_mini("jamba-mini");
+
+    private final String value;
+
+    AI21LABSModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+
+  enum CohereModelName {
+
+    command_r7b_12_2024("command-r7b-12-2024"),
+    command_r_plus_08_2024("command-r-plus-08-2024"),
+    command_r_plus("command-r-plus"),
+    command_r("command-r"),
+    command("command"),
+    command_r_plus_04_2024("command-r-plus-04-2024");
+
+    private final String value;
+
+    CohereModelName(String value) {
       this.value = value;
     }
 
@@ -417,6 +476,25 @@ public enum ModelType {
     }
   }
 
+  enum XinferenceModelName {
+    CHATGLM3_6("chatglm3-6b"),
+    Qwen25_72B_Instruct("Qwen2.5-72B-Instruct"),
+    Qwen25_32B_Instruct("Qwen2.5-32B-Instruct"),
+    Qwen25_Coder_7B_Instruct("Qwen2.5-Coder-7B-Instruct"),
+    glm_4_9b_chat("glm-4-9b-chat");
+
+    private final String value;
+
+    XinferenceModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
   enum CerebrasModelName {
     LLAMA3_1_8B("llama3.1-8b"), LLAMA3_1_70B("llama3.1-70b");
 
@@ -448,4 +526,19 @@ public enum ModelType {
     }
   }
 
+  enum AzureOpenAIModelName {
+    //The Model is not specified in the Azure OpenAI API but rather as part of the deployment configuration. In an ideal world we wouldn't need to specify a mdoel when using Azur OpenAI.
+    AZURE_OPENAI("azure-openai"); 
+
+    private final String value;
+
+    AzureOpenAIModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
 }
