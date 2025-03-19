@@ -49,16 +49,6 @@ public class InferenceConfiguration {
 
 	@Parameter
 	@Expression(ExpressionSupport.SUPPORTED)
-	@OfValues(ModerationNameProvider.class)
-	@Optional(defaultValue = "omni_moderation_latest")
-	private String moderationModelName;
-
-	public String getModerationModelName() {
-		return moderationModelName;
-	}
-
-	@Parameter
-	@Expression(ExpressionSupport.SUPPORTED)
 	@Optional(defaultValue = "500")
 	private Number maxTokens;
 
