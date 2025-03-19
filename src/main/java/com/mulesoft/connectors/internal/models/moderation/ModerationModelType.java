@@ -43,7 +43,7 @@ public enum ModerationModelType {
   enum OpenAIModerationModelName {
 
     text_moderation_latest_legacy("text-moderation-latest"),
-    omni_moderation_latest("omni_moderation_latest");
+    omni_moderation_latest("omni-moderation-latest");
     
 
     private final String value;

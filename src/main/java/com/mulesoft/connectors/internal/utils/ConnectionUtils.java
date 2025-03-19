@@ -125,6 +125,19 @@ public class ConnectionUtils {
     public static String executeREST(URL resourceUrl, InferenceConfiguration configuration, String payload) throws IOException {
         HttpURLConnection conn = getConnectionObject(resourceUrl, configuration);
 
+        return executeREST(conn, configuration, payload);
+    }
+
+        /**
+     * Execute a REST API call
+     * @param resourceUrl the URL to call
+     * @param configuration the connector configuration
+     * @param payload the payload to send
+     * @return the response string
+     * @throws IOException if an error occurs during the API call
+     */
+    public static String executeREST(HttpURLConnection conn, InferenceConfiguration configuration, String payload) throws IOException {
+        
         // Set appropriate timeouts
         conn.setConnectTimeout(30000);  // 30 seconds
         conn.setReadTimeout(120000);    // 2 minutes

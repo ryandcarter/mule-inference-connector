@@ -188,11 +188,12 @@ public class InferenceOperations {
         try {
             Moderation moderation =  Moderation.getInstance(configuration);
             String payload = moderation.getRequestPayload(text, null);
-            System.out.println("De payload: " + payload);
-            // JSONObject payload = moderation.getRequestPayload();
-            // String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
+            
+            //TODO: This probably needs to change since the request might be configured differently for the moderation service 
+             
+            String response = moderation.getResponsePayload(payload);
 
-            // LOGGER.debug("Moderation result {}", response);
+            LOGGER.debug("Moderation result {}", response);
             // return ResponseUtils.processLLMResponse(response, configuration);
             return null;
         } catch (Exception e) {
