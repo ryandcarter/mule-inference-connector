@@ -25,7 +25,6 @@ import java.io.*;
 import java.net.URL;
 
 
-import static com.mulesoft.connectors.internal.helpers.ResponseHelper.createLLMResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
@@ -172,36 +171,7 @@ public class InferenceOperations {
         }
     }
 
-    /**
-     * The moderation oepration allows users to check whether text or images are potentially harmful
-     * @param configuration
-     * @param systemContent
-     * @param userContent
-     * @return
-     */
-    @MediaType(value = APPLICATION_JSON, strict = false)
-    @Alias("Text-Moderation")
-    @OutputJsonType(schema = "api/response/ResponseModeration.json")
-    public Result<InputStream, LLMResponseAttributes> textModeration(
-            @Config InferenceConfiguration configuration,
-            @Content(primary = true) @Summary("Text to moderate. Can be a single string or an array of strings") InputStream text) throws ModuleException {
-        try {
-            Moderation moderation =  Moderation.getInstance(configuration);
-            String payload = moderation.getRequestPayload(text, null);
-            
-            //TODO: This probably needs to change since the request might be configured differently for the moderation service 
-             
-            String response = moderation.getResponsePayload(payload);
-
-            LOGGER.debug("Moderation result {}", response);
-            // return ResponseUtils.processLLMResponse(response, configuration);
-            return null;
-        } catch (Exception e) {
-            LOGGER.error("Error in moderation: {}", e.getMessage(), e); 
-            throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Moderation"),
-                    InferenceErrorType.CHAT_COMPLETION, e);
-        }
-    }
+   
 
     /**
      * Creates a messages array with system prompt and user message

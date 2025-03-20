@@ -1,8 +1,11 @@
 package com.mulesoft.connectors.internal.api.delegate;
 
+import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
+import com.mulesoft.connectors.internal.config.ModerationConfiguration;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
 import com.mulesoft.connectors.internal.utils.ConnectionUtils;
+import com.mulesoft.connectors.internal.utils.ResponseUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,17 +14,23 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.commons.io.IOUtils.toInputStream;
+
 public abstract class Moderation {
     private static final Logger LOGGER = LoggerFactory.getLogger(Moderation.class);
-    protected final InferenceConfiguration configuration;
+    protected final ModerationConfiguration configuration;
 
     private static Moderation instance; 
 
@@ -29,7 +38,7 @@ public abstract class Moderation {
      * Constructor for the Moderation class.
      * @param configuration the configuration for the moderation.
      */
-    protected Moderation(InferenceConfiguration configuration) {
+    protected Moderation(ModerationConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -38,7 +47,7 @@ public abstract class Moderation {
      * @param configuration the configuration for the moderation.
      * @return the instance of the Moderation class.
      */
-    public static Moderation getInstance(InferenceConfiguration configuration) {
+    public static Moderation getInstance(ModerationConfiguration configuration) {
         if (instance == null) {
             instance = findInstance(configuration);
         }
@@ -49,7 +58,7 @@ public abstract class Moderation {
         return instance;
     }
 
-    private static Moderation findInstance(InferenceConfiguration configuration) {
+    private static Moderation findInstance(ModerationConfiguration configuration) {
         if ("OPENAI".equals(configuration.getInferenceType())) {
             return new OpenAIModeration(configuration);
         }
@@ -89,7 +98,7 @@ public abstract class Moderation {
         {
             URL moderationURL = new URL(this.getAPIUrl());
             HttpURLConnection conn = this.getConnectionObject(moderationURL);
-            String response = ConnectionUtils.executeREST(conn, configuration, requestPayload);
+            String response = ConnectionUtils.executeREST(conn, requestPayload);
             LOGGER.debug("Moderation service - response from LLM: {}", response);
             return response;
         } catch (Exception e) {
@@ -130,6 +139,21 @@ public abstract class Moderation {
      */
     public abstract void addAuthHeaders(HttpURLConnection conn);
 
+    /**
+     * Subclasses should interpret the response from the moderation API and return true if the text is flagged as
+     * inappropriate. The logic will be strictly dependent on the model provider.
+     * @param response
+     * @return
+     */
+    protected abstract boolean isFlagged(JSONObject response);
+
+    /**
+     * Subclasses should interpret the response from the moderation API and 
+     * return a list of maps of categories and their confidence scores.
+     * @param llmResponseObject
+     * @return
+     */
+    protected abstract List<Map<String, Double>> getCategories(JSONObject llmResponseObject);
     
     /* PRIVATE METHODS */
 
@@ -185,4 +209,31 @@ public abstract class Moderation {
         this.addAuthHeaders(conn);
         return conn;
     }
+
+    public Result<InputStream, LLMResponseAttributes> processResponse(String llmResponse) throws ModuleException {
+        try {
+            JSONObject responseObject = new JSONObject();
+            JSONObject llmResponseObject = new JSONObject(llmResponse);
+            responseObject.put("flagged", isFlagged(llmResponseObject));
+            
+            List<Map<String, Double>> categories = getCategories(llmResponseObject);
+            JSONArray categoriesArray = new JSONArray();
+            categories.forEach(category -> categoriesArray.put(new JSONObject(category)));
+            responseObject.put("categories", categoriesArray);
+            
+            return Result.<InputStream, LLMResponseAttributes>builder()
+            //.attributes(new LLMResponseAttributes(tokenUsage, (HashMap<String, String>) responseAttributes))
+            .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
+            .output(toInputStream(responseObject.toString(), StandardCharsets.UTF_8))
+            .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
+            .build();
+            } catch (Exception e) {
+                LOGGER.error("Error processing moderation response: {}", e.getMessage(), e);
+                throw new ModuleException("MODERATION ERROR", InferenceErrorType.TEXT_MODERATION, e);
+        }
+   }
+            
+                
+
+ 
 }

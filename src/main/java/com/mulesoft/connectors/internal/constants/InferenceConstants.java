@@ -51,7 +51,7 @@ public class InferenceConstants {
   public static final String SYSTEM = "system";
   public static final String MODERATIONS = "moderations";
 
-  
+  public static final String MODERATION_OPENAI_PATH = "/moderations";
 
 
 }
