@@ -5,7 +5,6 @@ import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
 import com.mulesoft.connectors.internal.utils.ConnectionUtils;
 import com.mulesoft.connectors.internal.utils.PayloadUtils;
-import com.mulesoft.connectors.internal.utils.ProviderUtils;
 import com.mulesoft.connectors.internal.utils.ResponseUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -170,67 +169,4 @@ public class InferenceOperations {
         }
     }
 
-   
-
-    /**
-     * Creates a messages array with system prompt and user message
-     * @param configuration the connector configuration
-     * @param systemContent content for the system/assistant message
-     * @param userContent content for the user message
-     * @return JSONArray containing the messages
-     */
-    private JSONArray createMessagesArrayWithSystemPrompt(
-            InferenceConfiguration configuration, String systemContent, String userContent) {
-        JSONArray messagesArray = new JSONArray();
-
-        // Create system/assistant message based on provider
-        JSONObject systemMessage = new JSONObject();
-        systemMessage.put("role", ProviderUtils.isAnthropic(configuration) ? "assistant" : "system");
-        systemMessage.put("content", systemContent);
-        messagesArray.put(systemMessage);
-
-        // Create user message
-        JSONObject userMessage = new JSONObject();
-        userMessage.put("role", "user");
-        userMessage.put("content", userContent);
-        messagesArray.put(userMessage);
-
-        return messagesArray;
-    }
-
-    /**
-     * Check if the inference type is OLLAMA
-     * @param configuration the connector configuration
-     * @return true if the inference type is OLLAMA, false otherwise
-     */
-    private boolean isOllama(InferenceConfiguration configuration) {
-        return "OLLAMA".equals(configuration.getInferenceType());
-    }
-
-    /**
-     * Check if the inference type is Anthropic
-     * @param configuration the connector configuration
-     * @return true if the inference type is Anthropic, false otherwise
-     */
-    private boolean isAnthropic(InferenceConfiguration configuration) {
-        return "ANTHROPIC".equals(configuration.getInferenceType());
-    }
-
-    /**
-     * Check if the inference type is NVIDIA
-     * @param configuration the connector configuration
-     * @return true if the inference type is NVIDIA, false otherwise
-     */
-    private boolean isNvidia(InferenceConfiguration configuration) {
-        return "NVIDIA".equals(configuration.getInferenceType());
-    }
-
-    /**
-     * Check if the inference type is Cohere
-     * @param configuration the connector configuration
-     * @return true if the inference type is Cohere, false otherwise
-     */
-    private boolean isCohere(InferenceConfiguration configuration) {
-        return "COHERE".equals(configuration.getInferenceType());
-    }
 }
