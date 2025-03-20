@@ -1,16 +1,21 @@
 package com.mulesoft.connectors.internal.api.delegate;
 
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
+import com.mulesoft.connectors.internal.exception.InferenceErrorType;
+import com.mulesoft.connectors.internal.utils.ConnectionUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,10 +82,34 @@ public abstract class Moderation {
         payload = handleModelSpecificRequestPayload(payload, text, images);
         return payload.toString();
 
-        
-        
     }
 
+    public String getResponsePayload(String requestPayload) {
+        try 
+        {
+            URL moderationURL = new URL(this.getAPIUrl());
+            HttpURLConnection conn = this.getConnectionObject(moderationURL);
+            String response = ConnectionUtils.executeREST(conn, configuration, requestPayload);
+            LOGGER.debug("Moderation service - response from LLM: {}", response);
+            return response;
+        } catch (Exception e) {
+            LOGGER.error("Error in tools use native template: {}", e.getMessage(), e);
+            throw new ModuleException("MODERATION ERROR", InferenceErrorType.TEXT_MODERATION, e);
+        }
+    }
+
+    /******************** */
+    /*  ABSTRACT METHODS  */
+    /******************** */
+
+    /**
+     * This method is a placeholder for any specific attributes that needs to be added by the model provider.
+     * If no specific attributes are needed, the payload should be returned as is.
+     * @param payload
+     * @param text
+     * @param images
+     * @return
+     */
     protected abstract JSONObject handleModelSpecificRequestPayload(JSONObject payload, Object text, Object images);
     
     /**
@@ -89,8 +118,20 @@ public abstract class Moderation {
      */
     protected abstract String getTextInputAttributeName();
 
-    protected abstract String getAPIUrl();
+    /**
+     * Return the URL of the API to be used for moderation.
+     * @return
+     */
+    public abstract String getAPIUrl();
 
+    /**
+     * Add the authentication headers to the HTTP connection.
+     * @param conn
+     */
+    public abstract void addAuthHeaders(HttpURLConnection conn);
+
+    
+    /* PRIVATE METHODS */
 
     public static boolean isValidJson(String input) {
         try {
@@ -131,5 +172,17 @@ public abstract class Moderation {
             LOGGER.error("Error converting stream to string. Returning empty string", e);
             return "";
         }
-    }   
+    } 
+    
+    private HttpURLConnection getConnectionObject(URL url) throws IOException {
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setDoOutput(true);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+        conn.setRequestProperty("Accept", "application/json");
+
+        this.addAuthHeaders(conn);
+        return conn;
+    }
 }

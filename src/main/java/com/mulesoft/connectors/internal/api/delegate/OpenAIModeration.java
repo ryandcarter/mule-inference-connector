@@ -1,6 +1,7 @@
 package com.mulesoft.connectors.internal.api.delegate;
 
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 
 import org.json.JSONObject;
 
@@ -25,5 +26,10 @@ public class OpenAIModeration extends Moderation {
     @Override
     protected String getTextInputAttributeName() {
         return "input";
+    }
+
+    @Override
+    public void addAuthHeaders(HttpURLConnection conn) {
+        conn.setRequestProperty("Authorization", "Bearer " + configuration.getApiKey());
     }
 }
