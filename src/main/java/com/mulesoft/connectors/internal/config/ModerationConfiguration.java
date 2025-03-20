@@ -9,8 +9,8 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 
-import com.mulesoft.connectors.internal.models.ModelTypeProvider;
 import com.mulesoft.connectors.internal.models.moderation.ModerationNameProvider;
+import com.mulesoft.connectors.internal.models.moderation.ModerationTypeProvider;
 import com.mulesoft.connectors.internal.operations.ModerationOperations;
 
 @Operations(ModerationOperations.class)
@@ -21,7 +21,7 @@ public class ModerationConfiguration {
     @Placement(order = 1, tab = Placement.DEFAULT_TAB)
     @Expression(ExpressionSupport.SUPPORTED)
     @DisplayName("Inference Type")
-    @OfValues(ModelTypeProvider.class)
+    @OfValues(ModerationTypeProvider.class)
     private String inferenceType;
 
     public String getInferenceType() {

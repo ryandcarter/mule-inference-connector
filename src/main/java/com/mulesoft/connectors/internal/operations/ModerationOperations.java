@@ -40,13 +40,7 @@ public class ModerationOperations {
             @Config ModerationConfiguration configuration,
             @Content(primary = true) @Summary("Text to moderate. Can be a single string or an array of strings") InputStream text) throws ModuleException {
         try {
-            Moderation moderation =  Moderation.getInstance(configuration);
-            String payload = moderation.getRequestPayload(text, null);
-            
-            String response = moderation.getResponsePayload(payload);
-
-            LOGGER.debug("Moderation result {}", response);
-            return moderation.processResponse(response);
+            return  Moderation.getInstance(configuration).moderate(text);
             
         } catch (Exception e) {
             LOGGER.error("Error in moderation: {}", e.getMessage(), e); 
