@@ -8,5 +8,6 @@ import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 public enum InferenceErrorType implements ErrorTypeDefinition<InferenceErrorType> {
 
   CHAT_COMPLETION,
-  TEXT_MODERATION
+  TEXT_MODERATION,
+  VISION
 }

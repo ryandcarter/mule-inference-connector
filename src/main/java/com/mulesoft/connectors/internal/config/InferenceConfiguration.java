@@ -1,6 +1,7 @@
 package com.mulesoft.connectors.internal.config;
 
 import org.mule.runtime.api.meta.ExpressionSupport;
+import org.mule.runtime.extension.api.annotation.Configuration;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -15,6 +16,7 @@ import com.mulesoft.connectors.internal.models.ModelTypeProvider;
 import com.mulesoft.connectors.internal.operations.InferenceOperations;
 
 @Operations(InferenceOperations.class)
+@Configuration(name="llm-config")
 public class InferenceConfiguration {
 
     @Parameter
