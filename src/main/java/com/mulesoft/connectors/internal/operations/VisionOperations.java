@@ -86,9 +86,9 @@ public class VisionOperations {
             LOGGER.debug("Chat completions result {}", response);
             return ResponseUtils.processLLMResponse(response, inferenceConfig);
         } catch (Exception e) {
-            LOGGER.error("Error in chat completions: {}", e.getMessage(), e);
-            throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Chat completions"),
-                    InferenceErrorType.CHAT_COMPLETION, e);
+            LOGGER.error("Error in Read Image: {}", e.getMessage(), e);
+            throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Read Image"),
+                    InferenceErrorType.VISION, e);
         }
     }
 }
