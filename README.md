@@ -31,6 +31,8 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Xinference](https://inference.readthedocs.io/)
 - [Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
 
+## Supported Moderation Providers
+- [OpenAI](https://openai.com/)
 
 ### Requirements
 
