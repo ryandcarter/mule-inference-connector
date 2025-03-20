@@ -1,6 +1,5 @@
 package com.mulesoft.connectors.internal.api.delegate;
 
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,8 +9,6 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.google.gson.JsonObject;
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.config.ModerationConfiguration;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 
