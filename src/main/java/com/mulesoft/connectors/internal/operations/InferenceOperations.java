@@ -1,14 +1,10 @@
 package com.mulesoft.connectors.internal.operations;
 
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
-import com.mulesoft.connectors.internal.api.metadata.TokenUsage;
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
-import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
-import com.mulesoft.connectors.internal.helpers.TokenHelper;
 import com.mulesoft.connectors.internal.utils.ConnectionUtils;
 import com.mulesoft.connectors.internal.utils.PayloadUtils;
-import com.mulesoft.connectors.internal.utils.ProviderUtils;
 import com.mulesoft.connectors.internal.utils.ResponseUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,15 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
-import static com.mulesoft.connectors.internal.helpers.ResponseHelper.createLLMResponse;
+
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
@@ -41,7 +31,6 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICAT
  */
 public class InferenceOperations {
     private static final Logger LOGGER = LoggerFactory.getLogger(InferenceOperations.class);
-    private static final String[] NO_TEMPERATURE_MODELS = {"o3-mini", "o1", "o1-mini"};
     private static final String ERROR_MSG_FORMAT = "%s result error";
 
     /**
@@ -60,7 +49,7 @@ public class InferenceOperations {
         try {
             JSONArray messagesArray = PayloadUtils.parseInputStreamToJsonArray(messages);
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
-            
+
             LOGGER.debug("Chatting with {}", chatCompUrl);
             
             JSONObject payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
@@ -180,65 +169,4 @@ public class InferenceOperations {
         }
     }
 
-    /**
-     * Creates a messages array with system prompt and user message
-     * @param configuration the connector configuration
-     * @param systemContent content for the system/assistant message
-     * @param userContent content for the user message
-     * @return JSONArray containing the messages
-     */
-    private JSONArray createMessagesArrayWithSystemPrompt(
-            InferenceConfiguration configuration, String systemContent, String userContent) {
-        JSONArray messagesArray = new JSONArray();
-
-        // Create system/assistant message based on provider
-        JSONObject systemMessage = new JSONObject();
-        systemMessage.put("role", ProviderUtils.isAnthropic(configuration) ? "assistant" : "system");
-        systemMessage.put("content", systemContent);
-        messagesArray.put(systemMessage);
-
-        // Create user message
-        JSONObject userMessage = new JSONObject();
-        userMessage.put("role", "user");
-        userMessage.put("content", userContent);
-        messagesArray.put(userMessage);
-
-        return messagesArray;
-    }
-
-    /**
-     * Check if the inference type is OLLAMA
-     * @param configuration the connector configuration
-     * @return true if the inference type is OLLAMA, false otherwise
-     */
-    private boolean isOllama(InferenceConfiguration configuration) {
-        return "OLLAMA".equals(configuration.getInferenceType());
-    }
-
-    /**
-     * Check if the inference type is Anthropic
-     * @param configuration the connector configuration
-     * @return true if the inference type is Anthropic, false otherwise
-     */
-    private boolean isAnthropic(InferenceConfiguration configuration) {
-        return "ANTHROPIC".equals(configuration.getInferenceType());
-    }
-
-    /**
-     * Check if the inference type is NVIDIA
-     * @param configuration the connector configuration
-     * @return true if the inference type is NVIDIA, false otherwise
-     */
-    private boolean isNvidia(InferenceConfiguration configuration) {
-        return "NVIDIA".equals(configuration.getInferenceType());
-    }
-
-    /**
-     * Check if the inference type is Cohere
-     * @param configuration the connector configuration
-     * @return true if the inference type is Cohere, false otherwise
-     */
-    private boolean isCohere(InferenceConfiguration configuration) {
-        return "COHERE".equals(configuration.getInferenceType());
-    }
 }

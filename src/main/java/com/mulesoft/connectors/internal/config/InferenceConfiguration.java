@@ -1,6 +1,7 @@
 package com.mulesoft.connectors.internal.config;
 
 import org.mule.runtime.api.meta.ExpressionSupport;
+import org.mule.runtime.extension.api.annotation.Configuration;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -8,12 +9,14 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
+import com.mulesoft.connectors.internal.models.moderation.ModerationNameProvider;
 
 import com.mulesoft.connectors.internal.models.ModelNameProvider;
 import com.mulesoft.connectors.internal.models.ModelTypeProvider;
 import com.mulesoft.connectors.internal.operations.InferenceOperations;
 
 @Operations(InferenceOperations.class)
+@Configuration(name="llm-config")
 public class InferenceConfiguration {
 
     @Parameter
