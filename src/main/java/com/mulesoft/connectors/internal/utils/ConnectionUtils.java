@@ -12,6 +12,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +32,23 @@ public class ConnectionUtils {
      * @throws IOException if an error occurs during connection setup
      */
     public static HttpURLConnection getConnectionObject(URL url, InferenceConfiguration configuration) throws IOException {
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    	
+        HttpURLConnection conn;
+
+        if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
+        	Map<String, String> queryParams = new HashMap<>();
+        	queryParams.put("key", configuration.getApiKey());
+        	
+        	// Append query parameters to the base URL
+            String fullUrl = url.toString() + "?" + getQueryParams(queryParams);
+         
+            // Open connection with the modified URL
+            conn = (HttpURLConnection) new URL(fullUrl).openConnection();
+        } else {
+            conn = (HttpURLConnection) url.openConnection();
+        }
+        
+        //HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
@@ -109,6 +127,11 @@ public class ConnectionUtils {
                     .replace("{resource-name}", configuration.getAzureOpenaiResourceName())
                     .replace("{deployment-id}", configuration.getAzureOpenaiDeploymentId());
                 return new URL(urlStr);
+            case "VERTEX_AI_EXPRESS":
+                String vertexAIUrlStr = InferenceConstants.VERTEX_AI_EXPRESS_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI;
+                vertexAIUrlStr = vertexAIUrlStr
+                    .replace("{MODEL_ID}", configuration.getModelName());
+                return new URL(vertexAIUrlStr);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
         }
@@ -170,5 +193,21 @@ public class ConnectionUtils {
             }
             return response.toString();
         }
+    }
+    
+    /**
+     * Utility method to encode query parameters
+     */
+    public static String getQueryParams(Map<String, String> params) {
+        StringBuilder query = new StringBuilder();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (query.length() > 0) {
+                query.append("&");
+            }
+            query.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8))
+                 .append("=")
+                 .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+        }
+        return query.toString();
     }
 } 
