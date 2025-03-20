@@ -23,12 +23,12 @@ public enum ModelType {
       TOGETHER("TOGETHER", getTOGETHERModelNameStream()),
       DEEPINFRA("DEEPINFRA", getDEEPINFRAModelNameStream()),
       PERPLEXITY("PERPLEXITY", getPERPLEXITYModelNameStream()),
-      MISTRAL("MISTRAL", getMistralModelNameStream()),
       ANTHROPIC("ANTHROPIC", getAnthropicModelNameStream()),
       AI21LABS("AI21LABS", getAI21LABSModelNameStream()),
       COHERE("COHERE", getCohereModelNameStream()),
       XAI("XAI", getXAIModelNameStream()),
       AZURE_OPENAI("AZURE_OPENAI", getAzureOpenAIModelNameStream()),*/
+      MISTRAL("MISTRAL", getMistralModelNameStream()),
       OPENAI("OPENAI", getOpenAIModelNameStream()),
       ;
 
@@ -219,9 +219,8 @@ public enum ModelType {
 
   enum MistralModelName {
 
-    mistral_large_latest("mistral-large-latest"),
     mistral_small_latest("mistral-small-latest"),
-    open_mistral_nemo("open-mistral-nemo"),
+    pixtral_12b_latest("pixtral-12b-latest"),
     pixtral_large_latest("pixtral-large-latest");
 
     private final String value;
