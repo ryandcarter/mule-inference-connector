@@ -8,7 +8,7 @@ public class InferenceConstants {
   private InferenceConstants() {}
 
   public static final String PORTKEY_URL = "https://api.portkey.ai/v1";
-  public static final String HUGGINGFACE_URL = "https://api-inference.huggingface.co";
+  public static final String HUGGINGFACE_URL = "https://router.huggingface.co/hf-inference";
   public static final String GROQ_URL = "https://api.groq.com/openai/v1";
   public static final String OPENROUTER_URL ="https://openrouter.ai/api/v1";
   public static final String GITHUB_MODELS_URL = "https://models.inference.ai.azure.com";

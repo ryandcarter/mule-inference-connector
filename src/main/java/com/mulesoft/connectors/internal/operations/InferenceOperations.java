@@ -49,7 +49,7 @@ public class InferenceOperations {
         try {
             JSONArray messagesArray = PayloadUtils.parseInputStreamToJsonArray(messages);
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
-            
+
             LOGGER.debug("Chatting with {}", chatCompUrl);
             
             JSONObject payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
