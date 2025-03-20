@@ -49,6 +49,7 @@ public class InferenceConstants {
   public static final String TOOL_CALLS = "tool_calls";
   public static final String ASSISTANT = "assistant";
   public static final String SYSTEM = "system";
+  public static final String MODERATIONS = "moderations";
 
   
 
