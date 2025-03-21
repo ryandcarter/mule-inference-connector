@@ -10,7 +10,8 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 public enum ModerationModelType {
-    OPENAI("OPENAI", getOpenAIModerationModelNameStream());
+    OPENAI("OPENAI", getOpenAIModerationModelNameStream()),
+    MISTRAL_AI("MISTRAL_AI", getMistralAIModerationModelNameStream());
 
   private final String value;
   private final Stream<String> modelNameStream;
@@ -32,6 +33,10 @@ public enum ModerationModelType {
     return Arrays.stream(OpenAIModerationModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getMistralAIModerationModelNameStream() {
+    return Arrays.stream(MistralIModerationModelName.values()).map(String::valueOf);
+  }
+
   public static ModerationModelType fromValue(String value) {
     return Arrays.stream(ModerationModelType.values())
         .filter(moderationModelType -> moderationModelType.value.equals(value))
@@ -49,6 +54,22 @@ public enum ModerationModelType {
     private final String value;
 
     OpenAIModerationModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum MistralIModerationModelName {
+
+    mistral_moderation_latest("mistral-moderation-latest");
+    
+    private final String value;
+
+    MistralIModerationModelName(String value) {
       this.value = value;
     }
 
