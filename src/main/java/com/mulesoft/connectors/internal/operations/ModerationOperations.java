@@ -33,7 +33,7 @@ public class ModerationOperations {
      * @return
      */
     @MediaType(value = APPLICATION_JSON, strict = false)
-    @Alias("Text-Moderation")
+    @Alias("Toxicity-Detection-Text")
     @OutputJsonType(schema = "api/response/ResponseModeration.json")
     public Result<InputStream, LLMResponseAttributes> textModeration(
             @Config ModerationConfiguration configuration,
