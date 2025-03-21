@@ -14,12 +14,12 @@ import com.mulesoft.connectors.internal.constants.InferenceConstants;
 
 public class OpenAIModeration extends Moderation {
 
-    public OpenAIModeration(ModerationConfiguration configuration) {
+    protected OpenAIModeration(ModerationConfiguration configuration) {
         super(configuration);
     }
     
     public String getAPIUrl() {
-        return InferenceConstants.OPEN_AI_URL + InferenceConstants.MODERATION_OPENAI_PATH;
+        return InferenceConstants.OPEN_AI_URL + InferenceConstants.MODERATIONS_PATH;
     }
 
     @Override
