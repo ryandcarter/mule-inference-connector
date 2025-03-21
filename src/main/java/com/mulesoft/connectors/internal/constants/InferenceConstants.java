@@ -52,6 +52,10 @@ public class InferenceConstants {
   public static final String ASSISTANT = "assistant";
   public static final String SYSTEM = "system";
   public static final String MODERATIONS = "moderations";
+  public static final String CONTENTS = "contents";
+  public static final String SYSTEM_INSTRUCTION = "systemInstruction";
+  public static final String GENERATION_CONFIG = "generationConfig";
+  public static final String SAFETY_SETTINGS = "safetySettings";
 
   public static final String MODERATION_OPENAI_PATH = "/moderations";
 

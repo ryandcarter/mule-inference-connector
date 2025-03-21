@@ -2,18 +2,22 @@ package com.mulesoft.connectors.internal.utils;
 
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
+import com.mulesoft.connectors.internal.operations.InferenceOperations;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +26,9 @@ import org.slf4j.LoggerFactory;
  * Utility class for HTTP connection operations.
  */
 public class ConnectionUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InferenceOperations.class);
+
+    //private static final java.util.logging.Logger LOGGER = LoggerFactory.getLogger(ConnectionUtils.class);
 
     /**
      * Build the HTTP connection for the API request
@@ -47,6 +53,8 @@ public class ConnectionUtils {
         } else {
             conn = (HttpURLConnection) url.openConnection();
         }
+
+        LOGGER.debug("path : ", conn.getURL().getPath());
         
         //HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
@@ -66,6 +74,9 @@ public class ConnectionUtils {
                 break;
             case "AZURE_OPENAI":
                 conn.setRequestProperty("api-key", configuration.getApiKey());
+                break;
+            case "VERTEX_AI_EXPRESS":
+                //do nothing for Vertex AI
                 break;
             default:
                 conn.setRequestProperty("Authorization", "Bearer " + configuration.getApiKey());
@@ -211,15 +222,15 @@ public class ConnectionUtils {
     /**
      * Utility method to encode query parameters
      */
-    public static String getQueryParams(Map<String, String> params) {
+    public static String getQueryParams(Map<String, String> params) throws UnsupportedEncodingException {
         StringBuilder query = new StringBuilder();
         for (Map.Entry<String, String> entry : params.entrySet()) {
             if (query.length() > 0) {
                 query.append("&");
             }
-            query.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8))
+            query.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
                  .append("=")
-                 .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+                 .append(URLEncoder.encode(entry.getValue(), "UTF-8"));
         }
         return query.toString();
     }
