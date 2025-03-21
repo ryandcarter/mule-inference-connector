@@ -189,7 +189,7 @@ public class ResponseUtils {
             if ("tool_use".equals(type)) {
                 JSONObject functionObject = new JSONObject();
                 functionObject.put("name", contentItem.getString("name"));
-                functionObject.put("arguments", contentItem.getJSONObject("input").toString());
+                functionObject.put("arguments", contentItem.getJSONObject("input"));
 
                 JSONObject toolItem = new JSONObject();
                 toolItem.put("function", functionObject);

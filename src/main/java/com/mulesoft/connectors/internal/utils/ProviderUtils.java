@@ -49,10 +49,6 @@ public class ProviderUtils {
         // Create a new instance of InferenceConfiguration
         InferenceConfiguration inferenceConfig = new InferenceConfiguration();
 
-        // Copy all the shared properties from VisionConfiguration to InferenceConfiguration
-        // Using reflection or setter methods
-
-        // Using setter methods (you'll need to add them to InferenceConfiguration if they don't exist)
         try {
             // Use reflection to set fields since the class might not have setters
             java.lang.reflect.Field inferenceTypeField = InferenceConfiguration.class.getDeclaredField("inferenceType");
@@ -75,10 +71,17 @@ public class ProviderUtils {
             temperatureField.setAccessible(true);
             temperatureField.set(inferenceConfig, visionConfig.getTemperature());
 
-            // Set default value for topP since VisionConfiguration doesn't have it
             java.lang.reflect.Field topPField = InferenceConfiguration.class.getDeclaredField("topP");
             topPField.setAccessible(true);
-            topPField.set(inferenceConfig, 0.9);
+            topPField.set(inferenceConfig, visionConfig.getTemperature());
+
+            java.lang.reflect.Field ollamaURLField = InferenceConfiguration.class.getDeclaredField("ollamaUrl");
+            ollamaURLField.setAccessible(true);
+            ollamaURLField.set(inferenceConfig, visionConfig.getOllamaUrl());
+
+            java.lang.reflect.Field virtualKeyField = InferenceConfiguration.class.getDeclaredField("virtualKey");
+            virtualKeyField.setAccessible(true);
+            virtualKeyField.set(inferenceConfig, visionConfig.getVirtualKey());
 
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("Error converting VisionConfiguration to InferenceConfiguration", e);
