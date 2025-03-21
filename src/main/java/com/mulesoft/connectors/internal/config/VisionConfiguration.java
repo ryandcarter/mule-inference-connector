@@ -79,6 +79,28 @@ public class VisionConfiguration {
 		return topP;
 	}
 
+
+	@Parameter
+	@Placement(order = 1, tab = "Portkey Parameters")
+	@Optional(defaultValue = "Valid-for-portkey-only")
+	@Expression(ExpressionSupport.SUPPORTED)
+	@DisplayName("Virtual Key")
+	private String virtualKey;
+
+	public String getVirtualKey() {
+		return virtualKey;
+	}
+
+	@Parameter
+	@Placement(order = 1, tab = "Ollama Parameters")
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional(defaultValue = "http://localhost:11434/api")
+	@DisplayName("Ollama Base URL")
+	private String ollamaUrl;
+
+	public String getOllamaUrl() {
+		return ollamaUrl;
+	}
 }
 
 

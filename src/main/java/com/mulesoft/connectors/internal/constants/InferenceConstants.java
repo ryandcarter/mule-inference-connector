@@ -57,7 +57,7 @@ public class InferenceConstants {
   public static final String GENERATION_CONFIG = "generationConfig";
   public static final String SAFETY_SETTINGS = "safetySettings";
 
-  public static final String MODERATION_OPENAI_PATH = "/moderations";
+  public static final String MODERATIONS_PATH = "/moderations";
 
 
 }

@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
@@ -53,10 +55,14 @@ public abstract class Moderation {
     }
 
     private static Moderation findInstance(ModerationConfiguration configuration) {
-        if ("OPENAI".equals(configuration.getInferenceType())) {
-            return new OpenAIModeration(configuration);
+        switch (configuration.getInferenceType()){
+            case "MISTRAL_AI":
+                return new MistralAIModeration(configuration);
+            case "OPENAI":
+                return new OpenAIModeration(configuration);
+            default:
+                return null;
         }
-        return null;
     }   
 
 
@@ -116,46 +122,85 @@ public abstract class Moderation {
      */
     protected abstract boolean isFlagged(JSONObject response);
 
-    /**
-     * Subclasses should interpret the response from the moderation API and 
-     * return a list of maps of categories and their confidence scores.
-     * @param llmResponseObject
-     * @return
-     */
-    protected abstract List<Map<String, Double>> getCategories(JSONObject llmResponseObject);
+    
     
     
     /********************************* */
     /* PRIVATE and PROTECTED METHODS */
     /********************************* */
 
-    
+    /**
+     * This method should return a list like this:
+     * [
+     *  {
+     *      "harassment": 0.99,
+     *      "self_harm": 0.98,
+     *      "sexual": 0.97,
+     *      "violence": 0.96
+     *  } 
+     * given the following JSON response:
+     * {
+     *  "results": [
+     *      {
+     *          "categories": {
+     *              "harassment": true,
+     *              "self_harm": true,
+     *              "sexual": true,
+     *              "violence": true
+     *          },
+     *          "category_scores": {
+     *              "harassment": 0.99,
+     *              "self_harm": 0.98,
+     *              "sexual": 0.97,
+     *              "violence": 0.96
+     *          }
+     *      }
+     * ]
+     * ]
+     */
+    protected List<Map<String, Double>> getCategories(JSONObject llmResponseObject) {
+        JSONArray results = llmResponseObject.getJSONArray("results");
+        List<Map<String, Double>> returnValueList = new ArrayList<>();
+        for (Object result : results) {
+            Map<String, Double> categoriesMap = new HashMap<>();
+            JSONObject resultObject = (JSONObject) result;
+            JSONObject categoriesObject = resultObject.getJSONObject("categories");
+            JSONObject categoryScoresObject = resultObject.getJSONObject("category_scores");
+            //For each field in categoriesObject, add the field name and the value in categoryScoresObject
+            for (String key : categoriesObject.keySet()) {
+                categoriesMap.put(key, categoryScoresObject.getDouble(key));
+            }
+            returnValueList.add(categoriesMap);
+        }
+        return returnValueList;
+    }
+
     /**
      * Build the payload to be sent to the moderation API. 
+     * This default implementation accept a string or an array of string. If an array of strings is passed, the strings are concatenated with a space and sent to the LLM
      * @param text
      * @param images
      * @return
      */
     protected String getRequestPayload(InputStream text, InputStream images) {
-        
-        String inputString = convertStreamToString(text);
-        JSONObject payload = new JSONObject();
-        if (isJsonArray(inputString)) {
-            //We assume an array of strings. 
-            StringBuffer payloadText = new StringBuffer();
-            JSONArray inputArray = new JSONArray(inputString);
-            inputArray.forEach(item -> payloadText.append(item.toString() + " "));
-            inputArray.remove(inputArray.length() - 1); //Remove the last space
+       
+       String inputString = convertStreamToString(text);
 
-            payload.put(getTextInputAttributeName(), payloadText.toString());
-        } else  {
-            payload.put(getTextInputAttributeName(), inputString);
-        }
+       JSONObject payload = new JSONObject();
+       if (isJsonArray(inputString)) {
+           JSONArray inputArray = new JSONArray(inputString);
+           payload.put(getTextInputAttributeName(), inputArray);
+       } else  {
+           //Doing this because I don't know why the inputString is coming with double quotes as well.
+           JSONObject inputObject = new JSONObject("{ \"prompt\": " + inputString + " }");
+           payload.put(getTextInputAttributeName(), inputObject.get("prompt"));
+       }
+       //Call this method in case the specific model needs to add any specific attributes to the request payload.
+       //The subclass will just return the payload as is if no specific attributes are needed.
+       payload = handleModelSpecificRequestPayload(payload, text, images);
+       return payload.toString();
 
-        payload = handleModelSpecificRequestPayload(payload, text, images);
-        return payload.toString();
-
-    }
+   }
 
     /**
      * Send the request payload to the moderation API and return the response.
@@ -235,7 +280,7 @@ public abstract class Moderation {
         }
     }
 
-    private static String convertStreamToString(InputStream inputStream) {
+    protected static String convertStreamToString(InputStream inputStream) {
         
         if (inputStream == null) {
             return "";

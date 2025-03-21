@@ -173,4 +173,79 @@ public class PayloadUtils {
 
         return messagesArray;
     }
-} 
+
+
+    public static JSONArray createRequestImageURL(String provider, String prompt, String imageUrl) {
+
+        if (provider.equalsIgnoreCase("ANTHROPIC")) {
+            return createAnthropicImageURLRequest(prompt, imageUrl);
+        } else {
+            return createImageURLRequest(prompt, imageUrl);
+        }
+    }
+
+    /**
+     * Creates a messages array with system prompt and user message
+     * @param prompt of the user
+     * @param imageUrl of the image
+     * @return JSONArray containing the messages
+     */
+    private static JSONArray createImageURLRequest(String prompt, String imageUrl) {
+        JSONArray messagesArray = new JSONArray();
+        JSONObject userMessage = new JSONObject();
+        userMessage.put("role", "user");
+        JSONArray contentArray = new JSONArray();
+
+        JSONObject textContent = new JSONObject();
+        textContent.put("type", "text");
+        textContent.put("text", prompt);
+        contentArray.put(textContent);
+
+        JSONObject imageContent = new JSONObject();
+        imageContent.put("type", "image_url");
+        JSONObject imageMessage = new JSONObject();
+        imageMessage.put("url", imageUrl);
+        imageContent.put("image_url", imageMessage);
+        contentArray.put(imageContent);
+
+        userMessage.put("content", contentArray);
+        messagesArray.put(userMessage);
+
+
+        return messagesArray;
+    }
+
+
+    /**
+     * Creates a messages array with system prompt and user message
+     * @param prompt of the user
+     * @param imageUrl of the image
+     * @return JSONArray containing the messages
+     */
+    private static JSONArray createAnthropicImageURLRequest(String prompt, String imageUrl) {
+        JSONArray messagesArray = new JSONArray();
+        JSONObject userMessage = new JSONObject();
+        userMessage.put("role", "user");
+
+        JSONArray contentArray = new JSONArray();
+
+        JSONObject imageContent = new JSONObject();
+        imageContent.put("type", "image");
+        JSONObject imageSource = new JSONObject();
+        imageSource.put("type", "url");
+        imageSource.put("url", imageUrl);
+        imageContent.put("source", imageSource);
+        contentArray.put(imageContent);
+
+        JSONObject textContent = new JSONObject();
+        textContent.put("type", "text");
+        textContent.put("text", prompt);
+        contentArray.put(textContent);
+
+        userMessage.put("content", contentArray);
+        messagesArray.put(userMessage);
+
+        return messagesArray;
+    }
+
+}

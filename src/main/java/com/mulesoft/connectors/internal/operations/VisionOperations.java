@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.net.URL;
 
+
+import static com.mulesoft.connectors.internal.utils.PayloadUtils.createRequestImageURL;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
@@ -51,26 +53,7 @@ public class VisionOperations {
             @Content(primary = true) String imageUrl) throws ModuleException {
         try {
 
-            JSONArray messagesArray = new JSONArray();
-            JSONObject userMessage = new JSONObject();
-            userMessage.put("role", "user");
-            JSONArray contentArray = new JSONArray();
-            JSONObject textContent = new JSONObject();
-            textContent.put("type", "text");
-            textContent.put("text", prompt);
-            contentArray.put(textContent);
-
-            JSONObject imageContent = new JSONObject();
-            imageContent.put("type", "image_url");
-
-            JSONObject imageMessage = new JSONObject();
-            imageMessage.put("url", imageUrl);
-            imageContent.put("image_url", imageMessage);
-
-            contentArray.put(imageContent);
-
-            userMessage.put("content", contentArray);
-            messagesArray.put(userMessage);
+            JSONArray messagesArray = createRequestImageURL(configuration.getInferenceType(), prompt, imageUrl);
 
             InferenceConfiguration inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
 
@@ -78,12 +61,11 @@ public class VisionOperations {
 
             LOGGER.debug("Chatting with {}", chatCompUrl);
 
-            // Use the converted configuration
             JSONObject payload = PayloadUtils.buildPayload(inferenceConfig, messagesArray, null);
 
             String response = ConnectionUtils.executeREST(chatCompUrl, inferenceConfig, payload.toString());
 
-            LOGGER.debug("Chat completions result {}", response);
+            LOGGER.debug("Read Image result {}", response);
             return ResponseUtils.processLLMResponse(response, inferenceConfig);
         } catch (Exception e) {
             LOGGER.error("Error in Read Image: {}", e.getMessage(), e);
