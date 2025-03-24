@@ -20,8 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
-
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
@@ -77,15 +79,10 @@ public class InferenceOperations {
     public Result<InputStream, LLMResponseAttributes> chatAnswerPrompt(
             @Config InferenceConfiguration configuration,
             @Content String prompt) throws ModuleException {
-        try {
-            JSONArray messagesArray = new JSONArray();
-            JSONObject usersPrompt = new JSONObject();
-            usersPrompt.put("role", "user");
-            usersPrompt.put("content", prompt);
-            messagesArray.put(usersPrompt);
+        try {        
+        	JSONObject payload = PayloadUtils.buildChatAnswerPromptPayload(configuration, prompt);
 
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
-            JSONObject payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
             String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
 
             LOGGER.debug("Chat answer prompt result {}", response);
@@ -115,11 +112,10 @@ public class InferenceOperations {
             @Content String instructions,
             @Content(primary = true) String data) throws ModuleException {
         try {
-            JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
-                    configuration, template + " - " + instructions, data);
+        	        	
+        	JSONObject payload = PayloadUtils.buildPromptTemplatePayload(configuration, template, instructions, data);
 
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
-            JSONObject payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
             String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
 
             LOGGER.debug("Agent define prompt template result {}", response);
@@ -151,13 +147,12 @@ public class InferenceOperations {
             @Content String instructions,
             @Content(primary = true) String data,
             @Content @Summary("JSON Array defining the tools set to be used in the template so that the LLM can use them if required") InputStream tools) throws ModuleException {
-        try {
-            JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools);
-            JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
-                    configuration, template + " - " + instructions, data);
-
+        
+    	try {
+        	        	
+        	JSONObject payload = PayloadUtils.buildToolsTemplatePayload(configuration, template, instructions, data, tools);
+        	
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
-            JSONObject payload = PayloadUtils.buildPayload(configuration, messagesArray, toolsArray);
             String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
 
             LOGGER.debug("Tools use native template result {}", response);
