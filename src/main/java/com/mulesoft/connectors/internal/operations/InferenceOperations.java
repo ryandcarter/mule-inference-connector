@@ -79,25 +79,9 @@ public class InferenceOperations {
     public Result<InputStream, LLMResponseAttributes> chatAnswerPrompt(
             @Config InferenceConfiguration configuration,
             @Content String prompt) throws ModuleException {
-        try {
-        	
-        	JSONObject payload;
+        try {        
+        	JSONObject payload = PayloadUtils.buildChatAnswerPromptPayload(configuration, prompt);
 
-        	
-        	if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
-            	JSONArray safetySettings = new JSONArray(); // Empty array
-            	JSONObject systemInstruction = new JSONObject(); // Empty object
-            	JSONArray tools = new JSONArray(); // Empty array
-        		payload = PayloadUtils.buildVertexAIPayload(configuration, prompt, safetySettings, systemInstruction, tools);
-        	} else {
-	            JSONArray messagesArray = new JSONArray();
-	            JSONObject usersPrompt = new JSONObject();
-	            usersPrompt.put("role", "user");
-	            usersPrompt.put("content", prompt);
-	            messagesArray.put(usersPrompt);
-	            payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
-        	}
-        	
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
             String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
 
@@ -128,36 +112,8 @@ public class InferenceOperations {
             @Content String instructions,
             @Content(primary = true) String data) throws ModuleException {
         try {
-        	
-        	JSONObject payload;
-
-        	
-        	if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
-            	JSONArray safetySettings = new JSONArray(); // Empty array
-            	
-            	//Create systemInstruction object
-            	//Step 1: Wrap text in a part object
-                JSONObject part = new JSONObject();
-                part.put("text", template + " - " + instructions);
-
-                //Step 2: Create parts array
-                JSONArray parts = new JSONArray();
-                parts.put(part);
-
-                //Step 3: Create systemInstruction object
-                JSONObject systemInstruction = new JSONObject();
-                systemInstruction.put("parts", parts);
-            	
-            	JSONArray tools = new JSONArray(); // Empty array
-        		payload = PayloadUtils.buildVertexAIPayload(configuration, data, safetySettings, systemInstruction, tools);
-        	} else {
-                JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
-                        configuration, template + " - " + instructions, data);
-
-                payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
-
-        	}
-        	
+        	        	
+        	JSONObject payload = PayloadUtils.buildPromptTemplatePayload(configuration, template, instructions, data);
 
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
             String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
@@ -191,38 +147,10 @@ public class InferenceOperations {
             @Content String instructions,
             @Content(primary = true) String data,
             @Content @Summary("JSON Array defining the tools set to be used in the template so that the LLM can use them if required") InputStream tools) throws ModuleException {
-        try {
-        	
-        	
-        	JSONObject payload;
-
-        	
-        	if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
-            	JSONArray safetySettings = new JSONArray(); // Empty array
-            	
-            	//Create systemInstruction object
-            	//Step 1: Wrap text in a part object
-                JSONObject part = new JSONObject();
-                part.put("text", template + " - " + instructions);
-
-                //Step 2: Create parts array
-                JSONArray parts = new JSONArray();
-                parts.put(part);
-
-                //Step 3: Create systemInstruction object
-                JSONObject systemInstruction = new JSONObject();
-                systemInstruction.put("parts", parts);
-            	
-            	JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools); 
-        		payload = PayloadUtils.buildVertexAIPayload(configuration, data, safetySettings, systemInstruction, toolsArray);
-        	} else {
-        	
-        	
-        		JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools);
-        		JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
-        				configuration, template + " - " + instructions, data);
-        		payload = PayloadUtils.buildPayload(configuration, messagesArray, toolsArray);
-            }
+        
+    	try {
+        	        	
+        	JSONObject payload = PayloadUtils.buildToolsTemplatePayload(configuration, template, instructions, data, tools);
         	
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
             String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());

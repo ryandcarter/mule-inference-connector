@@ -33,6 +33,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 
 ## Supported Moderation Providers
 - [OpenAI](https://openai.com/)
+- [Mistral AI](https://docs.mistral.ai/capabilities/guardrailing/)
 
 ### Requirements
 
