@@ -13,6 +13,7 @@ import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
 import org.mule.runtime.extension.api.annotation.param.Config;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
@@ -44,7 +45,9 @@ public class InferenceOperations {
      */
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Chat-completions")
+    @DisplayName("[Chat] Completions")
     @OutputJsonType(schema = "api/response/Response.json")
+    @Summary("Native chat completion operation")
     public Result<InputStream, LLMResponseAttributes> chatCompletion(
             @Config InferenceConfiguration configuration,
             @Content InputStream messages) throws ModuleException {
@@ -75,7 +78,9 @@ public class InferenceOperations {
      */
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Chat-answer-prompt")
+    @DisplayName("[Chat] Answer Prompt")
     @OutputJsonType(schema = "api/response/Response.json")
+    @Summary("Simple chat answer prompt")
     public Result<InputStream, LLMResponseAttributes> chatAnswerPrompt(
             @Config InferenceConfiguration configuration,
             @Content String prompt) throws ModuleException {
@@ -105,7 +110,9 @@ public class InferenceOperations {
      */
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Agent-define-prompt-template")
+    @DisplayName("[Agent] Define Prompt Template")
     @OutputJsonType(schema = "api/response/Response.json")
+    @Summary("Define a prompt template with instructions, and data ")
     public Result<InputStream, LLMResponseAttributes> promptTemplate(
             @Config InferenceConfiguration configuration,
             @Content String template,
@@ -139,6 +146,7 @@ public class InferenceOperations {
      */
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Tools-native-template")
+    @DisplayName("[Tools] Native Template (Reasoning only)")
     @OutputJsonType(schema = "api/response/Response.json")
     @Summary("Define a prompt template with instructions, data and tools")
     public Result<InputStream, LLMResponseAttributes> toolsTemplate(
