@@ -30,6 +30,7 @@ public enum ModelType {
       OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
       PORTKEY("PORTKEY", getPortkeyModelNameStream()),
       HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
+      GITHUB("GITHUB", getGithubModelNameStream()),
       ;
 
   private final String value;
@@ -369,13 +370,11 @@ public enum ModelType {
   }
 
   enum GithubModelName {
-    GPT_4O("gpt-4o"),
-    PHI_3_5_MOE_INSTRUCT("Phi-3.5-MoE-instruct"),
-    MISTRAL_LARGE("Mistral-large"),
-    MISTRAL_SMALL("Mistral-small"),
-    GPT_4_TURBO("gpt-4-turbo"),
-    AI21_JAMBA_1_5_LARGE("AI21-Jamba-1.5-Large"),
-    COHERE_COMMAND_R("Cohere-command-r");
+    Phi_3_5_vision_instruct("Phi-3.5-vision-instruct"),
+    gpt_4o_mini("gpt-4o-mini"),
+    Llama_3_2_11B_Vision_Instruct("Llama-3.2-11B-Vision-Instruct"),
+    mistral_small_2503("mistral-small-2503"),
+    ;
     
     private final String value;
 
