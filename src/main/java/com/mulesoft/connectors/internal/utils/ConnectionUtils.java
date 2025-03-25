@@ -152,6 +152,11 @@ public class ConnectionUtils {
                     .replace("{resource-name}", configuration.getAzureAIFoundryResourceName())
                     .replace("{api-version}", configuration.getAzureAIFoundryApiVersion());
                 return new URL(aifurlStr);
+            case "GPT4ALL":
+                return new URL(configuration.getGpt4All() + InferenceConstants.CHAT_COMPLETIONS);
+            case "LMSTUDIO":
+                return new URL(configuration.getLmStudio() + InferenceConstants.CHAT_COMPLETIONS);
+
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
         }

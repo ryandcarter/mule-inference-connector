@@ -22,12 +22,13 @@ public class InferenceConstants {
   public static final String OPEN_AI_URL = "https://api.openai.com/v1";
   public static final String MISTRAL_AI_URL = "https://api.mistral.ai/v1";
   public static final String ANTHROPIC_URL = "https://api.anthropic.com/v1";
-
   public static final String AI21LABS_URL = "https://api.ai21.com/studio/v1";
   public static final String COHERE_URL = "https://api.cohere.com/v2";
   public static final String AZURE_OPENAI_URL = "https://{resource-name}.openai.azure.com/openai/deployments/{deployment-id}";
   public static final String VERTEX_AI_EXPRESS_URL = "https://aiplatform.googleapis.com/v1/publishers/google/models/{MODEL_ID}:";
   public static final String AZURE_AI_FOUNDRY_URL = "https://{resource-name}.services.ai.azure.com/models";
+  public static final String GPT4ALL_URL = "http://localhost:4891/v1";
+  public static final String LMSTUDIO_URL = "http://localhost:1234/v1";
 
   // Resources
   public static final String CHAT_COMPLETIONS = "/chat/completions";

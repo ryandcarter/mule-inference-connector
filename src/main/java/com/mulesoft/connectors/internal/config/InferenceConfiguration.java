@@ -1,5 +1,6 @@
 package com.mulesoft.connectors.internal.config;
 
+import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Configuration;
 import org.mule.runtime.extension.api.annotation.Expression;
@@ -100,6 +101,28 @@ public class InferenceConfiguration {
 	}
 
 	@Parameter
+	@Placement(order = 1, tab = "GPT4ALL Parameters")
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional(defaultValue = InferenceConstants.GPT4ALL_URL)
+	@DisplayName("GPT4ALL Base URL")
+	private String gpt4All;
+
+	public String getGpt4All() {
+		return gpt4All;
+	}
+
+	@Parameter
+	@Placement(order = 1, tab = "LM Studio Parameters")
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional(defaultValue = InferenceConstants.LMSTUDIO_URL)
+	@DisplayName("LM Studio Base URL")
+	private String lmStudio;
+
+	public String getLmStudio() {
+		return lmStudio;
+	}
+
+	@Parameter
 	@Placement(order = 1, tab = "Xinference Parameters")
 	@Expression(ExpressionSupport.SUPPORTED)
 	@Optional(defaultValue = "http://127.0.0.1:9997/v1 or https://inference.top/api/v1")
@@ -123,8 +146,8 @@ public class InferenceConfiguration {
     
 	@Parameter
 	@Expression(ExpressionSupport.SUPPORTED)
-		@Placement(order = 2, tab = "Azure OpenAI Parameters")
-		@Optional
+	@Placement(order = 2, tab = "Azure OpenAI Parameters")
+	@Optional
 	@DisplayName("Resource Name")
 	private String azureOpenaiResourceName;
 
@@ -145,8 +168,8 @@ public class InferenceConfiguration {
     
 	@Parameter
 	@Expression(ExpressionSupport.SUPPORTED)
-		@Placement(order = 2, tab = "Azure AI Foundry Parameters")
-		@Optional
+	@Placement(order = 2, tab = "Azure AI Foundry Parameters")
+	@Optional
 	@DisplayName("Resource Name")
 	private String azureAIFoundryResourceName;
 
