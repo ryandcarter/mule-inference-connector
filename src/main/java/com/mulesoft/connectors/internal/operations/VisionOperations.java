@@ -60,10 +60,13 @@ public class VisionOperations {
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(inferenceConfig);
 
             LOGGER.debug("Chatting with {}", chatCompUrl);
+            System.out.println(chatCompUrl);
 
             JSONObject payload = PayloadUtils.buildPayload(inferenceConfig, messagesArray, null);
+            System.out.println(payload);
 
             String response = ConnectionUtils.executeREST(chatCompUrl, inferenceConfig, payload.toString());
+            System.out.println(response);
 
             LOGGER.debug("Read Image result {}", response);
             return ResponseUtils.processLLMResponse(response, inferenceConfig);

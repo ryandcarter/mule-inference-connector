@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 public enum ModelType {
-      /*HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
+      /*
       GITHUB("GITHUB", getGithubModelNameStream()),
       XINFERENCE("XINFERENCE", getXinferenceModelNameStream()),
       NVIDIA("NVIDIA", getNVidiaModelNameStream()),
@@ -29,6 +29,7 @@ public enum ModelType {
       GROQ("GROQ", getGroqModelNameStream()),
       OPENROUTER("OPENROUTER", getOpenRouterModelNameStream()),
       PORTKEY("PORTKEY", getPortkeyModelNameStream()),
+      HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
       ;
 
   private final String value;
@@ -334,10 +335,11 @@ public enum ModelType {
   }
 
   enum HuggingFaceModelName {
-    TII_UAE_FALCON_7B_INSTRUCT("tiiuae/falcon-7b-instruct"), 
-    PHI3("microsoft/Phi-3.5-mini-instruct"), 
-    MISTRAL_7B_INSTRUCT_V03("mistralai/Mistral-7B-Instruct-v0.3"), 
-    TINY_LLAMA("TinyLlama/TinyLlama-1.1B-Chat-v1.0");
+    Qwen_Qwen2_5_VL_7B_Instruct("Qwen/Qwen2.5-VL-7B-Instruct"),
+    Qwen_Qwen2_VL_7B_Instruct("Qwen/Qwen2-VL-7B-Instruct"),
+    google_gemma_3_27b_it("google/gemma-3-27b-it"),
+    meta_llama_Llama_3_2_11B_Vision_Instruct("meta-llama/Llama-3.2-11B-Vision-Instruct"),
+    ;
 
     private final String value;
 
