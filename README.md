@@ -45,7 +45,8 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [OpenRouter](https://openrouter.ai/)
 - [Groq AI](https://console.groq.com/)
 - [Portkey](https://portkey.ai/)
-
+- [Hugging Face](https://huggingface.co/)
+- [GitHub Models](https://docs.github.com/en/github-models)
 
 ### Requirements
 

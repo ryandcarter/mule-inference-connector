@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 public enum ModelType {
       /*
-      GITHUB("GITHUB", getGithubModelNameStream()),
       XINFERENCE("XINFERENCE", getXinferenceModelNameStream()),
       NVIDIA("NVIDIA", getNVidiaModelNameStream()),
       FIREWORKS("FIREWORKS", getFireworksModelNameStream()),
