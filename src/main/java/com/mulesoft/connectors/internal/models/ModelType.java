@@ -30,7 +30,8 @@ public enum ModelType {
       COHERE("COHERE", getCohereModelNameStream()),
       XAI("XAI", getXAIModelNameStream()),
       AZURE_OPENAI("AZURE_OPENAI", getAzureOpenAIModelNameStream()),
-      VERTEX_AI_EXPRESS("VERTEX_AI_EXPRESS", getVertexAIExpressModelNameStream());
+      VERTEX_AI_EXPRESS("VERTEX_AI_EXPRESS", getVertexAIExpressModelNameStream()),
+      AZURE_AI_FOUNDRY("AZURE_AI_FOUNDRY", getAzureAIFoundryModelNameStream());
 
 
   private final String value;
@@ -138,6 +139,10 @@ public enum ModelType {
   private static Stream<String> getVertexAIExpressModelNameStream() {
 	    return Arrays.stream(VertexAIExpressModelName.values()).map(String::valueOf);
   }
+
+  private static Stream<String> getAzureAIFoundryModelNameStream() {
+    return Arrays.stream(AzureAIFoundryModelName.values()).map(String::valueOf);
+  }
   
 
   public static ModelType fromValue(String value) {
@@ -194,6 +199,23 @@ public enum ModelType {
     private final String value;
 
     CohereModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum AzureAIFoundryModelName {
+
+    DeepSeek_V3("DeepSeek-V3"),
+    gpt_4o_mini("gpt-4o-mini");
+
+    private final String value;
+
+    AzureAIFoundryModelName(String value) {
       this.value = value;
     }
 
