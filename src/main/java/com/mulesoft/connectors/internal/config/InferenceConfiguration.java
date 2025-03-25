@@ -121,16 +121,38 @@ public class InferenceConfiguration {
 		return azureOpenaiDeploymentId;
 	}
     
-  @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
-	@Placement(order = 2, tab = "Azure OpenAI Parameters")
-	@Optional
-  @DisplayName("Resource Name")
-  private String azureOpenaiResourceName;
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+		@Placement(order = 2, tab = "Azure OpenAI Parameters")
+		@Optional
+	@DisplayName("Resource Name")
+	private String azureOpenaiResourceName;
 
-  public String getAzureOpenaiResourceName() {
-     return azureOpenaiResourceName;
-  }
+	public String getAzureOpenaiResourceName() {
+		return azureOpenaiResourceName;
+	}
+
+	@Parameter  
+	@Placement(order = 1, tab = "Azure AI Foundry Parameters")
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional
+	@DisplayName("API Version")
+	private String azureAIFoundryApiVersion;
+
+	public String getAzureAIFoundryApiVersion() {
+		return azureAIFoundryApiVersion;
+	}
+    
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+		@Placement(order = 2, tab = "Azure AI Foundry Parameters")
+		@Optional
+	@DisplayName("Resource Name")
+	private String azureAIFoundryResourceName;
+
+	public String getAzureAIFoundryResourceName() {
+		return azureAIFoundryResourceName;
+	}
 }
 
 

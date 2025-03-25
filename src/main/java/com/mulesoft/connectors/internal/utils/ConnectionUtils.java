@@ -78,6 +78,9 @@ public class ConnectionUtils {
             case "VERTEX_AI_EXPRESS":
                 //do nothing for Vertex AI
                 break;
+                case "AZURE_AI_FOUNDRY":
+                    conn.setRequestProperty("api-key", configuration.getApiKey());
+                    break;
             default:
                 conn.setRequestProperty("Authorization", "Bearer " + configuration.getApiKey());
                 break;
@@ -143,6 +146,12 @@ public class ConnectionUtils {
                 vertexAIUrlStr = vertexAIUrlStr
                     .replace("{MODEL_ID}", configuration.getModelName());
                 return new URL(vertexAIUrlStr);
+            case "AZURE_AI_FOUNDRY":
+                String aifurlStr = InferenceConstants.AZURE_AI_FOUNDRY_URL + InferenceConstants.CHAT_COMPLETIONS_AZURE_AI_FOUNDRY;
+                aifurlStr = aifurlStr
+                    .replace("{resource-name}", configuration.getAzureAIFoundryResourceName())
+                    .replace("{api-version}", configuration.getAzureAIFoundryApiVersion());
+                return new URL(aifurlStr);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
         }

@@ -31,6 +31,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Xinference](https://inference.readthedocs.io/)
 - [Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
 - [Google Vertex AI](https://cloud.google.com/vertex-ai?hl=en)
+- [Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/)
 
 ## Supported Moderation Providers
 - [OpenAI](https://openai.com/)
