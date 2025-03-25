@@ -31,7 +31,10 @@ public enum ModelType {
       XAI("XAI", getXAIModelNameStream()),
       AZURE_OPENAI("AZURE_OPENAI", getAzureOpenAIModelNameStream()),
       VERTEX_AI_EXPRESS("VERTEX_AI_EXPRESS", getVertexAIExpressModelNameStream()),
-      AZURE_AI_FOUNDRY("AZURE_AI_FOUNDRY", getAzureAIFoundryModelNameStream());
+      AZURE_AI_FOUNDRY("AZURE_AI_FOUNDRY", getAzureAIFoundryModelNameStream()),
+      GPT4ALL("GPT4ALL", getGPT4ALLModelNameStream()),
+      LMSTUDIO("LMSTUDIO", getLMSTUDIOModelNameStream()),
+  ;
 
 
   private final String value;
@@ -143,7 +146,15 @@ public enum ModelType {
   private static Stream<String> getAzureAIFoundryModelNameStream() {
     return Arrays.stream(AzureAIFoundryModelName.values()).map(String::valueOf);
   }
-  
+
+  private static Stream<String> getGPT4ALLModelNameStream() {
+    return Arrays.stream(GPT4ALLModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getLMSTUDIOModelNameStream() {
+    return Arrays.stream(LMSTUDIOModelName.values()).map(String::valueOf);
+  }
+
 
   public static ModelType fromValue(String value) {
     return Arrays.stream(ModelType.values())
@@ -570,7 +581,42 @@ public enum ModelType {
       return this.value;
     }
   }
-  
+
+  enum GPT4ALLModelName {
+    //The Model is not specified in the Azure OpenAI API but rather as part of the deployment configuration. In an ideal world we wouldn't need to specify a mdoel when using Azur OpenAI.
+    MISTRAL_SMALL_2402("mistral-small-2402"),
+    Qwen2_1_5B_Instruct("Qwen2-1.5B-Instruct"),
+    ;
+
+    private final String value;
+
+    GPT4ALLModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum LMSTUDIOModelName {
+    //The Model is not specified in the Azure OpenAI API but rather as part of the deployment configuration. In an ideal world we wouldn't need to specify a mdoel when using Azur OpenAI.
+    granite_3_0_2b_instruct("granite-3.0-2b-instruct"),
+    mistral_nemo("mistral-nemo"),
+    ;
+
+    private final String value;
+
+    LMSTUDIOModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
   enum VertexAIExpressModelName {
 	    GEMINI_20_FLASH_001("gemini-2.0-flash-001"), 
 	    GEMINI_20_FLASH_LITE_001("gemini-2.0-flash-lite-001"),
