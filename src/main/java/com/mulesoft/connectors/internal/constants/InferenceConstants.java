@@ -29,6 +29,7 @@ public class InferenceConstants {
   public static final String AZURE_AI_FOUNDRY_URL = "https://{resource-name}.services.ai.azure.com/models";
   public static final String GPT4ALL_URL = "http://localhost:4891/v1";
   public static final String LMSTUDIO_URL = "http://localhost:1234/v1";
+  public static final String DOCKER_MODEL_URL = "http://localhost:12434";
 
   // Resources
   public static final String CHAT_COMPLETIONS = "/chat/completions";

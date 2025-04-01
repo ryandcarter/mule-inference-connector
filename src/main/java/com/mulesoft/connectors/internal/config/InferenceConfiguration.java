@@ -133,6 +133,18 @@ public class InferenceConfiguration {
 		return xnferenceUrl;
 	}
 
+
+	@Parameter
+	@Placement(order = 1, tab = "Docker Models Parameters")
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional(defaultValue = InferenceConstants.DOCKER_MODEL_URL)
+	@DisplayName("Docker Models URL")
+	private String dockerModelUrl;
+
+	public String getDockerModelUrl() {
+		return dockerModelUrl;
+	}
+
 	@Parameter  
 	@Placement(order = 1, tab = "Azure OpenAI Parameters")
 	@Expression(ExpressionSupport.SUPPORTED)
