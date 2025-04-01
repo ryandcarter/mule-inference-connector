@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -205,7 +206,11 @@ public class PayloadUtils {
         JSONObject imageContent = new JSONObject();
         imageContent.put("type", "image_url");
         JSONObject imageMessage = new JSONObject();
-        imageMessage.put("url", imageUrl);
+        if (isBase64String(imageUrl)) {
+            imageContent.put("image_url", "data:image/jpeg;base64," + imageUrl);
+        } else{
+            imageMessage.put("url", imageUrl);
+        }
         imageContent.put("image_url", imageMessage);
         contentArray.put(imageContent);
 
@@ -364,5 +369,17 @@ public class PayloadUtils {
     
     		return payload;
     }
-    
+
+    public static boolean isBase64String(String str) {
+        if (str == null || str.length() % 4 != 0 || !str.matches("^[A-Za-z0-9+/]*={0,2}$")) {
+            return false;
+        }
+        try {
+            Base64.getDecoder().decode(str);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
 } //end of class
