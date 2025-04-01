@@ -247,8 +247,6 @@ public class PayloadUtils {
             imageSource.put("url", imageUrl);
         }
 
-        imageSource.put("type", "url");
-        imageSource.put("url", imageUrl);
         imageContent.put("source", imageSource);
         contentArray.put(imageContent);
 
