@@ -60,6 +60,7 @@ public class VisionOperations {
             InferenceConfiguration inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
 
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(inferenceConfig);
+
             LOGGER.debug("Chatting with {}", chatCompUrl);
 
             JSONObject payload = PayloadUtils.buildPayload(inferenceConfig, messagesArray, null);
