@@ -207,7 +207,7 @@ public class PayloadUtils {
         imageContent.put("type", "image_url");
         JSONObject imageMessage = new JSONObject();
         if (isBase64String(imageUrl)) {
-            imageContent.put("image_url", "data:image/jpeg;base64," + imageUrl);
+            imageMessage.put("url", "data:image/jpeg;base64," + imageUrl);
         } else{
             imageMessage.put("url", imageUrl);
         }
@@ -238,6 +238,15 @@ public class PayloadUtils {
         JSONObject imageContent = new JSONObject();
         imageContent.put("type", "image");
         JSONObject imageSource = new JSONObject();
+        if (isBase64String(imageUrl)) {
+            imageSource.put("type", "base64");
+            imageSource.put("media_type", "image/jpeg");
+            imageSource.put("data", imageUrl);
+        } else{
+            imageSource.put("type", "url");
+            imageSource.put("url", imageUrl);
+        }
+
         imageSource.put("type", "url");
         imageSource.put("url", imageUrl);
         imageContent.put("source", imageSource);

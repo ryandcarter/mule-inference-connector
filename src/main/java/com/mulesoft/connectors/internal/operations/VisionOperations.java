@@ -47,12 +47,12 @@ public class VisionOperations {
      */
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Read-image")
-    @DisplayName("[Image] Read by URL")
+    @DisplayName("[Image] Read by (Url or Base64)")
     @OutputJsonType(schema = "api/response/Response.json")
     public Result<InputStream, LLMResponseAttributes> readImage(
             @Config VisionConfiguration configuration,
             @Content String prompt,
-            @Content(primary = true) String imageUrl) throws ModuleException {
+            @Content(primary = true) @DisplayName("Image") @Summary("An Image URL or a Base64 Image") String imageUrl) throws ModuleException {
         try {
 
             JSONArray messagesArray = createRequestImageURL(configuration.getInferenceType(), prompt, imageUrl);
@@ -60,7 +60,6 @@ public class VisionOperations {
             InferenceConfiguration inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
 
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(inferenceConfig);
-
             LOGGER.debug("Chatting with {}", chatCompUrl);
 
             JSONObject payload = PayloadUtils.buildPayload(inferenceConfig, messagesArray, null);
