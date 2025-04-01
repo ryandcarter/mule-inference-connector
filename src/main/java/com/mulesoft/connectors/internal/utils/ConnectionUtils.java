@@ -156,6 +156,8 @@ public class ConnectionUtils {
                 return new URL(configuration.getGpt4All() + InferenceConstants.CHAT_COMPLETIONS);
             case "LMSTUDIO":
                 return new URL(configuration.getLmStudio() + InferenceConstants.CHAT_COMPLETIONS);
+            case "DOCKER_MODELS":
+                return new URL(configuration.getDockerModelUrl() + "/engines/llama.cpp/v1" + InferenceConstants.CHAT_COMPLETIONS);
 
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
@@ -178,8 +180,7 @@ public class ConnectionUtils {
 
         /**
      * Execute a REST API call
-     * @param resourceUrl the URL to call
-     * @param configuration the connector configuration
+     * @param conn the URL to call
      * @param payload the payload to send
      * @return the response string
      * @throws IOException if an error occurs during the API call
