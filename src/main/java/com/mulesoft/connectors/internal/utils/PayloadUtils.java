@@ -4,10 +4,8 @@ import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
@@ -67,7 +65,6 @@ public class PayloadUtils {
      * Build the payload for the Vertex AI API request
      * @param configuration the connector configuration
      * @param prompt the prompt
-     * @param toolsArray the tools array (can be null)
      * @return the payload as a JSON object
      */
     public static JSONObject buildVertexAIPayload(InferenceConfiguration configuration, String prompt, 
@@ -177,7 +174,7 @@ public class PayloadUtils {
     }
 
 
-    public static JSONArray createRequestImageURL(String provider, String prompt, String imageUrl) {
+    public static JSONArray createRequestImageURL(String provider, String prompt, String imageUrl) throws IOException {
 
         if (provider.equalsIgnoreCase("ANTHROPIC")) {
             return createAnthropicImageURLRequest(prompt, imageUrl);
@@ -192,7 +189,7 @@ public class PayloadUtils {
      * @param imageUrl of the image
      * @return JSONArray containing the messages
      */
-    private static JSONArray createImageURLRequest(String prompt, String imageUrl) {
+    private static JSONArray createImageURLRequest(String prompt, String imageUrl) throws IOException {
         JSONArray messagesArray = new JSONArray();
         JSONObject userMessage = new JSONObject();
         userMessage.put("role", "user");
@@ -207,7 +204,7 @@ public class PayloadUtils {
         imageContent.put("type", "image_url");
         JSONObject imageMessage = new JSONObject();
         if (isBase64String(imageUrl)) {
-            imageMessage.put("url", "data:image/jpeg;base64," + imageUrl);
+            imageMessage.put("url", "data:" + getMimeType(imageUrl) + ";base64," + imageUrl);
         } else{
             imageMessage.put("url", imageUrl);
         }
@@ -228,7 +225,7 @@ public class PayloadUtils {
      * @param imageUrl of the image
      * @return JSONArray containing the messages
      */
-    private static JSONArray createAnthropicImageURLRequest(String prompt, String imageUrl) {
+    private static JSONArray createAnthropicImageURLRequest(String prompt, String imageUrl) throws IOException {
         JSONArray messagesArray = new JSONArray();
         JSONObject userMessage = new JSONObject();
         userMessage.put("role", "user");
@@ -240,7 +237,7 @@ public class PayloadUtils {
         JSONObject imageSource = new JSONObject();
         if (isBase64String(imageUrl)) {
             imageSource.put("type", "base64");
-            imageSource.put("media_type", "image/jpeg");
+            imageSource.put("media_type", getMimeType(imageUrl));
             imageSource.put("data", imageUrl);
         } else{
             imageSource.put("type", "url");
@@ -389,4 +386,12 @@ public class PayloadUtils {
         }
     }
 
-} //end of class
+    public static String getMimeType(String base64String) throws IOException {
+        byte[] decodedBytes = Base64.getDecoder().decode(base64String);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(decodedBytes);
+        String mimeType = URLConnection.guessContentTypeFromStream(inputStream);
+        return mimeType != null ? mimeType : "image/jpeg";
+    }
+
+}
+
