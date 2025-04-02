@@ -30,7 +30,9 @@ public enum ModelType {
       PORTKEY("PORTKEY", getPortkeyModelNameStream()),
       HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
       GITHUB("GITHUB", getGithubModelNameStream()),
-      ;
+      OLLAMA("OLLAMA", getOllamaModelNameStream()),
+
+  ;
 
   private final String value;
   private final Stream<String> modelNameStream;

@@ -178,6 +178,9 @@ public class PayloadUtils {
 
         if (provider.equalsIgnoreCase("ANTHROPIC")) {
             return createAnthropicImageURLRequest(prompt, imageUrl);
+        } else if (provider.equalsIgnoreCase("OLLAMA")) {
+            return createOllamaImageURLRequest(prompt, imageUrl);
+
         } else {
             return createImageURLRequest(prompt, imageUrl);
         }
@@ -214,6 +217,42 @@ public class PayloadUtils {
         userMessage.put("content", contentArray);
         messagesArray.put(userMessage);
 
+
+        return messagesArray;
+    }
+
+    /**
+     * Creates a messages array with system prompt and user message
+     * @param prompt of the user
+     * @param imageUrl of the image
+     * @return JSONArray containing the messages
+     */
+    private static JSONArray createOllamaImageURLRequest(String prompt, String imageUrl) throws IOException {
+        // Create messages array
+        JSONArray messagesArray = new JSONArray();
+
+        // Create user message object
+        JSONObject userMessage = new JSONObject();
+        userMessage.put("role", "user");
+        userMessage.put("content", prompt);
+
+        // Create images array
+        JSONArray imagesArray = new JSONArray();
+
+        // Add the image (either base64 or URL)
+        if (isBase64String(imageUrl)) {
+            // For base64 images, no need to add data: prefix as it's handled directly
+            imagesArray.put(imageUrl);
+        } else {
+            // For URL images
+            imagesArray.put(imageUrl);
+        }
+
+        // Add images array to user message
+        userMessage.put("images", imagesArray);
+
+        // Add the message to the array
+        messagesArray.put(userMessage);
 
         return messagesArray;
     }
