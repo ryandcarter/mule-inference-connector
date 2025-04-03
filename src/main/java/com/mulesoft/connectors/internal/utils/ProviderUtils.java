@@ -2,6 +2,7 @@ package com.mulesoft.connectors.internal.utils;
 
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.config.VisionConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Utility class for provider-specific operations.
@@ -52,55 +53,21 @@ public class ProviderUtils {
     public static boolean isVertexAIExpress(InferenceConfiguration configuration) {
         return "VERTEX_AI_EXPRESS".equals(configuration.getInferenceType());
     }
-
-    // Add this utility method to your class or to a utility class
-    public static InferenceConfiguration convertToInferenceConfig(VisionConfiguration visionConfig) {
-        // Create a new instance of InferenceConfiguration
+    
+    public static @NotNull InferenceConfiguration convertToInferenceConfig(VisionConfiguration visionConfig) {
         InferenceConfiguration inferenceConfig = new InferenceConfiguration();
 
-        try {
-            // Use reflection to set fields since the class might not have setters
-            java.lang.reflect.Field inferenceTypeField = InferenceConfiguration.class.getDeclaredField("inferenceType");
-            inferenceTypeField.setAccessible(true);
-            inferenceTypeField.set(inferenceConfig, visionConfig.getInferenceType());
-
-            java.lang.reflect.Field apiKeyField = InferenceConfiguration.class.getDeclaredField("apiKey");
-            apiKeyField.setAccessible(true);
-            apiKeyField.set(inferenceConfig, visionConfig.getApiKey());
-
-            java.lang.reflect.Field modelNameField = InferenceConfiguration.class.getDeclaredField("modelName");
-            modelNameField.setAccessible(true);
-            modelNameField.set(inferenceConfig, visionConfig.getModelName());
-
-            java.lang.reflect.Field maxTokensField = InferenceConfiguration.class.getDeclaredField("maxTokens");
-            maxTokensField.setAccessible(true);
-            maxTokensField.set(inferenceConfig, visionConfig.getMaxTokens());
-
-            java.lang.reflect.Field temperatureField = InferenceConfiguration.class.getDeclaredField("temperature");
-            temperatureField.setAccessible(true);
-            temperatureField.set(inferenceConfig, visionConfig.getTemperature());
-
-            java.lang.reflect.Field topPField = InferenceConfiguration.class.getDeclaredField("topP");
-            topPField.setAccessible(true);
-            topPField.set(inferenceConfig, visionConfig.getTemperature());
-
-            java.lang.reflect.Field timeout = InferenceConfiguration.class.getDeclaredField("timeout");
-            timeout.setAccessible(true);
-            timeout.set(inferenceConfig, visionConfig.getTimeout());
-
-
-            java.lang.reflect.Field ollamaURLField = InferenceConfiguration.class.getDeclaredField("ollamaUrl");
-            ollamaURLField.setAccessible(true);
-            ollamaURLField.set(inferenceConfig, visionConfig.getOllamaUrl());
-
-            java.lang.reflect.Field virtualKeyField = InferenceConfiguration.class.getDeclaredField("virtualKey");
-            virtualKeyField.setAccessible(true);
-            virtualKeyField.set(inferenceConfig, visionConfig.getVirtualKey());
-
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException("Error converting VisionConfiguration to InferenceConfiguration", e);
-        }
+        inferenceConfig.setInferenceType(visionConfig.getInferenceType());
+        inferenceConfig.setApiKey(visionConfig.getApiKey());
+        inferenceConfig.setModelName(visionConfig.getModelName());
+        inferenceConfig.setMaxTokens(visionConfig.getMaxTokens());
+        inferenceConfig.setTemperature(visionConfig.getTemperature());
+        inferenceConfig.setTopP(visionConfig.getTopP());
+        inferenceConfig.setTimeout(visionConfig.getTimeout());
+        inferenceConfig.setOllamaUrl(visionConfig.getOllamaUrl());
+        inferenceConfig.setVirtualKey(visionConfig.getVirtualKey());
 
         return inferenceConfig;
     }
+
 } 
