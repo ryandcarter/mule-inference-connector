@@ -63,6 +63,10 @@ public class ConnectionUtils {
         conn.setRequestProperty("User-Agent", "Mozilla/5.0");
         conn.setRequestProperty("Accept", "application/json");
 
+        // Set appropriate timeouts
+        conn.setConnectTimeout(30000);  // 30 seconds
+        conn.setReadTimeout(Integer.parseInt(configuration.getTimeout()));    // 2 minutes
+
         switch (configuration.getInferenceType()) {
             case "ANTHROPIC":
                 conn.setRequestProperty("x-api-key", configuration.getApiKey());
@@ -186,10 +190,6 @@ public class ConnectionUtils {
      * @throws IOException if an error occurs during the API call
      */
     public static String executeREST(HttpURLConnection conn, String payload) throws IOException {
-        
-        // Set appropriate timeouts
-        conn.setConnectTimeout(30000);  // 30 seconds
-        conn.setReadTimeout(120000);    // 2 minutes
 
         // Send the payload
         try (OutputStream os = conn.getOutputStream()) {

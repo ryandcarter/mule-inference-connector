@@ -84,6 +84,11 @@ public class ProviderUtils {
             topPField.setAccessible(true);
             topPField.set(inferenceConfig, visionConfig.getTemperature());
 
+            java.lang.reflect.Field timeout = InferenceConfiguration.class.getDeclaredField("timeout");
+            timeout.setAccessible(true);
+            timeout.set(inferenceConfig, visionConfig.getTimeout());
+
+
             java.lang.reflect.Field ollamaURLField = InferenceConfiguration.class.getDeclaredField("ollamaUrl");
             ollamaURLField.setAccessible(true);
             ollamaURLField.set(inferenceConfig, visionConfig.getOllamaUrl());

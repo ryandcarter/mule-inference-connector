@@ -77,10 +77,21 @@ public class InferenceConfiguration {
 		return topP;
 	}
 
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@DisplayName("Timeout (milliseconds)")
+	@Optional(defaultValue = "60000")
+	private String timeout;
+
+	public String getTimeout() {
+		return timeout;
+	}
+
+
 
 	@Parameter
 	@Placement(order = 1, tab = "Portkey Parameters")
-	@Optional(defaultValue = "Valid-for-portkey-only")
+	@Optional(defaultValue = "Portkey-virtual-key")
 	@Expression(ExpressionSupport.SUPPORTED)
 	@DisplayName("Virtual Key")
 	private String virtualKey;
