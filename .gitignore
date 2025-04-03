@@ -45,3 +45,4 @@ generated-test-sources/
 *.sh
 
 
+/bin/

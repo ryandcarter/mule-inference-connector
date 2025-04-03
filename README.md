@@ -48,6 +48,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Portkey](https://portkey.ai/)
 - [Hugging Face](https://huggingface.co/)
 - [GitHub Models](https://docs.github.com/en/github-models)
+- [Google Vertex AI](https://cloud.google.com/vertex-ai?hl=en)
 
 ### Requirements
 
