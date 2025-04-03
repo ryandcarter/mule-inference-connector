@@ -315,4 +315,37 @@ public class ResponseUtils {
 
         return processedToolCalls;
     }
+
+
+    public static Result<InputStream, LLMResponseAttributes> processImageGenResponse(
+            String response, InferenceConfiguration configuration) throws Exception {
+
+        JSONObject root = new JSONObject(response);
+        JSONObject jsonObject = new JSONObject();
+        Map<String, String> responseAttributes = new HashMap<>();
+
+        // Handle OpenAI Image Generation Response
+        if (ProviderUtils.isOpenAI(configuration) && root.has("data")) {
+            JSONArray dataArray = root.getJSONArray("data");
+
+            if (dataArray.length() > 0) {
+                JSONObject firstData = dataArray.getJSONObject(0);
+
+                // Extract `b64_json` and `revised_prompt`
+                String b64Json = firstData.optString("b64_json", null);
+                String revisedPrompt = firstData.optString("revised_prompt", null);
+
+                // Add revised_prompt to attributes
+                if (revisedPrompt != null) {
+                    responseAttributes.put("Prompt_used", revisedPrompt);
+                }
+
+                // Add b64_json as the response
+                jsonObject.put(InferenceConstants.RESPONSE, b64Json);
+            }
+        }
+
+        return ResponseHelper.createLLMResponse(jsonObject.toString(), null, responseAttributes);
+    }
+
 } 
