@@ -74,6 +74,23 @@ public class PayloadUtils {
 		
         return payload;
     }
+
+    /**
+     * Build the payload for the API request
+     * @param configuration the connector configuration
+     * @param requestJson the payload with prompt
+     * @return the payload as a JSON object
+     */
+    public static JSONObject buildPayloadImageGeneration(InferenceConfiguration configuration, JSONObject requestJson) {
+        JSONObject payload = requestJson;
+
+        if ("OPENAI".equalsIgnoreCase(configuration.getInferenceType())) {
+            //add contents to the payload
+            payload.put("model", configuration.getModelName());
+        }
+
+        return payload;
+    }
     
     /**
      * Build the payload for the Vertex AI API request
@@ -522,4 +539,30 @@ public class PayloadUtils {
         
 	    return generationConfig;
     }
+
+
+    public static JSONObject createRequestImageGeneration(String provider, String prompt) throws IOException {
+
+        if (provider.equalsIgnoreCase("OPENAI")) {
+            return createImageGenerationRequestOpenaI(prompt);
+        } else {
+            return createImageGenerationRequestOpenaI(prompt);
+        }
+    }
+
+    /**
+     * Creates a messages array with system prompt and user message
+     * @param prompt of the user
+     * @return JSONArray containing the messages
+     */
+    private static JSONObject createImageGenerationRequestOpenaI(String prompt) throws IOException {
+
+        JSONObject requestPayload = new JSONObject();
+        requestPayload.put("prompt", prompt);
+        requestPayload.put("response_format", "b64_json");
+
+        return requestPayload;
+    }
+
+
 }

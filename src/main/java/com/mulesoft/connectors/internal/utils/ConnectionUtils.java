@@ -64,8 +64,8 @@ public class ConnectionUtils {
         conn.setRequestProperty("Accept", "application/json");
 
         // Set appropriate timeouts
-        conn.setConnectTimeout(30000);  // 30 seconds
-        conn.setReadTimeout(Integer.parseInt(configuration.getTimeout()));    // 2 minutes
+        conn.setConnectTimeout(30000);
+        conn.setReadTimeout(configuration.getTimeout() != null ? Integer.parseInt(configuration.getTimeout()) : 600000);
 
         switch (configuration.getInferenceType()) {
             case "ANTHROPIC":
@@ -168,6 +168,22 @@ public class ConnectionUtils {
         }
     }
 
+
+
+    /**
+     * Get the appropriate URL for chat completion based on the configuration
+     * @param configuration the connector configuration
+     * @return the URL for the chat completion endpoint
+     * @throws MalformedURLException if the URL is invalid
+     */
+    public static URL getConnectionURLImageGeneration(InferenceConfiguration configuration) throws MalformedURLException {
+        switch (configuration.getInferenceType()) {
+            case "OPENAI":
+                return new URL(InferenceConstants.OPEN_AI_URL + InferenceConstants.OPENAI_GENERATE_IMAGES);
+            default:
+                throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
+        }
+    }
     /**
      * Execute a REST API call
      * @param resourceUrl the URL to call

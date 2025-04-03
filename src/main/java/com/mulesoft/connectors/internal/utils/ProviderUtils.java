@@ -1,5 +1,6 @@
 package com.mulesoft.connectors.internal.utils;
 
+import com.mulesoft.connectors.internal.config.ImageGenerationConfiguration;
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.config.VisionConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +55,7 @@ public class ProviderUtils {
         return "VERTEX_AI_EXPRESS".equals(configuration.getInferenceType());
     }
     
-    public static @NotNull InferenceConfiguration convertToInferenceConfig(VisionConfiguration visionConfig) {
+    public static @NotNull InferenceConfiguration convertToInferenceConfig_old(VisionConfiguration visionConfig) {
         InferenceConfiguration inferenceConfig = new InferenceConfiguration();
 
         inferenceConfig.setInferenceType(visionConfig.getInferenceType());
@@ -70,4 +71,41 @@ public class ProviderUtils {
         return inferenceConfig;
     }
 
-} 
+
+    public static @NotNull InferenceConfiguration convertToInferenceConfig(VisionConfiguration visionConfig) {
+        return convert(visionConfig);
+    }
+
+    public static @NotNull InferenceConfiguration convertToInferenceConfig(ImageGenerationConfiguration imageConfig) {
+        return convert(imageConfig);
+    }
+
+    private static @NotNull InferenceConfiguration convert(Object config) {
+        InferenceConfiguration inferenceConfig = new InferenceConfiguration();
+
+        if (config instanceof VisionConfiguration) {
+            VisionConfiguration vision = (VisionConfiguration) config;
+            inferenceConfig.setInferenceType(vision.getInferenceType());
+            inferenceConfig.setApiKey(vision.getApiKey());
+            inferenceConfig.setModelName(vision.getModelName());
+            inferenceConfig.setMaxTokens(vision.getMaxTokens());
+            inferenceConfig.setTemperature(vision.getTemperature());
+            inferenceConfig.setTopP(vision.getTopP());
+            inferenceConfig.setTimeout(vision.getTimeout());
+            inferenceConfig.setOllamaUrl(vision.getOllamaUrl());
+            inferenceConfig.setVirtualKey(vision.getVirtualKey());
+        } else if (config instanceof ImageGenerationConfiguration) {
+            ImageGenerationConfiguration image = (ImageGenerationConfiguration) config;
+            inferenceConfig.setInferenceType(image.getInferenceType());
+            inferenceConfig.setApiKey(image.getApiKey());
+            inferenceConfig.setModelName(image.getModelName());
+        }
+
+        return inferenceConfig;
+    }
+
+    public static boolean isOpenAI(InferenceConfiguration configuration) {
+        return "OPENAI".equals(configuration.getInferenceType());
+
+    }
+}
