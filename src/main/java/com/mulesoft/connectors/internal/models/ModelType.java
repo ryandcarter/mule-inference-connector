@@ -36,7 +36,7 @@ public enum ModelType {
       LMSTUDIO("LMSTUDIO", getLMSTUDIOModelNameStream()),
       DOCKER_MODELS("DOCKER_MODELS", getDOCKER_MODELSNameStream()),
       DEEPSEEK("DEEPSEEK", getDEEPSEEKModelNameStream()),
-      CHATGLM("CHATGLM", getCHATGLMModelNameStream()),
+      ZHIPU_AI("ZHIPU_AI", getCHATGLMModelNameStream()),
 
   ;
 

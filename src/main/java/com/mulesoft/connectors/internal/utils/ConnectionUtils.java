@@ -164,8 +164,8 @@ public class ConnectionUtils {
                 return new URL(configuration.getDockerModelUrl() + "/engines/llama.cpp/v1" + InferenceConstants.CHAT_COMPLETIONS);
             case "DEEPSEEK":
                 return new URL(InferenceConstants.DEEPSEEK_URL + InferenceConstants.CHAT_COMPLETIONS);
-            case "CHATGLM":
-                return new URL(InferenceConstants.CHATGLM_URL + InferenceConstants.CHAT_COMPLETIONS);
+            case "ZHIPU_AI":
+                return new URL(InferenceConstants.ZHIPU_AI_URL + InferenceConstants.CHAT_COMPLETIONS);
 
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
