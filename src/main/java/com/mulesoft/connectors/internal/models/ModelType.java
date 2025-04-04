@@ -35,6 +35,7 @@ public enum ModelType {
       GPT4ALL("GPT4ALL", getGPT4ALLModelNameStream()),
       LMSTUDIO("LMSTUDIO", getLMSTUDIOModelNameStream()),
       DOCKER_MODELS("DOCKER_MODELS", getDOCKER_MODELSNameStream()),
+      DEEPSEEK("DEEPSEEK", getDEEPSEEKModelNameStream()),
   ;
 
 
@@ -158,7 +159,9 @@ public enum ModelType {
   private static Stream<String> getDOCKER_MODELSNameStream() {
     return Arrays.stream(DockerModelName.values()).map(String::valueOf);
   }
-
+  private static Stream<String> getDEEPSEEKModelNameStream() {
+    return Arrays.stream(DEEPSEEKModelName.values()).map(String::valueOf);
+  }
 
   public static ModelType fromValue(String value) {
     return Arrays.stream(ModelType.values())
@@ -664,5 +667,20 @@ public enum ModelType {
 	      return this.value;
 	    }
 	  }
+
+    enum DEEPSEEKModelName {
+      deepseek_chat("deepseek-chat");
+  
+      private final String value;
+  
+      DEEPSEEKModelName(String value) {
+        this.value = value;
+      }
+  
+      @Override
+      public String toString() {
+        return this.value;
+      }
+    }
   
 }

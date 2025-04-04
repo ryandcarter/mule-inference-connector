@@ -33,6 +33,8 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Google Vertex AI](https://cloud.google.com/vertex-ai?hl=en)
 - [Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/)
 - [Docker Models](https://docs.docker.com/desktop/features/model-runner/)
+- [DeepSeek](https://api-docs.deepseek.com/)
+
 
 ## Supported Moderation Providers
 - [OpenAI](https://openai.com/)

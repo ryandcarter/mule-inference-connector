@@ -82,9 +82,9 @@ public class ConnectionUtils {
             case "VERTEX_AI_EXPRESS":
                 //do nothing for Vertex AI
                 break;
-                case "AZURE_AI_FOUNDRY":
-                    conn.setRequestProperty("api-key", configuration.getApiKey());
-                    break;
+            case "AZURE_AI_FOUNDRY":
+                conn.setRequestProperty("api-key", configuration.getApiKey());
+                break;
             default:
                 conn.setRequestProperty("Authorization", "Bearer " + configuration.getApiKey());
                 break;
@@ -162,6 +162,8 @@ public class ConnectionUtils {
                 return new URL(configuration.getLmStudio() + InferenceConstants.CHAT_COMPLETIONS);
             case "DOCKER_MODELS":
                 return new URL(configuration.getDockerModelUrl() + "/engines/llama.cpp/v1" + InferenceConstants.CHAT_COMPLETIONS);
+            case "DEEPSEEK":
+                return new URL(InferenceConstants.DEEPSEEK_URL + InferenceConstants.CHAT_COMPLETIONS);
 
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
