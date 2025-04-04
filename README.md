@@ -34,7 +34,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/)
 - [Docker Models](https://docs.docker.com/desktop/features/model-runner/)
 - [DeepSeek](https://api-docs.deepseek.com/)
-
+- [ZHIPU AI](https://open.bigmodel.cn/dev/api/normal-model/glm-4)
 
 ## Supported Moderation Providers
 - [OpenAI](https://openai.com/)

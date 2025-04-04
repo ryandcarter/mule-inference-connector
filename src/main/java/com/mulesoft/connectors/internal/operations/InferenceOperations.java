@@ -56,7 +56,7 @@ public class InferenceOperations {
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
 
             LOGGER.debug("Chatting with {}", chatCompUrl);
-            
+
             JSONObject payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
             String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
 
