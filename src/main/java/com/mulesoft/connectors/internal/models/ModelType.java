@@ -36,6 +36,8 @@ public enum ModelType {
       LMSTUDIO("LMSTUDIO", getLMSTUDIOModelNameStream()),
       DOCKER_MODELS("DOCKER_MODELS", getDOCKER_MODELSNameStream()),
       DEEPSEEK("DEEPSEEK", getDEEPSEEKModelNameStream()),
+      CHATGLM("CHATGLM", getCHATGLMModelNameStream()),
+
   ;
 
 
@@ -161,6 +163,10 @@ public enum ModelType {
   }
   private static Stream<String> getDEEPSEEKModelNameStream() {
     return Arrays.stream(DEEPSEEKModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getCHATGLMModelNameStream() {
+    return Arrays.stream(CHATGLMModelName.values()).map(String::valueOf);
   }
 
   public static ModelType fromValue(String value) {
@@ -682,5 +688,21 @@ public enum ModelType {
         return this.value;
       }
     }
-  
+
+  enum CHATGLMModelName {
+    glm_4_plus("glm-4-plus"),
+    glm_4_0520("glm-4-0520"),
+    ;
+
+    private final String value;
+
+    CHATGLMModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
 }

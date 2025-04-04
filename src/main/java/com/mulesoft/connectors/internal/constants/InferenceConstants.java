@@ -31,6 +31,7 @@ public class InferenceConstants {
   public static final String LMSTUDIO_URL = "http://localhost:1234/v1";
   public static final String DOCKER_MODEL_URL = "http://localhost:12434";
   public static final String DEEPSEEK_URL = "https://api.deepseek.com";
+  public static final String CHATGLM_URL = "https://open.bigmodel.cn/api/paas/v4";
 
   // Resources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
