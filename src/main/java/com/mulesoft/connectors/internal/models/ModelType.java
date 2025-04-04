@@ -159,11 +159,9 @@ public enum ModelType {
   private static Stream<String> getDOCKER_MODELSNameStream() {
     return Arrays.stream(DockerModelName.values()).map(String::valueOf);
   }
-
   private static Stream<String> getDEEPSEEKModelNameStream() {
     return Arrays.stream(DEEPSEEKModelName.values()).map(String::valueOf);
   }
-
 
   public static ModelType fromValue(String value) {
     return Arrays.stream(ModelType.values())
