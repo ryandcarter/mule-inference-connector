@@ -34,6 +34,7 @@ public enum ModelType {
       AZURE_AI_FOUNDRY("AZURE_AI_FOUNDRY", getAzureAIFoundryModelNameStream()),
       GPT4ALL("GPT4ALL", getGPT4ALLModelNameStream()),
       LMSTUDIO("LMSTUDIO", getLMSTUDIOModelNameStream()),
+      DEEPSEEK("DEEPSEEK", getDEEPSEEKModelNameStream()),
   ;
 
 
@@ -153,6 +154,10 @@ public enum ModelType {
 
   private static Stream<String> getLMSTUDIOModelNameStream() {
     return Arrays.stream(LMSTUDIOModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getDEEPSEEKModelNameStream() {
+    return Arrays.stream(DEEPSEEKModelName.values()).map(String::valueOf);
   }
 
 
@@ -636,5 +641,20 @@ public enum ModelType {
 	      return this.value;
 	    }
 	  }
+
+    enum DEEPSEEKModelName {
+      deepseek_chat("deepseek-chat");
+  
+      private final String value;
+  
+      DEEPSEEKModelName(String value) {
+        this.value = value;
+      }
+  
+      @Override
+      public String toString() {
+        return this.value;
+      }
+    }
   
 }
