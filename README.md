@@ -32,6 +32,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
 - [Google Vertex AI](https://cloud.google.com/vertex-ai?hl=en)
 - [Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/)
+- [Docker Models](https://docs.docker.com/desktop/features/model-runner/)
 
 ## Supported Moderation Providers
 - [OpenAI](https://openai.com/)
@@ -47,6 +48,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Portkey](https://portkey.ai/)
 - [Hugging Face](https://huggingface.co/)
 - [GitHub Models](https://docs.github.com/en/github-models)
+- [Google Vertex AI](https://cloud.google.com/vertex-ai?hl=en)
 
 ### Requirements
 

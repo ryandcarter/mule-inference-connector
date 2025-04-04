@@ -4,12 +4,11 @@ import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,34 +28,65 @@ public class PayloadUtils {
      */
     public static JSONObject buildPayload(InferenceConfiguration configuration, JSONArray messagesArray, JSONArray toolsArray) {
         JSONObject payload = new JSONObject();
-        if (!"AZURE_OPENAI".equals(configuration.getInferenceType())) {
-            payload.put(InferenceConstants.MODEL, configuration.getModelName());
-        }
-        payload.put(InferenceConstants.MESSAGES, messagesArray);
+        
+		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
+			//add contents to the payload
+	        payload.put(InferenceConstants.CONTENTS, messagesArray);
+	        
+	        //create the generationConfig
+	        JSONObject generationConfig = buildVertexAIGenerationConfig(configuration);	        
+	        
+	        //add generationConfig to the payload
+	        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);	        
 
-        // Different max token parameter names for different providers
-        if ("GROQ".equalsIgnoreCase(configuration.getInferenceType()) ||
-                "OPENAI".equalsIgnoreCase(configuration.getInferenceType())) {
-            payload.put(InferenceConstants.MAX_COMPLETION_TOKENS, configuration.getMaxTokens());
-        } else {
-            payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
-        }
+		} else {
+		
+	        if (!"AZURE_OPENAI".equals(configuration.getInferenceType())) {
+	            payload.put(InferenceConstants.MODEL, configuration.getModelName());
+	        }
+	        payload.put(InferenceConstants.MESSAGES, messagesArray);
+	
+	        // Different max token parameter names for different providers
+	        if ("GROQ".equalsIgnoreCase(configuration.getInferenceType()) ||
+	                "OPENAI".equalsIgnoreCase(configuration.getInferenceType())) {
+	            payload.put(InferenceConstants.MAX_COMPLETION_TOKENS, configuration.getMaxTokens());
+	        } else {
+	            payload.put(InferenceConstants.MAX_TOKENS, configuration.getMaxTokens());
+	        }
+	
+	        // Some models don't support temperature/top_p parameters
+	        String modelName = configuration.getModelName();
+	        if (!Arrays.asList(NO_TEMPERATURE_MODELS).contains(modelName)) {
+	            payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
+	            payload.put(InferenceConstants.TOP_P, configuration.getTopP());
+	        }
+	
+	        // Add tools array if provided
+	        if (toolsArray != null && !toolsArray.isEmpty()) {
+	            payload.put(InferenceConstants.TOOLS, toolsArray);
+	        }
+	
+	        // Special handling for Ollama's and Azure OpenAI's stream parameter
+	        if ("OLLAMA".equals(configuration.getInferenceType()) || "AZURE_OPENAI".equals(configuration.getInferenceType())) {
+	            payload.put("stream", false);
+	        }
+		}
+		
+        return payload;
+    }
 
-        // Some models don't support temperature/top_p parameters
-        String modelName = configuration.getModelName();
-        if (!Arrays.asList(NO_TEMPERATURE_MODELS).contains(modelName)) {
-            payload.put(InferenceConstants.TEMPERATURE, configuration.getTemperature());
-            payload.put(InferenceConstants.TOP_P, configuration.getTopP());
-        }
+    /**
+     * Build the payload for the API request
+     * @param configuration the connector configuration
+     * @param requestJson the payload with prompt
+     * @return the payload as a JSON object
+     */
+    public static JSONObject buildPayloadImageGeneration(InferenceConfiguration configuration, JSONObject requestJson) {
+        JSONObject payload = requestJson;
 
-        // Add tools array if provided
-        if (toolsArray != null && !toolsArray.isEmpty()) {
-            payload.put(InferenceConstants.TOOLS, toolsArray);
-        }
-
-        // Special handling for Ollama's and Azure OpenAI's stream parameter
-        if ("OLLAMA".equals(configuration.getInferenceType()) || "AZURE_OPENAI".equals(configuration.getInferenceType())) {
-            payload.put("stream", false);
+        if ("OPENAI".equalsIgnoreCase(configuration.getInferenceType())) {
+            //add contents to the payload
+            payload.put("model", configuration.getModelName());
         }
 
         return payload;
@@ -66,7 +96,6 @@ public class PayloadUtils {
      * Build the payload for the Vertex AI API request
      * @param configuration the connector configuration
      * @param prompt the prompt
-     * @param toolsArray the tools array (can be null)
      * @return the payload as a JSON object
      */
     public static JSONObject buildVertexAIPayload(InferenceConfiguration configuration, String prompt, 
@@ -97,15 +126,11 @@ public class PayloadUtils {
         }
 
         //create the generationConfig
-        JSONObject generationConfig = new JSONObject();
-        generationConfig.put("responseModalities", new String[]{"TEXT"});
-        generationConfig.put("temperature", configuration.getTemperature());
-        generationConfig.put("maxOutputTokens", configuration.getMaxTokens());
-        generationConfig.put("topP", configuration.getTopP());
+        JSONObject generationConfig = buildVertexAIGenerationConfig(configuration);	        
         
         //add generationConfig to the payload
-        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);
-
+        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);	        
+        
         //add safety settings if provided
         if (safetySettings != null && !safetySettings.isEmpty()) {
             payload.put(InferenceConstants.SAFETY_SETTINGS, safetySettings);
@@ -118,6 +143,8 @@ public class PayloadUtils {
 
         return payload;
     }
+    
+    
 
 
     /**
@@ -176,10 +203,14 @@ public class PayloadUtils {
     }
 
 
-    public static JSONArray createRequestImageURL(String provider, String prompt, String imageUrl) {
+    public static JSONArray createRequestImageURL(String provider, String prompt, String imageUrl) throws IOException {
 
         if (provider.equalsIgnoreCase("ANTHROPIC")) {
             return createAnthropicImageURLRequest(prompt, imageUrl);
+        } else if (provider.equalsIgnoreCase("OLLAMA")) {
+            return createOllamaImageURLRequest(prompt, imageUrl);
+        } else if (provider.equalsIgnoreCase("VERTEX_AI_EXPRESS")) {
+            return createVertexAIExpressImageURLRequest(prompt, imageUrl);
         } else {
             return createImageURLRequest(prompt, imageUrl);
         }
@@ -191,7 +222,7 @@ public class PayloadUtils {
      * @param imageUrl of the image
      * @return JSONArray containing the messages
      */
-    private static JSONArray createImageURLRequest(String prompt, String imageUrl) {
+    private static JSONArray createImageURLRequest(String prompt, String imageUrl) throws IOException {
         JSONArray messagesArray = new JSONArray();
         JSONObject userMessage = new JSONObject();
         userMessage.put("role", "user");
@@ -205,13 +236,53 @@ public class PayloadUtils {
         JSONObject imageContent = new JSONObject();
         imageContent.put("type", "image_url");
         JSONObject imageMessage = new JSONObject();
-        imageMessage.put("url", imageUrl);
+        if (isBase64String(imageUrl)) {
+            imageMessage.put("url", "data:" + getMimeType(imageUrl) + ";base64," + imageUrl);
+        } else{
+            imageMessage.put("url", imageUrl);
+        }
         imageContent.put("image_url", imageMessage);
         contentArray.put(imageContent);
 
         userMessage.put("content", contentArray);
         messagesArray.put(userMessage);
 
+
+        return messagesArray;
+    }
+
+    /**
+     * Creates a messages array with system prompt and user message
+     * @param prompt of the user
+     * @param imageUrl of the image
+     * @return JSONArray containing the messages
+     */
+    private static JSONArray createOllamaImageURLRequest(String prompt, String imageUrl) throws IOException {
+        // Create messages array
+        JSONArray messagesArray = new JSONArray();
+
+        // Create user message object
+        JSONObject userMessage = new JSONObject();
+        userMessage.put("role", "user");
+        userMessage.put("content", prompt);
+
+        // Create images array
+        JSONArray imagesArray = new JSONArray();
+
+        // Add the image (either base64 or URL)
+        if (isBase64String(imageUrl)) {
+            // For base64 images, no need to add data: prefix as it's handled directly
+            imagesArray.put(imageUrl);
+        } else {
+            // For URL images
+            imagesArray.put(imageUrl);
+        }
+
+        // Add images array to user message
+        userMessage.put("images", imagesArray);
+
+        // Add the message to the array
+        messagesArray.put(userMessage);
 
         return messagesArray;
     }
@@ -223,7 +294,7 @@ public class PayloadUtils {
      * @param imageUrl of the image
      * @return JSONArray containing the messages
      */
-    private static JSONArray createAnthropicImageURLRequest(String prompt, String imageUrl) {
+    private static JSONArray createAnthropicImageURLRequest(String prompt, String imageUrl) throws IOException {
         JSONArray messagesArray = new JSONArray();
         JSONObject userMessage = new JSONObject();
         userMessage.put("role", "user");
@@ -233,8 +304,15 @@ public class PayloadUtils {
         JSONObject imageContent = new JSONObject();
         imageContent.put("type", "image");
         JSONObject imageSource = new JSONObject();
-        imageSource.put("type", "url");
-        imageSource.put("url", imageUrl);
+        if (isBase64String(imageUrl)) {
+            imageSource.put("type", "base64");
+            imageSource.put("media_type", getMimeType(imageUrl));
+            imageSource.put("data", imageUrl);
+        } else{
+            imageSource.put("type", "url");
+            imageSource.put("url", imageUrl);
+        }
+
         imageContent.put("source", imageSource);
         contentArray.put(imageContent);
 
@@ -248,6 +326,56 @@ public class PayloadUtils {
 
         return messagesArray;
     }
+    
+    /**
+     * Creates a messages array with system prompt and base64 contents or URL of the image for Vertex AI Express
+     * @param prompt of the user
+     * @param imageUrl of the image
+     * @return JSONArray containing the messages
+     */
+    private static JSONArray createVertexAIExpressImageURLRequest(String prompt, String imageUrl) throws IOException {
+
+    	JSONArray parts = new JSONArray();
+    	
+        if (isBase64String(imageUrl)) {
+            JSONObject inlineData = new JSONObject();
+            inlineData.put("mimeType", getMimeType(imageUrl));
+            inlineData.put("data", imageUrl);  // imageUrl contains base64 in this case
+
+            JSONObject inlineDataWrapper = new JSONObject();
+            inlineDataWrapper.put("inlineData", inlineData);
+
+            parts.put(inlineDataWrapper);
+        } else {
+            JSONObject fileData = new JSONObject();
+            fileData.put("mimeType", getMimeTypeFromUrl(imageUrl));
+            fileData.put("fileUri", imageUrl);  // imageUrl contains gs:// URI in this case
+
+            JSONObject fileDataWrapper = new JSONObject();
+            fileDataWrapper.put("fileData", fileData);
+
+            parts.put(fileDataWrapper);
+        }
+
+        // Add text part
+        JSONObject textPart = new JSONObject();
+        textPart.put("text", prompt);
+
+        parts.put(textPart);
+
+        // Add to contents array
+        JSONObject content = new JSONObject();
+        content.put("role", "user");
+        content.put("parts", parts);
+
+        JSONArray contents = new JSONArray();
+        contents.put(content);
+
+        return contents;
+    
+    }
+
+
     
     /**
      * Build the payload for the chatAnswerPrompt request
@@ -364,5 +492,77 @@ public class PayloadUtils {
     
     		return payload;
     }
+
+    public static boolean isBase64String(String str) {
+        if (str == null || str.length() % 4 != 0 || !str.matches("^[A-Za-z0-9+/]*={0,2}$")) {
+            return false;
+        }
+        try {
+            Base64.getDecoder().decode(str);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public static String getMimeType(String base64String) throws IOException {
+        byte[] decodedBytes = Base64.getDecoder().decode(base64String);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(decodedBytes);
+        String mimeType = URLConnection.guessContentTypeFromStream(inputStream);
+        return mimeType != null ? mimeType : "image/jpeg";
+    }
     
-} //end of class
+    public static String getMimeTypeFromUrl(String imageUrl) {
+        if (imageUrl == null || imageUrl.trim().isEmpty()) {
+            return "image/jpeg"; // Default
+        }
+
+        imageUrl = imageUrl.toLowerCase().trim();
+
+        if (imageUrl.endsWith(".png")) {
+            return "image/png";
+        } else if (imageUrl.endsWith(".jpg") || imageUrl.endsWith(".jpeg")) {
+            return "image/jpeg";
+        }
+
+        // Add more types if needed
+        return "image/jpeg"; // Default fallback
+    }
+    
+    public static JSONObject buildVertexAIGenerationConfig(InferenceConfiguration configuration) {
+	    //create the generationConfig
+	    JSONObject generationConfig = new JSONObject();
+	    generationConfig.put("responseModalities", new String[]{"TEXT"});
+	    generationConfig.put("temperature", configuration.getTemperature());
+	    generationConfig.put("maxOutputTokens", configuration.getMaxTokens());
+	    generationConfig.put("topP", configuration.getTopP());
+        
+	    return generationConfig;
+    }
+
+
+    public static JSONObject createRequestImageGeneration(String provider, String prompt) throws IOException {
+
+        if (provider.equalsIgnoreCase("OPENAI")) {
+            return createImageGenerationRequestOpenaI(prompt);
+        } else {
+            return createImageGenerationRequestOpenaI(prompt);
+        }
+    }
+
+    /**
+     * Creates a messages array with system prompt and user message
+     * @param prompt of the user
+     * @return JSONArray containing the messages
+     */
+    private static JSONObject createImageGenerationRequestOpenaI(String prompt) throws IOException {
+
+        JSONObject requestPayload = new JSONObject();
+        requestPayload.put("prompt", prompt);
+        requestPayload.put("response_format", "b64_json");
+
+        return requestPayload;
+    }
+
+
+}

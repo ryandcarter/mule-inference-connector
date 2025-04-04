@@ -1,6 +1,7 @@
 package com.mulesoft.connectors.internal.operations;
 
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
+import com.mulesoft.connectors.internal.config.ImageGenerationConfiguration;
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.config.VisionConfiguration;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.net.URL;
 
-
+import static com.mulesoft.connectors.internal.utils.PayloadUtils.createRequestImageGeneration;
 import static com.mulesoft.connectors.internal.utils.PayloadUtils.createRequestImageURL;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
@@ -33,45 +34,43 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICAT
  * This class contains operations for the inference connector.
  * Each public method represents an extension operation.
  */
-public class VisionOperations {
-    private static final Logger LOGGER = LoggerFactory.getLogger(VisionOperations.class);
+public class ImageGenerationOperations {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageGenerationOperations.class);
     private static final String ERROR_MSG_FORMAT = "%s result error";
 
     /**
      * Chat completions by messages array including system, users messages i.e. conversation history
      * @param configuration the connector configuration
      * @param prompt the users prompt
-     * @param imageUrl the image Url to be sent to the Vision Model
      * @return result containing the LLM response
      * @throws ModuleException if an error occurs during the operation
      */
     @MediaType(value = APPLICATION_JSON, strict = false)
-    @Alias("Read-image")
-    @DisplayName("[Image] Read by (Url or Base64)")
+    @Alias("Generate-image")
+    @DisplayName("[Image] Generate (only Base64)")
     @OutputJsonType(schema = "api/response/Response.json")
-    public Result<InputStream, LLMResponseAttributes> readImage(
-            @Config VisionConfiguration configuration,
-            @Content String prompt,
-            @Content(primary = true) @DisplayName("Image") @Summary("An Image URL or a Base64 Image") String imageUrl) throws ModuleException {
+    public Result<InputStream, LLMResponseAttributes> generateImage(
+            @Config ImageGenerationConfiguration configuration,
+            @Content String prompt) throws ModuleException {
         try {
 
-            JSONArray messagesArray = createRequestImageURL(configuration.getInferenceType(), prompt, imageUrl);
+            JSONObject requestJson = createRequestImageGeneration(configuration.getInferenceType(), prompt);
 
             InferenceConfiguration inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
 
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(inferenceConfig);
-            LOGGER.debug("Chatting with {}", chatCompUrl);
+            URL imageGenerationUrl = ConnectionUtils.getConnectionURLImageGeneration(inferenceConfig);
+            LOGGER.debug("Generate Image with {}", imageGenerationUrl);
 
-            JSONObject payload = PayloadUtils.buildPayload(inferenceConfig, messagesArray, null);
+            JSONObject payload = PayloadUtils.buildPayloadImageGeneration(inferenceConfig, requestJson);
 
-            String response = ConnectionUtils.executeREST(chatCompUrl, inferenceConfig, payload.toString());
+            String response = ConnectionUtils.executeREST(imageGenerationUrl, inferenceConfig, payload.toString());
 
-            LOGGER.debug("Read Image result {}", response);
-            return ResponseUtils.processLLMResponse(response, inferenceConfig);
+            LOGGER.debug("Generate Image result {}", response);
+            return ResponseUtils.processImageGenResponse(response, inferenceConfig);
         } catch (Exception e) {
-            LOGGER.error("Error in Read Image: {}", e.getMessage(), e);
-            throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Read Image"),
-                    InferenceErrorType.VISION, e);
+            LOGGER.error("Error in Generate Image: {}", e.getMessage(), e);
+            throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Generate Image"),
+                    InferenceErrorType.IMAGE_GENERATION, e);
         }
     }
 }

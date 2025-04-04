@@ -63,6 +63,10 @@ public class ConnectionUtils {
         conn.setRequestProperty("User-Agent", "Mozilla/5.0");
         conn.setRequestProperty("Accept", "application/json");
 
+        // Set appropriate timeouts
+        conn.setConnectTimeout(30000);
+        conn.setReadTimeout(configuration.getTimeout() != null ? Integer.parseInt(configuration.getTimeout()) : 600000);
+
         switch (configuration.getInferenceType()) {
             case "ANTHROPIC":
                 conn.setRequestProperty("x-api-key", configuration.getApiKey());
@@ -156,6 +160,8 @@ public class ConnectionUtils {
                 return new URL(configuration.getGpt4All() + InferenceConstants.CHAT_COMPLETIONS);
             case "LMSTUDIO":
                 return new URL(configuration.getLmStudio() + InferenceConstants.CHAT_COMPLETIONS);
+            case "DOCKER_MODELS":
+                return new URL(configuration.getDockerModelUrl() + "/engines/llama.cpp/v1" + InferenceConstants.CHAT_COMPLETIONS);
             case "DEEPSEEK":
                 return new URL(InferenceConstants.DEEPSEEK_URL + InferenceConstants.CHAT_COMPLETIONS);
 
@@ -164,6 +170,22 @@ public class ConnectionUtils {
         }
     }
 
+
+
+    /**
+     * Get the appropriate URL for chat completion based on the configuration
+     * @param configuration the connector configuration
+     * @return the URL for the chat completion endpoint
+     * @throws MalformedURLException if the URL is invalid
+     */
+    public static URL getConnectionURLImageGeneration(InferenceConfiguration configuration) throws MalformedURLException {
+        switch (configuration.getInferenceType()) {
+            case "OPENAI":
+                return new URL(InferenceConstants.OPEN_AI_URL + InferenceConstants.OPENAI_GENERATE_IMAGES);
+            default:
+                throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
+        }
+    }
     /**
      * Execute a REST API call
      * @param resourceUrl the URL to call
@@ -180,17 +202,12 @@ public class ConnectionUtils {
 
         /**
      * Execute a REST API call
-     * @param resourceUrl the URL to call
-     * @param configuration the connector configuration
+     * @param conn the URL to call
      * @param payload the payload to send
      * @return the response string
      * @throws IOException if an error occurs during the API call
      */
     public static String executeREST(HttpURLConnection conn, String payload) throws IOException {
-        
-        // Set appropriate timeouts
-        conn.setConnectTimeout(30000);  // 30 seconds
-        conn.setReadTimeout(120000);    // 2 minutes
 
         // Send the payload
         try (OutputStream os = conn.getOutputStream()) {

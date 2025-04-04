@@ -1,10 +1,12 @@
 package com.mulesoft.connectors.internal.extension;
 
+import com.mulesoft.connectors.internal.config.ImageGenerationConfiguration;
 import com.mulesoft.connectors.internal.config.VisionConfiguration;
 import com.mulesoft.connectors.internal.operations.VisionOperations;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Configurations;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.sdk.api.annotation.JavaVersionSupport;
 
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
@@ -19,9 +21,14 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
  * and sources are going to be declared.
  */
 @Xml(prefix = "mac-inference")
-@Extension(name = "MAC Inference")
+@Extension(name = "MuleSoft Inference")
 @JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})
-@Configurations(value = {InferenceConfiguration.class, ModerationConfiguration.class, VisionConfiguration.class})
+@Configurations(value = {
+        InferenceConfiguration.class,
+        ModerationConfiguration.class,
+        VisionConfiguration.class,
+        ImageGenerationConfiguration.class
+})
 public class InferenceExtension {
 
 }
