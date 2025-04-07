@@ -110,6 +110,17 @@ public class InferenceConfiguration {
 	public void setGpt4All(String gpt4All) { this.gpt4All = gpt4All; }
 
 	@Parameter
+	@Placement(order = 1, tab = "OpenAI Compatible Endpoint")
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional(defaultValue = InferenceConstants.OPENAI_COMPATIBLE_ENDPOINT)
+	@DisplayName("OpenAI Compatible URL")
+	private String openCompatibleURL;
+
+	public String getOpenAICompatibleURL() { return openCompatibleURL; }
+	public void setOpenAICompatibleURL(String openCompatibleURL) { this.openCompatibleURL = openCompatibleURL; }
+
+
+	@Parameter
 	@Placement(order = 1, tab = "LM Studio Parameters")
 	@Expression(ExpressionSupport.SUPPORTED)
 	@Optional(defaultValue = InferenceConstants.LMSTUDIO_URL)

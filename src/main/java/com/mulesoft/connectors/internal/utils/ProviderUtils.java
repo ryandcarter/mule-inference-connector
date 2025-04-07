@@ -94,6 +94,7 @@ public class ProviderUtils {
             inferenceConfig.setTimeout(vision.getTimeout());
             inferenceConfig.setOllamaUrl(vision.getOllamaUrl());
             inferenceConfig.setVirtualKey(vision.getVirtualKey());
+            inferenceConfig.setOpenAICompatibleURL(vision.getOpenAICompatibleURL());
         } else if (config instanceof ImageGenerationConfiguration) {
             ImageGenerationConfiguration image = (ImageGenerationConfiguration) config;
             inferenceConfig.setInferenceType(image.getInferenceType());
