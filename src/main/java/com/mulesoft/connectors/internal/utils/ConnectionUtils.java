@@ -166,7 +166,8 @@ public class ConnectionUtils {
                 return new URL(InferenceConstants.DEEPSEEK_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "ZHIPU_AI":
                 return new URL(InferenceConstants.ZHIPU_AI_URL + InferenceConstants.CHAT_COMPLETIONS);
-
+            case "OPENAI_COMPATIBLE_ENDPOINT":
+                return new URL(configuration.getOpenAICompatibleURL() + InferenceConstants.CHAT_COMPLETIONS);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
         }

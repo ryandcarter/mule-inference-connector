@@ -37,6 +37,7 @@ public enum ModelType {
       DOCKER_MODELS("DOCKER_MODELS", getDOCKER_MODELSNameStream()),
       DEEPSEEK("DEEPSEEK", getDEEPSEEKModelNameStream()),
       ZHIPU_AI("ZHIPU_AI", getCHATGLMModelNameStream()),
+      OPENAI_COMPATIBLE_ENDPOINT("OPENAI_COMPATIBLE_ENDPOINT", getOpenAIModelNameStream()),
 
   ;
 

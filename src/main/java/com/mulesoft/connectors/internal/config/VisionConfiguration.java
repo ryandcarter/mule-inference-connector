@@ -1,5 +1,6 @@
 package com.mulesoft.connectors.internal.config;
 
+import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.models.vision.ModelNameProvider;
 import com.mulesoft.connectors.internal.models.vision.ModelTypeProvider;
 import com.mulesoft.connectors.internal.operations.InferenceOperations;
@@ -111,6 +112,16 @@ public class VisionConfiguration {
 	public String getOllamaUrl() {
 		return ollamaUrl;
 	}
+
+	@Parameter
+	@Placement(order = 1, tab = "OpenAI Compatible Endpoint")
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Optional(defaultValue = InferenceConstants.GPT4ALL_URL)
+	@DisplayName("OpenAI Compatible URL")
+	private String openCompatibleURL;
+
+	public String getOpenAICompatibleURL() { return openCompatibleURL; }
+
 }
 
 

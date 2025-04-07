@@ -35,6 +35,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Docker Models](https://docs.docker.com/desktop/features/model-runner/)
 - [DeepSeek](https://api-docs.deepseek.com/)
 - [ZHIPU AI](https://open.bigmodel.cn/dev/api/normal-model/glm-4)
+- [OpenAI Compatible Endpoints](https://platform.openai.com/docs/api-reference/introduction)
 
 ## Supported Moderation Providers
 - [OpenAI](https://openai.com/)
@@ -51,6 +52,10 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Hugging Face](https://huggingface.co/)
 - [GitHub Models](https://docs.github.com/en/github-models)
 - [Google Vertex AI](https://cloud.google.com/vertex-ai?hl=en)
+- [OpenAI Compatible Endpoints](https://platform.openai.com/docs/api-reference/introduction)
+
+## Supported Image Models Providers
+- [OpenAI](https://platform.openai.com/docs/guides/images?api-mode=chat)
 
 ### Requirements
 
