@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public enum ModelType {
       OPENAI("OPENAI", getOpenAIModelNameStream()),
-      //HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
+      HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
 
   ;
 
