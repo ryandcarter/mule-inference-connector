@@ -32,6 +32,7 @@ public class InferenceConstants {
   public static final String DOCKER_MODEL_URL = "http://localhost:12434";
   public static final String DEEPSEEK_URL = "https://api.deepseek.com";
   public static final String ZHIPU_AI_URL = "https://open.bigmodel.cn/api/paas/v4";
+  public static final String VERTEX_AI_URL = "https://{LOCATION_ID}-aiplatform.googleapis.com/v1/projects/{PROJECT_ID}/locations/{LOCATION_ID}/publishers/google/models/{MODEL_ID}:";
 
   // Resources
   public static final String CHAT_COMPLETIONS = "/chat/completions";

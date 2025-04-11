@@ -29,7 +29,9 @@ public class PayloadUtils {
     public static JSONObject buildPayload(InferenceConfiguration configuration, JSONArray messagesArray, JSONArray toolsArray) {
         JSONObject payload = new JSONObject();
         
-		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
+    	String type = configuration.getInferenceType();
+
+    	if ("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) {
 			//add contents to the payload
 	        payload.put(InferenceConstants.CONTENTS, messagesArray);
 	        
@@ -209,8 +211,8 @@ public class PayloadUtils {
             return createAnthropicImageURLRequest(prompt, imageUrl);
         } else if (provider.equalsIgnoreCase("OLLAMA")) {
             return createOllamaImageURLRequest(prompt, imageUrl);
-        } else if (provider.equalsIgnoreCase("VERTEX_AI_EXPRESS")) {
-            return createVertexAIExpressImageURLRequest(prompt, imageUrl);
+        } else if ("VERTEX_AI".equalsIgnoreCase(provider) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(provider)) {
+            return createVertexAIImageURLRequest(prompt, imageUrl);
         } else {
             return createImageURLRequest(prompt, imageUrl);
         }
@@ -333,7 +335,7 @@ public class PayloadUtils {
      * @param imageUrl of the image
      * @return JSONArray containing the messages
      */
-    private static JSONArray createVertexAIExpressImageURLRequest(String prompt, String imageUrl) throws IOException {
+    private static JSONArray createVertexAIImageURLRequest(String prompt, String imageUrl) throws IOException {
 
     	JSONArray parts = new JSONArray();
     	
@@ -385,9 +387,11 @@ public class PayloadUtils {
      */
     public static JSONObject buildChatAnswerPromptPayload(InferenceConfiguration configuration, String prompt) {
     	JSONObject payload;
-	
-		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
-	    	JSONArray safetySettings = new JSONArray(); // Empty array
+    	
+    	String type = configuration.getInferenceType();
+
+    	if ("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) {
+   	    	JSONArray safetySettings = new JSONArray(); // Empty array
 	    	JSONObject systemInstruction = new JSONObject(); // Empty object
 	    	JSONArray tools = new JSONArray(); // Empty array
 			payload = PayloadUtils.buildVertexAIPayload(configuration, prompt, safetySettings, systemInstruction, tools);
@@ -413,9 +417,10 @@ public class PayloadUtils {
      */
     public static JSONObject buildPromptTemplatePayload(InferenceConfiguration configuration, String template, String instructions, String data) {
     	JSONObject payload;
-	
-	
-		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
+
+    	String type = configuration.getInferenceType();
+
+    	if ("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) {
 	    	//Create systemInstruction object
 	    	//Step 1: Wrap text in a part object
 	        JSONObject part = new JSONObject();
@@ -460,8 +465,9 @@ public class PayloadUtils {
 
         	JSONObject payload;
 
-        	
-        	if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
+        	String type = configuration.getInferenceType();
+
+        	if ("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) {
             	
             	//Create systemInstruction object
             	//Step 1: Wrap text in a part object

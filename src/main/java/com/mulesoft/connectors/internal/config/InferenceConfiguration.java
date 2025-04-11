@@ -78,7 +78,7 @@ public class InferenceConfiguration {
 
 	public String getTimeout() { return timeout; }
 	public void setTimeout(String timeout) { this.timeout = timeout; }
-
+	
 	@Parameter
 	@Placement(order = 1, tab = "Portkey Parameters")
 	@Optional(defaultValue = "Portkey-virtual-key")
@@ -88,7 +88,7 @@ public class InferenceConfiguration {
 
 	public String getVirtualKey() { return virtualKey; }
 	public void setVirtualKey(String virtualKey) { this.virtualKey = virtualKey; }
-
+	
 	@Parameter
 	@Placement(order = 1, tab = "Ollama Parameters")
 	@Expression(ExpressionSupport.SUPPORTED)
@@ -178,4 +178,25 @@ public class InferenceConfiguration {
 
 	public String getAzureAIFoundryResourceName() { return azureAIFoundryResourceName; }
 	public void setAzureAIFoundryResourceName(String azureAIFoundryResourceName) { this.azureAIFoundryResourceName = azureAIFoundryResourceName; }
+	
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Placement(order = 1, tab = "Vertex AI Parameters")
+	@Optional
+	@DisplayName("Project Id")
+	private String vertexAIProjectId;
+
+	public String getVertexAIProjectId() { return vertexAIProjectId; }
+	public void setVertexAIProjectId(String vertexAIProjectId) { this.vertexAIProjectId = vertexAIProjectId; }
+
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Placement(order = 2, tab = "Vertex AI Parameters")
+	@Optional
+	@DisplayName("Location Id")
+	private String vertexAILocationId;
+
+	public String getVertexAILocationId() { return vertexAILocationId; }
+	public void setVertexAILocationId(String vertexAILocationId) { this.vertexAILocationId = vertexAILocationId; }	
+	
 }

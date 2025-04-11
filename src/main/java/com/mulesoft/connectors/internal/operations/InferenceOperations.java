@@ -88,6 +88,8 @@ public class InferenceOperations {
         	JSONObject payload = PayloadUtils.buildChatAnswerPromptPayload(configuration, prompt);
 
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
+            LOGGER.debug("Chat answer prompt Url: {}", chatCompUrl.toString());
+
             String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
 
             LOGGER.debug("Chat answer prompt result {}", response);

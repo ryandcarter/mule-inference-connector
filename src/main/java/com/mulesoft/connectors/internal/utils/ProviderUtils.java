@@ -54,6 +54,10 @@ public class ProviderUtils {
     public static boolean isVertexAIExpress(InferenceConfiguration configuration) {
         return "VERTEX_AI_EXPRESS".equals(configuration.getInferenceType());
     }
+
+    public static boolean isVertexAI(InferenceConfiguration configuration) {
+        return "VERTEX_AI".equals(configuration.getInferenceType());
+    }
     
     public static @NotNull InferenceConfiguration convertToInferenceConfig_old(VisionConfiguration visionConfig) {
         InferenceConfiguration inferenceConfig = new InferenceConfiguration();
@@ -94,6 +98,8 @@ public class ProviderUtils {
             inferenceConfig.setTimeout(vision.getTimeout());
             inferenceConfig.setOllamaUrl(vision.getOllamaUrl());
             inferenceConfig.setVirtualKey(vision.getVirtualKey());
+            inferenceConfig.setVertexAILocationId(vision.getVertexAILocationId());
+            inferenceConfig.setVertexAIProjectId(vision.getVertexAIProjectId());
         } else if (config instanceof ImageGenerationConfiguration) {
             ImageGenerationConfiguration image = (ImageGenerationConfiguration) config;
             inferenceConfig.setInferenceType(image.getInferenceType());

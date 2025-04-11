@@ -57,7 +57,8 @@ public class ResponseUtils {
         }
 
         // Handle Vertex AI tools responses (functionCall)
-        if (isToolsResponse && ProviderUtils.isVertexAIExpress(configuration)) {
+        if (isToolsResponse && 
+        		   (ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration))) {
             JSONArray functionCalls = extractVertexAIFunctionCalls(root);
             if (!functionCalls.isEmpty()) {
                 responseInfo.message.put("tool_calls", functionCalls);
@@ -75,7 +76,8 @@ public class ResponseUtils {
                     content = firstContent.getString("text"); // Extract the "text" field
                 }
             }
-        } else if (ProviderUtils.isVertexAIExpress(configuration)) {
+        } else if (ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) {
+
             content = responseInfo.message.has("text") && !responseInfo.message.isNull("text")
                     ? responseInfo.message.getString("text") : null;
 
@@ -150,13 +152,15 @@ public class ResponseUtils {
         ResponseInfo info = new ResponseInfo();
         info.model = !("AI21LABS".equals(configuration.getInferenceType())
                 || "COHERE".equals(configuration.getInferenceType())
-                || "VERTEX_AI_EXPRESS".equals(configuration.getInferenceType()))
-                ? root.getString("model")   //if model is notAI21LABS or COHERE or VERTEX_AI_EXPRESS
+                || "VERTEX_AI_EXPRESS".equals(configuration.getInferenceType())
+                || "VERTEX_AI".equals(configuration.getInferenceType())
+                )
+                ? root.getString("model")   //if model is notAI21LABS or COHERE or VERTEX_AI_EXPRESS or VERTEX_AI
                 : configuration.getModelName();
 
         if (ProviderUtils.isOllama(configuration)) {
             info.id = null;
-        } else if (ProviderUtils.isVertexAIExpress(configuration)) {
+        } else if (ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) {
         	info.id = root.getString("responseId");
         } else {
         	info.id = root.getString("id");
@@ -187,7 +191,7 @@ public class ResponseUtils {
 
             info.message = new JSONObject();
             info.message.put("content", info.text);
-        } else if (ProviderUtils.isVertexAIExpress(configuration)) {
+        } else if (ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) {
         	// Extract candidates array
             JSONArray candidatesArray = root.getJSONArray("candidates");
 
@@ -204,7 +208,7 @@ public class ResponseUtils {
                 info.message = partsArray.getJSONObject(0);
                 
             } else {
-                System.out.println("No candidates found in the response.");
+            	LOGGER.debug("No candidates found in the response from provider: {}", configuration.getInferenceType());
             }
         	
         	

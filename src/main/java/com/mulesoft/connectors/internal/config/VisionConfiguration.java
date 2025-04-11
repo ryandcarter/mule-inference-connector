@@ -111,6 +111,27 @@ public class VisionConfiguration {
 	public String getOllamaUrl() {
 		return ollamaUrl;
 	}
+	
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Placement(order = 1, tab = "Vertex AI Parameters")
+	@Optional
+	@DisplayName("Project Id")
+	private String vertexAIProjectId;
+
+	public String getVertexAIProjectId() { return vertexAIProjectId; }
+	public void setVertexAIProjectId(String vertexAIProjectId) { this.vertexAIProjectId = vertexAIProjectId; }
+
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Placement(order = 2, tab = "Vertex AI Parameters")
+	@Optional
+	@DisplayName("Location Id")
+	private String vertexAILocationId;
+
+	public String getVertexAILocationId() { return vertexAILocationId; }
+	public void setVertexAILocationId(String vertexAILocationId) { this.vertexAILocationId = vertexAILocationId; }	
+
 }
 
 

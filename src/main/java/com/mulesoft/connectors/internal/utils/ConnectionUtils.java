@@ -1,5 +1,6 @@
 package com.mulesoft.connectors.internal.utils;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.operations.InferenceOperations;
@@ -15,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -54,7 +56,7 @@ public class ConnectionUtils {
             conn = (HttpURLConnection) url.openConnection();
         }
 
-        LOGGER.debug("path : ", conn.getURL().getPath());
+        LOGGER.debug("path:  {}", conn.getURL().getPath());
         
         //HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
@@ -80,10 +82,13 @@ public class ConnectionUtils {
                 conn.setRequestProperty("api-key", configuration.getApiKey());
                 break;
             case "VERTEX_AI_EXPRESS":
-                //do nothing for Vertex AI
+                //do nothing for Vertex AI Express
                 break;
             case "AZURE_AI_FOUNDRY":
                 conn.setRequestProperty("api-key", configuration.getApiKey());
+                break;
+            case "VERTEX_AI":
+                conn.setRequestProperty("Authorization", "Bearer " + getAccessTokenFromServiceAccountKey(configuration));
                 break;
             default:
                 conn.setRequestProperty("Authorization", "Bearer " + configuration.getApiKey());
@@ -146,10 +151,19 @@ public class ConnectionUtils {
                     .replace("{deployment-id}", configuration.getAzureOpenaiDeploymentId());
                 return new URL(urlStr);
             case "VERTEX_AI_EXPRESS":
-                String vertexAIUrlStr = InferenceConstants.VERTEX_AI_EXPRESS_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI;
+                String vertexAIExpressUrlStr = InferenceConstants.VERTEX_AI_EXPRESS_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI;
+                vertexAIExpressUrlStr = vertexAIExpressUrlStr
+                    .replace("{MODEL_ID}", configuration.getModelName());
+                return new URL(vertexAIExpressUrlStr);
+            case "VERTEX_AI":
+                String vertexAIUrlStr = InferenceConstants.VERTEX_AI_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI;
                 vertexAIUrlStr = vertexAIUrlStr
+                	.replace("{LOCATION_ID}", configuration.getVertexAILocationId())
+                	.replace("{PROJECT_ID}", configuration.getVertexAIProjectId())
                     .replace("{MODEL_ID}", configuration.getModelName());
                 return new URL(vertexAIUrlStr);
+               
+
             case "AZURE_AI_FOUNDRY":
                 String aifurlStr = InferenceConstants.AZURE_AI_FOUNDRY_URL + InferenceConstants.CHAT_COMPLETIONS_AZURE_AI_FOUNDRY;
                 aifurlStr = aifurlStr
@@ -269,4 +283,22 @@ public class ConnectionUtils {
         }
         return query.toString();
     }
+
+    //get access token from google service acc key file	
+    public static String getAccessTokenFromServiceAccountKey(InferenceConfiguration configuration) throws IOException {
+        GoogleCredentials credentials = GoogleCredentials.getApplicationDefault()
+            .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
+
+        credentials.refreshIfExpired();
+        
+        String token = credentials.getAccessToken().getTokenValue();
+        
+        //System.out.println();
+        LOGGER.debug("gcp access token {}", token);
+        
+
+        return token;
+        
+    }
+
 } 
