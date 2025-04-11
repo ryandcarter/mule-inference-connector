@@ -7,7 +7,11 @@ import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.helpers.ResponseHelper;
 import com.mulesoft.connectors.internal.helpers.TokenHelper;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -328,28 +332,29 @@ public class ResponseUtils {
         JSONObject jsonObject = new JSONObject();
         Map<String, String> responseAttributes = new HashMap<>();
 
-        // Handle OpenAI Image Generation Response
-        if (ProviderUtils.isOpenAI(configuration) && root.has("data")) {
+        if ((ProviderUtils.isOpenAI(configuration)  || ProviderUtils.isHuggingFace(configuration))  && root.has("data")) {
             JSONArray dataArray = root.getJSONArray("data");
 
             if (dataArray.length() > 0) {
                 JSONObject firstData = dataArray.getJSONObject(0);
 
-                // Extract `b64_json` and `revised_prompt`
                 String b64Json = firstData.optString("b64_json", null);
                 String revisedPrompt = firstData.optString("revised_prompt", null);
 
-                // Add revised_prompt to attributes
                 if (revisedPrompt != null) {
                     responseAttributes.put("Prompt_used", revisedPrompt);
                 }
 
-                // Add b64_json as the response
                 jsonObject.put(InferenceConstants.RESPONSE, b64Json);
             }
         }
 
+        responseAttributes.put("model", configuration.getModelName());
         return ResponseHelper.createLLMResponse(jsonObject.toString(), null, responseAttributes);
+    }
+
+    public static String encodeImageToBase64(byte[] imageBytes) {
+        return Base64.getEncoder().encodeToString(imageBytes);
     }
 
 } 

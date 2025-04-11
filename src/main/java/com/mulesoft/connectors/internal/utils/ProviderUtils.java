@@ -20,6 +20,15 @@ public class ProviderUtils {
     }
 
     /**
+     * Check if the inference type is OLLAMA
+     * @param configuration the connector configuration
+     * @return true if the inference type is OLLAMA, false otherwise
+     */
+    public static boolean isHuggingFace(InferenceConfiguration configuration) {
+        return "HUGGING_FACE".equals(configuration.getInferenceType());
+    }
+
+    /**
      * Check if the inference type is Anthropic
      * @param configuration the connector configuration
      * @return true if the inference type is Anthropic, false otherwise
@@ -100,11 +109,13 @@ public class ProviderUtils {
             inferenceConfig.setVirtualKey(vision.getVirtualKey());
             inferenceConfig.setVertexAILocationId(vision.getVertexAILocationId());
             inferenceConfig.setVertexAIProjectId(vision.getVertexAIProjectId());
+            inferenceConfig.setOpenAICompatibleURL(vision.getOpenAICompatibleURL());
         } else if (config instanceof ImageGenerationConfiguration) {
             ImageGenerationConfiguration image = (ImageGenerationConfiguration) config;
             inferenceConfig.setInferenceType(image.getInferenceType());
             inferenceConfig.setApiKey(image.getApiKey());
             inferenceConfig.setModelName(image.getModelName());
+            inferenceConfig.setTimeout("600000");
         }
 
         return inferenceConfig;

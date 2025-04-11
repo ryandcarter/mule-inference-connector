@@ -28,6 +28,7 @@ import java.net.URL;
 
 import static com.mulesoft.connectors.internal.utils.PayloadUtils.createRequestImageGeneration;
 import static com.mulesoft.connectors.internal.utils.PayloadUtils.createRequestImageURL;
+import static com.mulesoft.connectors.internal.utils.ResponseUtils.encodeImageToBase64;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
@@ -55,7 +56,7 @@ public class ImageGenerationOperations {
         try {
 
             JSONObject requestJson = createRequestImageGeneration(configuration.getInferenceType(), prompt);
-
+            String response;
             InferenceConfiguration inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
 
             URL imageGenerationUrl = ConnectionUtils.getConnectionURLImageGeneration(inferenceConfig);
@@ -63,7 +64,11 @@ public class ImageGenerationOperations {
 
             JSONObject payload = PayloadUtils.buildPayloadImageGeneration(inferenceConfig, requestJson);
 
-            String response = ConnectionUtils.executeREST(imageGenerationUrl, inferenceConfig, payload.toString());
+            if ((ProviderUtils.isHuggingFace((inferenceConfig)))) {
+                response = ConnectionUtils.executeRESTHuggingFaceImage(imageGenerationUrl, inferenceConfig, payload.toString());
+            } else {
+                response = ConnectionUtils.executeREST(imageGenerationUrl, inferenceConfig, payload.toString());
+            }
 
             LOGGER.debug("Generate Image result {}", response);
             return ResponseUtils.processImageGenResponse(response, inferenceConfig);
