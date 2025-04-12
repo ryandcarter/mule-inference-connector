@@ -1,0 +1,157 @@
+package com.mulesoft.connectors.internal.connection.types;
+
+import com.mulesoft.connectors.internal.config.options.*;
+import com.mulesoft.connectors.internal.models.ModelNameProvider;
+import com.mulesoft.connectors.internal.models.ModelTypeProvider;
+import org.mule.runtime.api.connection.CachedConnectionProvider;
+import org.mule.runtime.api.connection.ConnectionException;
+import org.mule.runtime.api.connection.ConnectionValidationResult;
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.lifecycle.Startable;
+import org.mule.runtime.api.lifecycle.Stoppable;
+import org.mule.runtime.api.meta.ExpressionSupport;
+import org.mule.runtime.api.tls.TlsContextFactory;
+import org.mule.runtime.extension.api.annotation.Alias;
+import org.mule.runtime.extension.api.annotation.Expression;
+import org.mule.runtime.extension.api.annotation.param.Optional;
+import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
+import org.mule.runtime.extension.api.annotation.param.RefName;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.annotation.param.display.Placement;
+import org.mule.runtime.extension.api.annotation.values.OfValues;
+import org.mule.runtime.http.api.HttpService;
+import org.mule.runtime.http.api.client.HttpClient;
+import org.mule.runtime.http.api.client.HttpClientConfiguration;
+
+import javax.inject.Inject;
+
+@Alias("llm")
+@DisplayName("Text Generation LLM")
+public class TextGenerationProvider implements CachedConnectionProvider<TextGeneration>, Startable, Stoppable {
+
+  private HttpClient httpClient;
+
+  @RefName
+  private String configName;
+
+  @Inject
+  private HttpService httpService;
+
+
+  @Parameter
+  @Placement(order = 1)
+  @Expression(ExpressionSupport.SUPPORTED)
+  @DisplayName("Inference Type")
+  @OfValues(ModelTypeProvider.class)
+  private String inferenceType;
+
+  public void setInferenceType(String inferenceType) { this.inferenceType = inferenceType; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @DisplayName("API Key")
+  private String apiKey;
+
+  public void setApiKey(String apiKey) { this.apiKey = apiKey; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @OfValues(ModelNameProvider.class)
+  @Optional(defaultValue = "gpt-3.5-turbo")
+  private String modelName;
+
+  public void setModelName(String modelName) { this.modelName = modelName; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = "500")
+  private Number maxTokens;
+
+  public void setMaxTokens(Number maxTokens) { this.maxTokens = maxTokens; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = "0.9")
+  private Number temperature;
+
+  public void setTemperature(Number temperature) { this.temperature = temperature; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = "0.9")
+  private Number topP;
+
+  public void setTopP(Number topP) { this.topP = topP; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @DisplayName("Timeout (milliseconds)")
+  @Optional(defaultValue = "#['60000']")
+  private int timeout;
+
+  public void setTimeout(int timeout) { this.timeout = timeout; }
+
+  @Parameter
+  @Placement(order = 2, tab = "Advanced")
+  @Optional
+  private TlsContextFactory tlsContext;
+
+
+  @Override
+  public TextGeneration connect() throws ConnectionException {
+    return new TextGeneration(
+            httpClient,
+            timeout,
+            inferenceType,
+            apiKey,
+            modelName,
+            maxTokens,
+            temperature,
+            topP
+
+    );
+  }
+
+  @Override
+  public void disconnect(TextGeneration textGeneration) {
+
+  }
+
+  @Override
+  public ConnectionValidationResult validate(TextGeneration textGeneration) {
+    try {
+      textGeneration.validate();
+      return ConnectionValidationResult.success();
+    }
+    catch (ConnectionException e) {
+      return ConnectionValidationResult.failure(e.getMessage(), e);
+    }
+  }
+
+  @Override
+  public void start() throws MuleException {
+
+    HttpClientConfiguration config = createClientConfiguration();
+    httpClient = httpService.getClientFactory().create(config);
+    httpClient.start();
+  }
+
+  private HttpClientConfiguration createClientConfiguration() {
+
+    HttpClientConfiguration.Builder builder = new HttpClientConfiguration.Builder().setName(configName);
+    if (null != tlsContext) {
+      builder.setTlsContextFactory(tlsContext);
+    } else {
+      builder.setTlsContextFactory(TlsContextFactory.builder().buildDefault());
+    }
+    return builder.build();
+  }
+
+  @Override
+  public void stop() throws MuleException {
+    if (httpClient != null) {
+      httpClient.stop();
+    }
+  }
+}
