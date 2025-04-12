@@ -38,6 +38,7 @@ public enum ModelType {
       DEEPSEEK("DEEPSEEK", getDEEPSEEKModelNameStream()),
       ZHIPU_AI("ZHIPU_AI", getCHATGLMModelNameStream()),
       OPENAI_COMPATIBLE_ENDPOINT("OPENAI_COMPATIBLE_ENDPOINT", getOpenAIModelNameStream()),
+      IBM_WATSON("IBM_WATSON", getIBMWatsonModelNameStream()),
 
   ;
 
@@ -162,12 +163,17 @@ public enum ModelType {
   private static Stream<String> getDOCKER_MODELSNameStream() {
     return Arrays.stream(DockerModelName.values()).map(String::valueOf);
   }
+
   private static Stream<String> getDEEPSEEKModelNameStream() {
     return Arrays.stream(DEEPSEEKModelName.values()).map(String::valueOf);
   }
 
   private static Stream<String> getCHATGLMModelNameStream() {
     return Arrays.stream(CHATGLMModelName.values()).map(String::valueOf);
+  }
+  
+  private static Stream<String> getIBMWatsonModelNameStream() {
+    return Arrays.stream(IBMWatsonModelName.values()).map(String::valueOf);
   }
 
   public static ModelType fromValue(String value) {
@@ -700,6 +706,21 @@ public enum ModelType {
     private final String value;
 
     CHATGLMModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum IBMWatsonModelName {
+    meta_llama_llama_3_2_1b_instruct("meta-llama/llama-3-2-1b-instruct");
+
+    private final String value;
+
+    IBMWatsonModelName(String value) {
       this.value = value;
     }
 

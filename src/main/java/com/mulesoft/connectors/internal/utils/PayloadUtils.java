@@ -41,9 +41,13 @@ public class PayloadUtils {
 
 		} else {
 		
-	        if (!"AZURE_OPENAI".equals(configuration.getInferenceType())) {
+	        if (!"AZURE_OPENAI".equals(configuration.getInferenceType()) && !"IBM_WATSON".equals(configuration.getInferenceType())) {
 	            payload.put(InferenceConstants.MODEL, configuration.getModelName());
 	        }
+            if ("IBM_WATSON".equals(configuration.getInferenceType())) {
+	            payload.put("model_id", configuration.getModelName());
+	            payload.put("project_id", configuration.getibmWatsonProjectID());
+            }
 	        payload.put(InferenceConstants.MESSAGES, messagesArray);
 	
 	        // Different max token parameter names for different providers
