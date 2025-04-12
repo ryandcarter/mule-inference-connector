@@ -1,8 +1,6 @@
 package com.mulesoft.connectors.internal.config;
 
-import com.mulesoft.connectors.internal.config.options.*;
 import com.mulesoft.connectors.internal.connection.types.TextGenerationProvider;
-import com.mulesoft.connectors.internal.connection.types.VisionProvider;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.operations.TextGenerationOperations;
 import org.mule.runtime.api.meta.ExpressionSupport;

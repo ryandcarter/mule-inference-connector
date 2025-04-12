@@ -1,6 +1,5 @@
 package com.mulesoft.connectors.internal.connection.types;
 
-import com.mulesoft.connectors.internal.config.options.AzureModelInference;
 import com.mulesoft.connectors.internal.connection.BaseConnection;
 import com.mulesoft.connectors.internal.models.ModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -21,7 +20,6 @@ public class TextGeneration implements BaseConnection {
   private Number maxTokens;
   private Number temperature;
   private Number topP;
-  private AzureModelInference azureModelInference;
 
 
   public TextGeneration(
