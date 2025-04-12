@@ -14,7 +14,7 @@ import com.mulesoft.connectors.internal.models.moderation.ModerationTypeProvider
 import com.mulesoft.connectors.internal.operations.ModerationOperations;
 
 @Operations(ModerationOperations.class)
-@Configuration(name="moderation-config")
+@Configuration(name="moderation-config-old")
 public class ModerationConfiguration {
  
     @Parameter

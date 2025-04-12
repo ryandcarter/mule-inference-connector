@@ -2,27 +2,27 @@ package com.mulesoft.connectors.internal.utils;
 
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.internal.api.metadata.TokenUsage;
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
-import com.mulesoft.connectors.internal.connection.BaseConnection;
+import com.mulesoft.connectors.internal.config.obsolete_InferenceConfiguration;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.helpers.ResponseHelper;
 import com.mulesoft.connectors.internal.helpers.TokenHelper;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.mule.runtime.extension.api.runtime.operation.Result;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.mule.runtime.extension.api.runtime.operation.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Utility class for processing API responses.
  */
-public class MuleHttpClientResponseUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MuleHttpClientResponseUtils.class);
+public class obsolete_ResponseUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(obsolete_ResponseUtils.class);
 
     /**
      * Process the response from the LLM API
@@ -33,7 +33,7 @@ public class MuleHttpClientResponseUtils {
      * @throws Exception if an error occurs during processing
      */
     public static Result<InputStream, LLMResponseAttributes> processResponse(
-            String response, BaseConnection configuration, boolean isToolsResponse) throws Exception {
+            String response, obsolete_InferenceConfiguration configuration, boolean isToolsResponse) throws Exception {
 
         JSONObject root = new JSONObject(response);
         ResponseInfo responseInfo = extractResponseInfo(root, configuration);
@@ -50,7 +50,7 @@ public class MuleHttpClientResponseUtils {
       }
 
         // Handle Anthropic tool_use for tools responses
-        if (isToolsResponse && MuleHttpClientProviderUtils.isAnthropic(configuration)) {
+        if (isToolsResponse && obsolete_ProviderUtils.isAnthropic(configuration)) {
             JSONArray toolsCallAnthropic = extractAnthropicToolCalls(root.getJSONArray("content"));
             if (!toolsCallAnthropic.isEmpty()) {
                 responseInfo.message.put("tool_calls", toolsCallAnthropic);
@@ -58,14 +58,14 @@ public class MuleHttpClientResponseUtils {
         }
 
         // Handle Vertex AI tools responses (functionCall)
-        if (isToolsResponse && MuleHttpClientProviderUtils.isVertexAIExpress(configuration)) {
+        if (isToolsResponse && obsolete_ProviderUtils.isVertexAIExpress(configuration)) {
             JSONArray functionCalls = extractVertexAIFunctionCalls(root);
             if (!functionCalls.isEmpty()) {
                 responseInfo.message.put("tool_calls", functionCalls);
             }
         }
 
-        if (MuleHttpClientProviderUtils.isCohere(configuration)) {
+        if (obsolete_ProviderUtils.isCohere(configuration)) {
             JSONArray contentArray = responseInfo.message.has("content") && !responseInfo.message.isNull("content")
                     ? responseInfo.message.getJSONArray("content")
                     : null;
@@ -76,7 +76,7 @@ public class MuleHttpClientResponseUtils {
                     content = firstContent.getString("text"); // Extract the "text" field
                 }
             }
-        } else if (MuleHttpClientProviderUtils.isVertexAIExpress(configuration)) {
+        } else if (obsolete_ProviderUtils.isVertexAIExpress(configuration)) {
             content = responseInfo.message.has("text") && !responseInfo.message.isNull("text")
                     ? responseInfo.message.getString("text") : null;
 
@@ -114,7 +114,7 @@ public class MuleHttpClientResponseUtils {
      * @throws Exception if an error occurs during processing
      */
     public static Result<InputStream, LLMResponseAttributes> processLLMResponse(
-            String response, BaseConnection configuration) throws Exception {
+            String response, obsolete_InferenceConfiguration configuration) throws Exception {
         return processResponse(response, configuration, false);
     }
 
@@ -126,7 +126,7 @@ public class MuleHttpClientResponseUtils {
      * @throws Exception if an error occurs during processing
      */
     public static Result<InputStream, LLMResponseAttributes> processToolsResponse(
-            String response, BaseConnection configuration) throws Exception {
+            String response, obsolete_InferenceConfiguration configuration) throws Exception {
         return processResponse(response, configuration, true);
     }
 
@@ -147,7 +147,7 @@ public class MuleHttpClientResponseUtils {
      * @param configuration the connector configuration
      * @return ResponseInfo containing the extracted information
      */
-    private static ResponseInfo extractResponseInfo(JSONObject root, BaseConnection configuration) {
+    private static ResponseInfo extractResponseInfo(JSONObject root, obsolete_InferenceConfiguration configuration) {
         ResponseInfo info = new ResponseInfo();
         info.model = !("AI21LABS".equals(configuration.getInferenceType())
                 || "COHERE".equals(configuration.getInferenceType())
@@ -155,9 +155,9 @@ public class MuleHttpClientResponseUtils {
                 ? root.getString("model")   //if model is notAI21LABS or COHERE or VERTEX_AI_EXPRESS
                 : configuration.getModelName();
 
-        if (MuleHttpClientProviderUtils.isOllama(configuration)) {
+        if (obsolete_ProviderUtils.isOllama(configuration)) {
             info.id = null;
-        } else if (MuleHttpClientProviderUtils.isVertexAIExpress(configuration)) {
+        } else if (obsolete_ProviderUtils.isVertexAIExpress(configuration)) {
         	info.id = root.getString("responseId");
         } else {
         	info.id = root.getString("id");
@@ -165,13 +165,13 @@ public class MuleHttpClientResponseUtils {
 
         info.message = new JSONObject();
 
-        if (MuleHttpClientProviderUtils.isOllama(configuration)) {
+        if (obsolete_ProviderUtils.isOllama(configuration)) {
             info.message = root.getJSONObject("message");
             info.finishReason = root.getString("done_reason");
-        } else if (MuleHttpClientProviderUtils.isCohere(configuration)) {
+        } else if (obsolete_ProviderUtils.isCohere(configuration)) {
             info.message = root.getJSONObject("message");
             info.finishReason = root.getString("finish_reason");
-        } else if (MuleHttpClientProviderUtils.isAnthropic(configuration)) {
+        } else if (obsolete_ProviderUtils.isAnthropic(configuration)) {
             info.finishReason = root.getString("stop_reason");
 
             // Extract text from content array
@@ -188,7 +188,7 @@ public class MuleHttpClientResponseUtils {
 
             info.message = new JSONObject();
             info.message.put("content", info.text);
-        } else if (MuleHttpClientProviderUtils.isVertexAIExpress(configuration)) {
+        } else if (obsolete_ProviderUtils.isVertexAIExpress(configuration)) {
         	// Extract candidates array
             JSONArray candidatesArray = root.getJSONArray("candidates");
 
@@ -213,7 +213,7 @@ public class MuleHttpClientResponseUtils {
             // Default case for other models (OpenAI, etc.)
             JSONArray choicesArray = root.getJSONArray("choices");
             JSONObject firstChoice = choicesArray.getJSONObject(0);
-            info.finishReason = MuleHttpClientProviderUtils.isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
+            info.finishReason = obsolete_ProviderUtils.isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
             info.message = firstChoice.getJSONObject("message");
         }
 
@@ -319,13 +319,13 @@ public class MuleHttpClientResponseUtils {
 
 
     public static Result<InputStream, LLMResponseAttributes> processImageGenResponse(
-            String response, InferenceConfiguration configuration) throws Exception {
+            String response, obsolete_InferenceConfiguration configuration) throws Exception {
 
         JSONObject root = new JSONObject(response);
         JSONObject jsonObject = new JSONObject();
         Map<String, String> responseAttributes = new HashMap<>();
 
-        if ((ProviderUtils.isOpenAI(configuration)  || ProviderUtils.isHuggingFace(configuration))  && root.has("data")) {
+        if ((obsolete_ProviderUtils.isOpenAI(configuration)  || obsolete_ProviderUtils.isHuggingFace(configuration))  && root.has("data")) {
             JSONArray dataArray = root.getJSONArray("data");
 
             if (dataArray.length() > 0) {

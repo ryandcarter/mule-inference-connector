@@ -1,11 +1,11 @@
 package com.mulesoft.connectors.internal.operations;
 
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
+import com.mulesoft.connectors.internal.config.obsolete_InferenceConfiguration;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
-import com.mulesoft.connectors.internal.utils.ConnectionUtils;
-import com.mulesoft.connectors.internal.utils.PayloadUtils;
-import com.mulesoft.connectors.internal.utils.ResponseUtils;
+import com.mulesoft.connectors.internal.utils.obsolete_ConnectionUtils;
+import com.mulesoft.connectors.internal.utils.obsolete_PayloadUtils;
+import com.mulesoft.connectors.internal.utils.obsolete_ResponseUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -21,10 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
@@ -32,8 +29,8 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICAT
  * This class contains operations for the inference connector.
  * Each public method represents an extension operation.
  */
-public class InferenceOperations {
-    private static final Logger LOGGER = LoggerFactory.getLogger(InferenceOperations.class);
+public class obsolete_InferenceOperations {
+    private static final Logger LOGGER = LoggerFactory.getLogger(obsolete_InferenceOperations.class);
     private static final String ERROR_MSG_FORMAT = "%s result error";
 
     /**
@@ -49,19 +46,19 @@ public class InferenceOperations {
     @OutputJsonType(schema = "api/response/Response.json")
     @Summary("Native chat completion operation")
     public Result<InputStream, LLMResponseAttributes> chatCompletion(
-            @Config InferenceConfiguration configuration,
+            @Config obsolete_InferenceConfiguration configuration,
             @Content InputStream messages) throws ModuleException {
         try {
-            JSONArray messagesArray = PayloadUtils.parseInputStreamToJsonArray(messages);
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
+            JSONArray messagesArray = obsolete_PayloadUtils.parseInputStreamToJsonArray(messages);
+            URL chatCompUrl = obsolete_ConnectionUtils.getConnectionURLChatCompletion(configuration);
 
             LOGGER.debug("Chatting with {}", chatCompUrl);
 
-            JSONObject payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
-            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
+            JSONObject payload = obsolete_PayloadUtils.buildPayload(configuration, messagesArray, null);
+            String response = obsolete_ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
 
             LOGGER.debug("Chat completions result {}", response);
-            return ResponseUtils.processLLMResponse(response, configuration);
+            return obsolete_ResponseUtils.processLLMResponse(response, configuration);
         } catch (Exception e) {
             LOGGER.error("Error in chat completions: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Chat completions"),
@@ -82,16 +79,16 @@ public class InferenceOperations {
     @OutputJsonType(schema = "api/response/Response.json")
     @Summary("Simple chat answer prompt")
     public Result<InputStream, LLMResponseAttributes> chatAnswerPrompt(
-            @Config InferenceConfiguration configuration,
+            @Config obsolete_InferenceConfiguration configuration,
             @Content String prompt) throws ModuleException {
         try {        
-        	JSONObject payload = PayloadUtils.buildChatAnswerPromptPayload(configuration, prompt);
+        	JSONObject payload = obsolete_PayloadUtils.buildChatAnswerPromptPayload(configuration, prompt);
 
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
-            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
+            URL chatCompUrl = obsolete_ConnectionUtils.getConnectionURLChatCompletion(configuration);
+            String response = obsolete_ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
 
             LOGGER.debug("Chat answer prompt result {}", response);
-            return ResponseUtils.processLLMResponse(response, configuration);
+            return obsolete_ResponseUtils.processLLMResponse(response, configuration);
         } catch (Exception e) {
             LOGGER.error("Error in chat answer prompt: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Chat answer prompt"),
@@ -114,19 +111,19 @@ public class InferenceOperations {
     @OutputJsonType(schema = "api/response/Response.json")
     @Summary("Define a prompt template with instructions, and data ")
     public Result<InputStream, LLMResponseAttributes> promptTemplate(
-            @Config InferenceConfiguration configuration,
+            @Config obsolete_InferenceConfiguration configuration,
             @Content String template,
             @Content String instructions,
             @Content(primary = true) String data) throws ModuleException {
         try {
         	        	
-        	JSONObject payload = PayloadUtils.buildPromptTemplatePayload(configuration, template, instructions, data);
+        	JSONObject payload = obsolete_PayloadUtils.buildPromptTemplatePayload(configuration, template, instructions, data);
 
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
-            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
+            URL chatCompUrl = obsolete_ConnectionUtils.getConnectionURLChatCompletion(configuration);
+            String response = obsolete_ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
 
             LOGGER.debug("Agent define prompt template result {}", response);
-            return ResponseUtils.processLLMResponse(response, configuration);
+            return obsolete_ResponseUtils.processLLMResponse(response, configuration);
         } catch (Exception e) {
             LOGGER.error("Error in agent define prompt template: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Agent define prompt template"),
@@ -150,7 +147,7 @@ public class InferenceOperations {
     @OutputJsonType(schema = "api/response/Response.json")
     @Summary("Define a prompt template with instructions, data and tools")
     public Result<InputStream, LLMResponseAttributes> toolsTemplate(
-            @Config InferenceConfiguration configuration,
+            @Config obsolete_InferenceConfiguration configuration,
             @Content String template,
             @Content String instructions,
             @Content(primary = true) String data,
@@ -158,13 +155,13 @@ public class InferenceOperations {
         
     	try {
         	        	
-        	JSONObject payload = PayloadUtils.buildToolsTemplatePayload(configuration, template, instructions, data, tools);
+        	JSONObject payload = obsolete_PayloadUtils.buildToolsTemplatePayload(configuration, template, instructions, data, tools);
         	
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
-            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
+            URL chatCompUrl = obsolete_ConnectionUtils.getConnectionURLChatCompletion(configuration);
+            String response = obsolete_ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
 
             LOGGER.debug("Tools use native template result {}", response);
-            return ResponseUtils.processToolsResponse(response, configuration);
+            return obsolete_ResponseUtils.processToolsResponse(response, configuration);
         } catch (Exception e) {
             LOGGER.error("Error in tools use native template: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Tools use native template"),
