@@ -11,9 +11,9 @@ import org.mule.runtime.extension.api.annotation.values.OfValues;
 
 import com.mulesoft.connectors.internal.models.moderation.ModerationNameProvider;
 import com.mulesoft.connectors.internal.models.moderation.ModerationTypeProvider;
-import com.mulesoft.connectors.internal.operations.ModerationOperations;
+import com.mulesoft.connectors.internal.operations.obsolete_ModerationOperations;
 
-@Operations(ModerationOperations.class)
+@Operations(obsolete_ModerationOperations.class)
 @Configuration(name="moderation-config-old")
 public class ModerationConfiguration {
  

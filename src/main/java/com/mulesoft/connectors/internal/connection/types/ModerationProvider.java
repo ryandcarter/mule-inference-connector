@@ -1,7 +1,5 @@
 package com.mulesoft.connectors.internal.connection.types;
 
-import com.mulesoft.connectors.internal.models.images.ModelNameProvider;
-import com.mulesoft.connectors.internal.models.images.ModelTypeProvider;
 import com.mulesoft.connectors.internal.models.moderation.ModerationNameProvider;
 import com.mulesoft.connectors.internal.models.moderation.ModerationTypeProvider;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
@@ -26,9 +24,9 @@ import org.mule.runtime.http.api.client.HttpClientConfiguration;
 
 import javax.inject.Inject;
 
-@Alias("image-generation")
-@DisplayName("Image Generation Model")
-public class ModerationProvider implements CachedConnectionProvider<ImageGeneration>, Startable, Stoppable {
+@Alias("moderation-model")
+@DisplayName("Moderation Model")
+public class ModerationProvider implements CachedConnectionProvider<ModerationBase>, Startable, Stoppable {
 
   private HttpClient httpClient;
 
@@ -80,8 +78,8 @@ public class ModerationProvider implements CachedConnectionProvider<ImageGenerat
 
 
   @Override
-  public ImageGeneration connect() throws ConnectionException {
-    return new ImageGeneration(
+  public ModerationBase connect() throws ConnectionException {
+    return new ModerationBase(
             httpClient,
             timeout,
             inferenceType,
@@ -91,14 +89,14 @@ public class ModerationProvider implements CachedConnectionProvider<ImageGenerat
   }
 
   @Override
-  public void disconnect(ImageGeneration imageGeneration) {
+  public void disconnect(ModerationBase moderation) {
 
   }
 
   @Override
-  public ConnectionValidationResult validate(ImageGeneration imageGeneration) {
+  public ConnectionValidationResult validate(ModerationBase moderation) {
     try {
-      imageGeneration.validate();
+      moderation.validate();
       return ConnectionValidationResult.success();
     }
     catch (ConnectionException e) {

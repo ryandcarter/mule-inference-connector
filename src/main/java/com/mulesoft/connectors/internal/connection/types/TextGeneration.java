@@ -1,14 +1,12 @@
 package com.mulesoft.connectors.internal.connection.types;
 
-import com.mulesoft.connectors.internal.connection.BaseConnection;
-import com.mulesoft.connectors.internal.models.ModelNameProvider;
+import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TextGeneration implements BaseConnection {
+public class TextGeneration implements ChatCompletionBase {
 
   private static Logger LOGGER = LoggerFactory.getLogger(TextGeneration.class);
 

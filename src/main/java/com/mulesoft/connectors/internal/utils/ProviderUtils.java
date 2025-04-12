@@ -101,6 +101,10 @@ public class ProviderUtils {
         return convert(imageConfig);
     }
 
+    public static @NotNull TextGenerationConfig convertToInferenceConfig(ModerationConfig imageConfig) {
+        return convert(imageConfig);
+    }
+
     private static @NotNull TextGenerationConfig convert(Object config) {
         TextGenerationConfig inferenceConfig = new TextGenerationConfig();
 
@@ -115,12 +119,19 @@ public class ProviderUtils {
             inferenceConfig.setOllamaUrl(vision.getOllamaUrl());
             inferenceConfig.setVirtualKey(vision.getVirtualKey());
             inferenceConfig.setOpenAICompatibleURL(vision.getOpenAICompatibleURL());
-        } else if (config instanceof obsolete_ImageGenerationConfiguration) {
-            obsolete_ImageGenerationConfiguration image = (obsolete_ImageGenerationConfiguration) config;
+        } else if (config instanceof ImageGenerationConfig) {
+            ImageGenerationConfig image = (ImageGenerationConfig) config;
 //            inferenceConfig.setInferenceType(image.getInferenceType());
 //            inferenceConfig.setApiKey(image.getApiKey());
 //            inferenceConfig.setModelName(image.getModelName());
 //            inferenceConfig.setTimeout("600000");
+        } else if (config instanceof ModerationConfig) {
+            ModerationConfig moderation = (ModerationConfig) config;
+//            inferenceConfig.setInferenceType(image.getInferenceType());
+//            inferenceConfig.setApiKey(image.getApiKey());
+//            inferenceConfig.setModelName(image.getModelName());
+//            inferenceConfig.setTimeout("600000");
+
         }
 
         return inferenceConfig;

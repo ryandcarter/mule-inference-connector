@@ -52,19 +52,12 @@ public class TextGenerationOperations {
 
             JSONArray messagesArray = PayloadUtils.parseInputStreamToJsonArray(messages);
 
-            System.out.println(messagesArray);
-
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration, connection);
-            System.out.println(chatCompUrl);
-
             LOGGER.debug("Chatting with {}", chatCompUrl);
 
             JSONObject payload = PayloadUtils.buildPayload(connection, messagesArray, null);
-            System.out.println(payload);
 
-            //String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
             String response = ConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
-            System.out.println(response);
 
             LOGGER.debug("Chat completions result {}", response);
             return ResponseUtils.processLLMResponse(response, connection);
