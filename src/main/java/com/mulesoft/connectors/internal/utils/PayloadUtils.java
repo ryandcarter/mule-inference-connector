@@ -26,7 +26,7 @@ public class PayloadUtils {
      * @param toolsArray the tools array (can be null)
      * @return the payload as a JSON object
      */
-    public static JSONObject buildPayload(ChatCompletionBase configuration, JSONArray messagesArray, JSONArray toolsArray) {
+    public static JSONObject buildPayload(TextGenerationConfig inferenceConfig, ChatCompletionBase configuration, JSONArray messagesArray, JSONArray toolsArray) {
         JSONObject payload = new JSONObject();
         
 		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
@@ -40,10 +40,14 @@ public class PayloadUtils {
 	        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);	        
 
 		} else {
-		
-	        if (!"AZURE_OPENAI".equals(configuration.getInferenceType())) {
-	            payload.put(InferenceConstants.MODEL, configuration.getModelName());
-	        }
+
+            if (!"AZURE_OPENAI".equals(configuration.getInferenceType()) && !"IBM_WATSON".equals(configuration.getInferenceType())) {
+                payload.put(InferenceConstants.MODEL, configuration.getModelName());
+            }
+            if ("IBM_WATSON".equals(configuration.getInferenceType())) {
+                payload.put("model_id", configuration.getModelName());
+                payload.put("project_id", inferenceConfig.getibmWatsonProjectID());
+            }
 	        payload.put(InferenceConstants.MESSAGES, messagesArray);
 	
 	        // Different max token parameter names for different providers
@@ -383,7 +387,7 @@ public class PayloadUtils {
      * @param prompt The prompt
      * @return The payload as a JSON object
      */
-    public static JSONObject buildChatAnswerPromptPayload(ChatCompletionBase configuration, String prompt) {
+    public static JSONObject buildChatAnswerPromptPayload(TextGenerationConfig inferenceConfig, ChatCompletionBase configuration, String prompt) {
     	JSONObject payload;
 	
 		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
@@ -397,7 +401,7 @@ public class PayloadUtils {
 	        usersPrompt.put("role", "user");
 	        usersPrompt.put("content", prompt);
 	        messagesArray.put(usersPrompt);
-	        payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
+	        payload = PayloadUtils.buildPayload(inferenceConfig, configuration, messagesArray, null);
 		}
 	
 		return payload;
@@ -411,7 +415,7 @@ public class PayloadUtils {
      * @param data The primary data content
      * @return The payload as a JSON object
      */
-    public static JSONObject buildPromptTemplatePayload(ChatCompletionBase configuration, String template, String instructions, String data) {
+    public static JSONObject buildPromptTemplatePayload(TextGenerationConfig inferenceConfig,ChatCompletionBase configuration, String template, String instructions, String data) {
     	JSONObject payload;
 	
 	
@@ -438,7 +442,7 @@ public class PayloadUtils {
 	        JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
 	                configuration, template + " - " + instructions, data);
 	
-	        payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
+	        payload = PayloadUtils.buildPayload(inferenceConfig, configuration, messagesArray, null);
 	
 		}
 
@@ -455,7 +459,7 @@ public class PayloadUtils {
      * @param tools The tools set to be used
      * @return The payload as a JSON object
      */
-    public static JSONObject buildToolsTemplatePayload(ChatCompletionBase configuration, String template,
+    public static JSONObject buildToolsTemplatePayload(TextGenerationConfig inferenceConfig, ChatCompletionBase configuration, String template,
                                                        String instructions, String data, InputStream tools) throws IOException {
 
         	JSONObject payload;
@@ -487,7 +491,7 @@ public class PayloadUtils {
         		JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools);
         		JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
         				configuration, template + " - " + instructions, data);
-        		payload = PayloadUtils.buildPayload(configuration, messagesArray, toolsArray);
+        		payload = PayloadUtils.buildPayload(inferenceConfig, configuration, messagesArray, toolsArray);
             }
     
     		return payload;

@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.net.URL;
 
-import static com.mulesoft.connectors.internal.utils.obsolete_PayloadUtils.createRequestImageURL;
+import static com.mulesoft.connectors.internal.utils.PayloadUtils.createRequestImageURL;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
@@ -60,7 +60,7 @@ public class VisionModelOperations {
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(inferenceConfig, connection);
             LOGGER.debug("Chatting with {}", chatCompUrl);
 
-            JSONObject payload = PayloadUtils.buildPayload(connection, messagesArray, null);
+            JSONObject payload = PayloadUtils.buildPayload(inferenceConfig, connection, messagesArray, null);
 
             String response = ConnectionUtils.executeREST(chatCompUrl, inferenceConfig, connection, payload.toString());
 

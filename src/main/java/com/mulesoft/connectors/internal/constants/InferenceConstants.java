@@ -33,11 +33,14 @@ public class InferenceConstants {
   public static final String DEEPSEEK_URL = "https://api.deepseek.com";
   public static final String ZHIPU_AI_URL = "https://open.bigmodel.cn/api/paas/v4";
   public static final String OPENAI_COMPATIBLE_ENDPOINT = "https://server.endpoint.com";
+  public static final String IBM_WATSON_URL = "https://us-south.ml.cloud.ibm.com/ml/v1/text";
+  public static final String IBM_WATSON_Token_URL = "https://iam.cloud.ibm.com/identity/token";
 
   // Resources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
   public static final String CHAT_COMPLETIONS_AZURE = "/chat/completions?api-version=2024-10-21";
   public static final String CHAT_COMPLETIONS_AZURE_AI_FOUNDRY = "/chat/completions?api-version={api-version}";
+  public static final String CHAT_COMPLETIONS_IBM_WATSON = "/chat?version={api-version}";
   public static final String CHAT_COMPLETIONS_OLLAMA = "/chat";
   public static final String GENERATION_OLLAMA = "/generate";
   public static final String GENERATE_CONTENT_VERTEX_AI = "generateContent";

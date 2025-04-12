@@ -1,7 +1,6 @@
 package com.mulesoft.connectors.internal.api.delegate;
 
 import com.mulesoft.connectors.internal.config.ModerationConfig;
-import com.mulesoft.connectors.internal.config.ModerationConfiguration;
 import com.mulesoft.connectors.internal.connection.types.ModerationBase;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import org.json.JSONArray;

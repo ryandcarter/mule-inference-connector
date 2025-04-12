@@ -76,23 +76,6 @@ public class ProviderUtils {
 
     }
 
-    public static @NotNull obsolete_InferenceConfiguration convertToInferenceConfig_old(obsolete_VisionConfiguration visionConfig) {
-        obsolete_InferenceConfiguration inferenceConfig = new obsolete_InferenceConfiguration();
-
-        inferenceConfig.setInferenceType(visionConfig.getInferenceType());
-        inferenceConfig.setApiKey(visionConfig.getApiKey());
-        inferenceConfig.setModelName(visionConfig.getModelName());
-        inferenceConfig.setMaxTokens(visionConfig.getMaxTokens());
-        inferenceConfig.setTemperature(visionConfig.getTemperature());
-        inferenceConfig.setTopP(visionConfig.getTopP());
-        inferenceConfig.setTimeout(visionConfig.getTimeout());
-        inferenceConfig.setOllamaUrl(visionConfig.getOllamaUrl());
-        inferenceConfig.setVirtualKey(visionConfig.getVirtualKey());
-
-        return inferenceConfig;
-    }
-
-
     public static @NotNull TextGenerationConfig convertToInferenceConfig(VisionConfig visionConfig) {
         return convert(visionConfig);
     }
