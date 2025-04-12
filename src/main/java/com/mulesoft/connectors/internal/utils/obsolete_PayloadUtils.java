@@ -1,11 +1,7 @@
 package com.mulesoft.connectors.internal.utils;
 
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
-import com.mulesoft.connectors.internal.config.TextGenerationConfig;
-import com.mulesoft.connectors.internal.connection.BaseConnection;
+import com.mulesoft.connectors.internal.config.obsolete_InferenceConfiguration;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.net.URLConnection;
@@ -13,10 +9,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 /**
  * Utility class for payload operations.
  */
-public class MuleHttpClientPayloadUtils {
+public class obsolete_PayloadUtils {
     private static final String[] NO_TEMPERATURE_MODELS = {"o3-mini", "o1", "o1-mini"};
 
     /**
@@ -26,7 +25,7 @@ public class MuleHttpClientPayloadUtils {
      * @param toolsArray the tools array (can be null)
      * @return the payload as a JSON object
      */
-    public static JSONObject buildPayload(BaseConnection configuration, JSONArray messagesArray, JSONArray toolsArray) {
+    public static JSONObject buildPayload(obsolete_InferenceConfiguration configuration, JSONArray messagesArray, JSONArray toolsArray) {
         JSONObject payload = new JSONObject();
         
 		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
@@ -81,7 +80,7 @@ public class MuleHttpClientPayloadUtils {
      * @param requestJson the payload with prompt
      * @return the payload as a JSON object
      */
-    public static JSONObject buildPayloadImageGeneration(InferenceConfiguration configuration, JSONObject requestJson) {
+    public static JSONObject buildPayloadImageGeneration(obsolete_InferenceConfiguration configuration, JSONObject requestJson) {
         JSONObject payload = requestJson;
 
         if ("OPENAI".equalsIgnoreCase(configuration.getInferenceType())) {
@@ -98,8 +97,8 @@ public class MuleHttpClientPayloadUtils {
      * @param prompt the prompt
      * @return the payload as a JSON object
      */
-    public static JSONObject buildVertexAIPayload(BaseConnection configuration, String prompt,
-    		JSONArray safetySettings, JSONObject systemInstruction, JSONArray tools) {
+    public static JSONObject buildVertexAIPayload(obsolete_InferenceConfiguration configuration, String prompt,
+                                                  JSONArray safetySettings, JSONObject systemInstruction, JSONArray tools) {
         JSONObject payload = new JSONObject();
         
         //create the parts of the contents
@@ -184,12 +183,12 @@ public class MuleHttpClientPayloadUtils {
      * @return JSONArray containing the messages
      */
     public static JSONArray createMessagesArrayWithSystemPrompt(
-            BaseConnection configuration, String systemContent, String userContent) {
+            obsolete_InferenceConfiguration configuration, String systemContent, String userContent) {
         JSONArray messagesArray = new JSONArray();
 
         // Create system/assistant message based on provider
         JSONObject systemMessage = new JSONObject();
-        systemMessage.put("role", "Anthropic".equals(configuration.getInferenceType()) ? "assistant" : "system");
+        systemMessage.put("role", obsolete_ProviderUtils.isAnthropic(configuration) ? "assistant" : "system");
         systemMessage.put("content", systemContent);
         messagesArray.put(systemMessage);
 
@@ -383,21 +382,21 @@ public class MuleHttpClientPayloadUtils {
      * @param prompt The prompt
      * @return The payload as a JSON object
      */
-    public static JSONObject buildChatAnswerPromptPayload(BaseConnection configuration, String prompt) {
+    public static JSONObject buildChatAnswerPromptPayload(obsolete_InferenceConfiguration configuration, String prompt) {
     	JSONObject payload;
 	
 		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
 	    	JSONArray safetySettings = new JSONArray(); // Empty array
 	    	JSONObject systemInstruction = new JSONObject(); // Empty object
 	    	JSONArray tools = new JSONArray(); // Empty array
-			payload = MuleHttpClientPayloadUtils.buildVertexAIPayload(configuration, prompt, safetySettings, systemInstruction, tools);
+			payload = obsolete_PayloadUtils.buildVertexAIPayload(configuration, prompt, safetySettings, systemInstruction, tools);
 		} else {
 	        JSONArray messagesArray = new JSONArray();
 	        JSONObject usersPrompt = new JSONObject();
 	        usersPrompt.put("role", "user");
 	        usersPrompt.put("content", prompt);
 	        messagesArray.put(usersPrompt);
-	        payload = MuleHttpClientPayloadUtils.buildPayload(configuration, messagesArray, null);
+	        payload = obsolete_PayloadUtils.buildPayload(configuration, messagesArray, null);
 		}
 	
 		return payload;
@@ -411,7 +410,7 @@ public class MuleHttpClientPayloadUtils {
      * @param data The primary data content
      * @return The payload as a JSON object
      */
-    public static JSONObject buildPromptTemplatePayload(BaseConnection configuration, String template, String instructions, String data) {
+    public static JSONObject buildPromptTemplatePayload(obsolete_InferenceConfiguration configuration, String template, String instructions, String data) {
     	JSONObject payload;
 	
 	
@@ -433,12 +432,12 @@ public class MuleHttpClientPayloadUtils {
 
 	    	JSONArray tools = new JSONArray(); // Empty array
 
-	    	payload = MuleHttpClientPayloadUtils.buildVertexAIPayload(configuration, data, safetySettings, systemInstruction, tools);
+	    	payload = obsolete_PayloadUtils.buildVertexAIPayload(configuration, data, safetySettings, systemInstruction, tools);
 		} else {
-	        JSONArray messagesArray = MuleHttpClientPayloadUtils.createMessagesArrayWithSystemPrompt(
+	        JSONArray messagesArray = obsolete_PayloadUtils.createMessagesArrayWithSystemPrompt(
 	                configuration, template + " - " + instructions, data);
 	
-	        payload = MuleHttpClientPayloadUtils.buildPayload(configuration, messagesArray, null);
+	        payload = obsolete_PayloadUtils.buildPayload(configuration, messagesArray, null);
 	
 		}
 
@@ -455,8 +454,8 @@ public class MuleHttpClientPayloadUtils {
      * @param tools The tools set to be used
      * @return The payload as a JSON object
      */
-    public static JSONObject buildToolsTemplatePayload(BaseConnection configuration, String template,
-    		String instructions, String data, InputStream tools) throws IOException {
+    public static JSONObject buildToolsTemplatePayload(obsolete_InferenceConfiguration configuration, String template,
+                                                       String instructions, String data, InputStream tools) throws IOException {
 
         	JSONObject payload;
 
@@ -476,18 +475,18 @@ public class MuleHttpClientPayloadUtils {
                 JSONObject systemInstruction = new JSONObject();
                 systemInstruction.put("parts", parts);
             	
-            	JSONArray toolsArray = MuleHttpClientPayloadUtils.parseInputStreamToJsonArray(tools);
+            	JSONArray toolsArray = obsolete_PayloadUtils.parseInputStreamToJsonArray(tools);
 
             	JSONArray safetySettings = new JSONArray(); // Empty array
 
-            	payload = MuleHttpClientPayloadUtils.buildVertexAIPayload(configuration, data, safetySettings, systemInstruction, toolsArray);
+            	payload = obsolete_PayloadUtils.buildVertexAIPayload(configuration, data, safetySettings, systemInstruction, toolsArray);
         	} else {
         	
         	
-        		JSONArray toolsArray = MuleHttpClientPayloadUtils.parseInputStreamToJsonArray(tools);
-        		JSONArray messagesArray = MuleHttpClientPayloadUtils.createMessagesArrayWithSystemPrompt(
+        		JSONArray toolsArray = obsolete_PayloadUtils.parseInputStreamToJsonArray(tools);
+        		JSONArray messagesArray = obsolete_PayloadUtils.createMessagesArrayWithSystemPrompt(
         				configuration, template + " - " + instructions, data);
-        		payload = MuleHttpClientPayloadUtils.buildPayload(configuration, messagesArray, toolsArray);
+        		payload = obsolete_PayloadUtils.buildPayload(configuration, messagesArray, toolsArray);
             }
     
     		return payload;
@@ -529,7 +528,7 @@ public class MuleHttpClientPayloadUtils {
         return "image/jpeg"; // Default fallback
     }
     
-    public static JSONObject buildVertexAIGenerationConfig(BaseConnection configuration) {
+    public static JSONObject buildVertexAIGenerationConfig(obsolete_InferenceConfiguration configuration) {
 	    //create the generationConfig
 	    JSONObject generationConfig = new JSONObject();
 	    generationConfig.put("responseModalities", new String[]{"TEXT"});

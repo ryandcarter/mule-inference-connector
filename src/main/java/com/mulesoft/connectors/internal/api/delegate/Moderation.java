@@ -3,7 +3,7 @@ package com.mulesoft.connectors.internal.api.delegate;
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.internal.config.ModerationConfiguration;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
-import com.mulesoft.connectors.internal.utils.ConnectionUtils;
+import com.mulesoft.connectors.internal.utils.obsolete_ConnectionUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -212,7 +212,7 @@ public abstract class Moderation {
         {
             URL moderationURL = new URL(this.getAPIUrl());
             HttpURLConnection conn = this.getConnectionObject(moderationURL);
-            return ConnectionUtils.executeREST(conn, requestPayload);
+            return obsolete_ConnectionUtils.executeREST(conn, requestPayload);
         } catch (Exception e) {
             LOGGER.error("Error in tools use native template: {}", e.getMessage(), e);
             throw new ModuleException("MODERATION ERROR", InferenceErrorType.TEXT_MODERATION, e);

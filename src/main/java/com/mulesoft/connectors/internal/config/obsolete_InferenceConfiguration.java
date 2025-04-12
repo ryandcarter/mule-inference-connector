@@ -10,14 +10,13 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
-import com.mulesoft.connectors.internal.models.moderation.ModerationNameProvider;
 import com.mulesoft.connectors.internal.models.ModelNameProvider;
 import com.mulesoft.connectors.internal.models.ModelTypeProvider;
-import com.mulesoft.connectors.internal.operations.InferenceOperations;
+import com.mulesoft.connectors.internal.operations.obsolete_InferenceOperations;
 
-@Operations(InferenceOperations.class)
+@Operations(obsolete_InferenceOperations.class)
 @Configuration(name="llm-config")
-public class InferenceConfiguration {
+public class obsolete_InferenceConfiguration {
 
 	@Parameter
 	@Placement(order = 1, tab = Placement.DEFAULT_TAB)

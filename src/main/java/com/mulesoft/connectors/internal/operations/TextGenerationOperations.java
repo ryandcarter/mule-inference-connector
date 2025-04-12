@@ -2,7 +2,7 @@ package com.mulesoft.connectors.internal.operations;
 
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.internal.config.TextGenerationConfig;
-import com.mulesoft.connectors.internal.connection.BaseConnection;
+import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
 import com.mulesoft.connectors.internal.utils.*;
 import org.json.JSONArray;
@@ -46,28 +46,28 @@ public class TextGenerationOperations {
     @OutputJsonType(schema = "api/response/Response.json")
     @Summary("Native chat completion operation")
     public Result<InputStream, LLMResponseAttributes> chatCompletion(
-            @Config TextGenerationConfig configuration, @Connection BaseConnection connection,
+            @Config TextGenerationConfig configuration, @Connection ChatCompletionBase connection,
             @Content InputStream messages) throws ModuleException {
         try {
 
-            JSONArray messagesArray = MuleHttpClientPayloadUtils.parseInputStreamToJsonArray(messages);
+            JSONArray messagesArray = PayloadUtils.parseInputStreamToJsonArray(messages);
 
             System.out.println(messagesArray);
 
-            URL chatCompUrl = MuleHttpClientConnectionUtils.getConnectionURLChatCompletion(configuration, connection);
+            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration, connection);
             System.out.println(chatCompUrl);
 
             LOGGER.debug("Chatting with {}", chatCompUrl);
 
-            JSONObject payload = MuleHttpClientPayloadUtils.buildPayload(connection, messagesArray, null);
+            JSONObject payload = PayloadUtils.buildPayload(connection, messagesArray, null);
             System.out.println(payload);
 
             //String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());
-            String response = MuleHttpClientConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
+            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
             System.out.println(response);
 
             LOGGER.debug("Chat completions result {}", response);
-            return MuleHttpClientResponseUtils.processLLMResponse(response, connection);
+            return ResponseUtils.processLLMResponse(response, connection);
         } catch (Exception e) {
             LOGGER.error("Error in chat completions: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Chat completions"),
@@ -88,16 +88,16 @@ public class TextGenerationOperations {
     @OutputJsonType(schema = "api/response/Response.json")
     @Summary("Simple chat answer prompt")
     public Result<InputStream, LLMResponseAttributes> chatAnswerPrompt(
-            @Config TextGenerationConfig configuration, @Connection BaseConnection connection,
+            @Config TextGenerationConfig configuration, @Connection ChatCompletionBase connection,
             @Content String prompt) throws ModuleException {
         try {        
-        	JSONObject payload = MuleHttpClientPayloadUtils.buildChatAnswerPromptPayload(connection, prompt);
+        	JSONObject payload = PayloadUtils.buildChatAnswerPromptPayload(connection, prompt);
 
-            URL chatCompUrl = MuleHttpClientConnectionUtils.getConnectionURLChatCompletion(configuration, connection);
-            String response = MuleHttpClientConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
+            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration, connection);
+            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
 
             LOGGER.debug("Chat answer prompt result {}", response);
-            return MuleHttpClientResponseUtils.processLLMResponse(response, connection);
+            return ResponseUtils.processLLMResponse(response, connection);
         } catch (Exception e) {
             LOGGER.error("Error in chat answer prompt: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Chat answer prompt"),
@@ -120,19 +120,19 @@ public class TextGenerationOperations {
     @OutputJsonType(schema = "api/response/Response.json")
     @Summary("Define a prompt template with instructions, and data ")
     public Result<InputStream, LLMResponseAttributes> promptTemplate(
-            @Config TextGenerationConfig configuration, @Connection BaseConnection connection,
+            @Config TextGenerationConfig configuration, @Connection ChatCompletionBase connection,
             @Content String template,
             @Content String instructions,
             @Content(primary = true) String data) throws ModuleException {
         try {
         	        	
-        	JSONObject payload = MuleHttpClientPayloadUtils.buildPromptTemplatePayload(connection, template, instructions, data);
+        	JSONObject payload = PayloadUtils.buildPromptTemplatePayload(connection, template, instructions, data);
 
-            URL chatCompUrl = MuleHttpClientConnectionUtils.getConnectionURLChatCompletion(configuration,connection);
-            String response = MuleHttpClientConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
+            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration,connection);
+            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
 
             LOGGER.debug("Agent define prompt template result {}", response);
-            return MuleHttpClientResponseUtils.processLLMResponse(response, connection);
+            return ResponseUtils.processLLMResponse(response, connection);
         } catch (Exception e) {
             LOGGER.error("Error in agent define prompt template: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Agent define prompt template"),
@@ -156,7 +156,7 @@ public class TextGenerationOperations {
     @OutputJsonType(schema = "api/response/Response.json")
     @Summary("Define a prompt template with instructions, data and tools")
     public Result<InputStream, LLMResponseAttributes> toolsTemplate(
-            @Config TextGenerationConfig configuration, @Connection BaseConnection connection,
+            @Config TextGenerationConfig configuration, @Connection ChatCompletionBase connection,
             @Content String template,
             @Content String instructions,
             @Content(primary = true) String data,
@@ -164,13 +164,13 @@ public class TextGenerationOperations {
         
     	try {
         	        	
-        	JSONObject payload = MuleHttpClientPayloadUtils.buildToolsTemplatePayload(connection, template, instructions, data, tools);
+        	JSONObject payload = PayloadUtils.buildToolsTemplatePayload(connection, template, instructions, data, tools);
         	
-            URL chatCompUrl = MuleHttpClientConnectionUtils.getConnectionURLChatCompletion(configuration, connection);
-            String response = MuleHttpClientConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
+            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration, connection);
+            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
 
             LOGGER.debug("Tools use native template result {}", response);
-            return MuleHttpClientResponseUtils.processToolsResponse(response, connection);
+            return ResponseUtils.processToolsResponse(response, connection);
         } catch (Exception e) {
             LOGGER.error("Error in tools use native template: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Tools use native template"),

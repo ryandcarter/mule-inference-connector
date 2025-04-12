@@ -1,13 +1,13 @@
 package com.mulesoft.connectors.internal.operations;
 
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
-import com.mulesoft.connectors.internal.config.VisionConfiguration;
+import com.mulesoft.connectors.internal.config.obsolete_InferenceConfiguration;
+import com.mulesoft.connectors.internal.config.obsolete_VisionConfiguration;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
-import com.mulesoft.connectors.internal.utils.ConnectionUtils;
-import com.mulesoft.connectors.internal.utils.PayloadUtils;
-import com.mulesoft.connectors.internal.utils.ProviderUtils;
-import com.mulesoft.connectors.internal.utils.ResponseUtils;
+import com.mulesoft.connectors.internal.utils.obsolete_ConnectionUtils;
+import com.mulesoft.connectors.internal.utils.obsolete_PayloadUtils;
+import com.mulesoft.connectors.internal.utils.obsolete_ProviderUtils;
+import com.mulesoft.connectors.internal.utils.obsolete_ResponseUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -26,15 +26,15 @@ import java.io.InputStream;
 import java.net.URL;
 
 
-import static com.mulesoft.connectors.internal.utils.PayloadUtils.createRequestImageURL;
+import static com.mulesoft.connectors.internal.utils.obsolete_PayloadUtils.createRequestImageURL;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
  * This class contains operations for the inference connector.
  * Each public method represents an extension operation.
  */
-public class VisionOperations {
-    private static final Logger LOGGER = LoggerFactory.getLogger(VisionOperations.class);
+public class obsolete_VisionOperations {
+    private static final Logger LOGGER = LoggerFactory.getLogger(obsolete_VisionOperations.class);
     private static final String ERROR_MSG_FORMAT = "%s result error";
 
     /**
@@ -50,24 +50,24 @@ public class VisionOperations {
     @DisplayName("[Image] Read by (Url or Base64)")
     @OutputJsonType(schema = "api/response/Response.json")
     public Result<InputStream, LLMResponseAttributes> readImage(
-            @Config VisionConfiguration configuration,
+            @Config obsolete_VisionConfiguration configuration,
             @Content String prompt,
             @Content(primary = true) @DisplayName("Image") @Summary("An Image URL or a Base64 Image") String imageUrl) throws ModuleException {
         try {
 
             JSONArray messagesArray = createRequestImageURL(configuration.getInferenceType(), prompt, imageUrl);
 
-            InferenceConfiguration inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
+            obsolete_InferenceConfiguration inferenceConfig = obsolete_ProviderUtils.convertToInferenceConfig(configuration);
 
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(inferenceConfig);
+            URL chatCompUrl = obsolete_ConnectionUtils.getConnectionURLChatCompletion(inferenceConfig);
             LOGGER.debug("Chatting with {}", chatCompUrl);
 
-            JSONObject payload = PayloadUtils.buildPayload(inferenceConfig, messagesArray, null);
+            JSONObject payload = obsolete_PayloadUtils.buildPayload(inferenceConfig, messagesArray, null);
 
-            String response = ConnectionUtils.executeREST(chatCompUrl, inferenceConfig, payload.toString());
+            String response = obsolete_ConnectionUtils.executeREST(chatCompUrl, inferenceConfig, payload.toString());
 
             LOGGER.debug("Read Image result {}", response);
-            return ResponseUtils.processLLMResponse(response, inferenceConfig);
+            return obsolete_ResponseUtils.processLLMResponse(response, inferenceConfig);
         } catch (Exception e) {
             LOGGER.error("Error in Read Image: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Read Image"),

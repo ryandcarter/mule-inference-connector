@@ -1,7 +1,7 @@
 package com.mulesoft.connectors.internal.connection.types;
 
-import com.mulesoft.connectors.internal.models.vision.ModelNameProvider;
-import com.mulesoft.connectors.internal.models.vision.ModelTypeProvider;
+import com.mulesoft.connectors.internal.models.images.ModelNameProvider;
+import com.mulesoft.connectors.internal.models.images.ModelTypeProvider;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
@@ -24,9 +24,9 @@ import org.mule.runtime.http.api.client.HttpClientConfiguration;
 
 import javax.inject.Inject;
 
-@Alias("vision")
-@DisplayName("Vision Models")
-public class VisionProvider implements CachedConnectionProvider<Vision>, Startable, Stoppable {
+@Alias("image-generation")
+@DisplayName("Image Generation Model")
+public class ImageGenerationProvider implements CachedConnectionProvider<ImageGeneration>, Startable, Stoppable {
 
   private HttpClient httpClient;
 
@@ -44,7 +44,6 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
   @OfValues(ModelTypeProvider.class)
   private String inferenceType;
 
-  public String getInferenceType() { return inferenceType; }
   public void setInferenceType(String inferenceType) { this.inferenceType = inferenceType; }
 
   @Parameter
@@ -52,74 +51,50 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
   @DisplayName("API Key")
   private String apiKey;
 
-  public String getApiKey() { return apiKey; }
   public void setApiKey(String apiKey) { this.apiKey = apiKey; }
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @OfValues(ModelNameProvider.class)
-  @Optional(defaultValue = "gpt-4o-mini")
+  @Optional(defaultValue = "dall-e-3")
   private String modelName;
 
-  public String getModelName() { return modelName; }
   public void setModelName(String modelName) { this.modelName = modelName; }
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Optional(defaultValue = "500")
-  private Number maxTokens;
-
-  public Number getMaxTokens() { return maxTokens; }
-  public void setMaxTokens(Number maxTokens) { this.maxTokens = maxTokens; }
-
-  @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Optional(defaultValue = "0.9")
-  private Number temperature;
-
-  public Number getTemperature() { return temperature; }
-  public void setTemperature(Number temperature) { this.temperature = temperature; }
-
-  @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Optional(defaultValue = "0.9")
-  private Number topP;
-
-  public Number getTopP() { return topP; }
-  public void setTopP(Number topP) { this.topP = topP; }
-
-  @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
   @DisplayName("Timeout (milliseconds)")
-  @Optional(defaultValue = "60000")
+  @Optional(defaultValue = "#['600000']")
   private int timeout;
 
-  public int getTimeout() { return timeout; }
   public void setTimeout(int timeout) { this.timeout = timeout; }
+
+  @Parameter
+  @Placement(order = 2, tab = "Advanced")
+  @Optional
+  private TlsContextFactory tlsContext;
 
 
   @Override
-  public Vision connect() throws ConnectionException {
-    return new Vision(
+  public ImageGeneration connect() throws ConnectionException {
+    return new ImageGeneration(
             httpClient,
             timeout,
             inferenceType,
             apiKey,
-            modelName,
-            maxTokens,
-            temperature,
-            topP
-    );  }
+            modelName
+    );
+  }
 
   @Override
-  public void disconnect(Vision vision) {
+  public void disconnect(ImageGeneration imageGeneration) {
 
   }
 
   @Override
-  public ConnectionValidationResult validate(Vision vision) {
+  public ConnectionValidationResult validate(ImageGeneration imageGeneration) {
     try {
-      vision.validate();
+      imageGeneration.validate();
       return ConnectionValidationResult.success();
     }
     catch (ConnectionException e) {
@@ -138,12 +113,13 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
   private HttpClientConfiguration createClientConfiguration() {
 
     HttpClientConfiguration.Builder builder = new HttpClientConfiguration.Builder().setName(configName);
-
-    builder.setTlsContextFactory(TlsContextFactory.builder().buildDefault());
-
+    if (null != tlsContext) {
+      builder.setTlsContextFactory(tlsContext);
+    } else {
+      builder.setTlsContextFactory(TlsContextFactory.builder().buildDefault());
+    }
     return builder.build();
   }
-
 
   @Override
   public void stop() throws MuleException {
