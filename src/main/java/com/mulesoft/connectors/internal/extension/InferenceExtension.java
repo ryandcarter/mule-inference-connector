@@ -1,20 +1,13 @@
 package com.mulesoft.connectors.internal.extension;
 
-import com.mulesoft.connectors.internal.config.ImageGenerationConfiguration;
-import com.mulesoft.connectors.internal.config.VisionConfiguration;
-import com.mulesoft.connectors.internal.operations.VisionOperations;
+import com.mulesoft.connectors.internal.config.*;
+import com.mulesoft.connectors.internal.connection.types.VisionProvider;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Configurations;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
-import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.sdk.api.annotation.JavaVersionSupport;
 
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
-import com.mulesoft.connectors.internal.config.ModerationConfiguration;
-
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_11;
 import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
 
 /**
  * This is the main class of an extension, is the entry point from which configurations, connection providers, operations
@@ -22,13 +15,15 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
  */
 @Xml(prefix = "mac-inference")
 @Extension(name = "MuleSoft Inference")
-@JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})
-@Configurations(value = {
-        InferenceConfiguration.class,
-        ModerationConfiguration.class,
-        VisionConfiguration.class,
-        ImageGenerationConfiguration.class
-})
+@JavaVersionSupport({JAVA_17})
+//@Configurations(value = {
+//        InferenceConfiguration.class,
+//        ModerationConfiguration.class,
+//        VisionConfiguration.class,
+//        ImageGenerationConfiguration.class
+//})
+
+@Configurations({TextGenerationConfig.class, VisionConfig.class})
 public class InferenceExtension {
 
 }
