@@ -80,6 +80,25 @@ public class TextGenerationConfig {
     public String getGpt4All() { return gpt4All; }
     public void setGpt4All(String gpt4All) { this.gpt4All = gpt4All; }
 
+    @Parameter
+    @Expression(ExpressionSupport.SUPPORTED)
+    @Placement(tab = "Additional Properties")
+    @Optional
+    @DisplayName("[IBM Watson] API Version")
+    private String ibmWatsonApiVersion;
+
+    public String getIBMWatsonApiVersion() { return ibmWatsonApiVersion; }
+    public void setIBMWatsonApiVersion(String ibmWatsonApiVersion) { this.ibmWatsonApiVersion = ibmWatsonApiVersion; }
+
+    @Parameter
+    @Expression(ExpressionSupport.SUPPORTED)
+    @Placement(tab = "Additional Properties")
+    @Optional
+    @DisplayName("[IBM Watson] Project ID")
+    private String ibmWatsonProjectID;
+
+    public String getibmWatsonProjectID() { return ibmWatsonProjectID; }
+    public void setibmWatsonProjectID(String ibmWatsonProjectID) { this.ibmWatsonProjectID = ibmWatsonProjectID; }
 
     @Parameter
     @Expression(ExpressionSupport.SUPPORTED)

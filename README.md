@@ -57,6 +57,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 
 ## Supported Image Models Providers
 - [OpenAI](https://platform.openai.com/docs/guides/images?api-mode=chat)
+- [Hugging Face](https://huggingface.co/)
 
 ### Requirements
 

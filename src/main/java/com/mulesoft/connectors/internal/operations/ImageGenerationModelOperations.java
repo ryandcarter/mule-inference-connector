@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.net.URL;
 
-import static com.mulesoft.connectors.internal.utils.obsolete_PayloadUtils.createRequestImageGeneration;
+import static com.mulesoft.connectors.internal.utils.PayloadUtils.createRequestImageGeneration;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**

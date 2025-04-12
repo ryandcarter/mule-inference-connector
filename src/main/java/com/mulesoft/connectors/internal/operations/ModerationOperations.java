@@ -3,7 +3,6 @@ package com.mulesoft.connectors.internal.operations;
 import com.mulesoft.connectors.internal.api.delegate.Moderation;
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.internal.config.ModerationConfig;
-import com.mulesoft.connectors.internal.config.ModerationConfiguration;
 import com.mulesoft.connectors.internal.connection.types.ModerationBase;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
 import org.mule.runtime.extension.api.annotation.Alias;

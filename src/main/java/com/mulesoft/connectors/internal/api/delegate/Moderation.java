@@ -2,9 +2,6 @@ package com.mulesoft.connectors.internal.api.delegate;
 
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.internal.config.ModerationConfig;
-import com.mulesoft.connectors.internal.config.ModerationConfiguration;
-import com.mulesoft.connectors.internal.config.TextGenerationConfig;
-import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.connection.types.ModerationBase;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
 import com.mulesoft.connectors.internal.utils.ConnectionUtils;
