@@ -1,12 +1,12 @@
 package com.mulesoft.connectors.internal.connection.types;
 
-import com.mulesoft.connectors.internal.connection.BaseConnection;
+import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vision implements BaseConnection {
+public class Vision implements ChatCompletionBase {
 
   private static Logger LOGGER = LoggerFactory.getLogger(Vision.class);
 

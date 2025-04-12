@@ -26,7 +26,8 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 @Configurations({
         TextGenerationConfig.class,
         VisionConfig.class,
-        ImageGenerationConfig.class
+        ImageGenerationConfig.class,
+        ModerationConfig.class
 })
 public class InferenceExtension {
 

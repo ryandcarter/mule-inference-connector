@@ -6,9 +6,9 @@ import org.mule.runtime.http.api.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Moderation implements ModerationImageGenerationBase {
+public class ModerationBase implements ModerationImageGenerationBase {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(Moderation.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(ModerationBase.class);
 
   private HttpClient httpClient;
   private int timeout;
@@ -17,7 +17,7 @@ public class Moderation implements ModerationImageGenerationBase {
   private String modelName;
 
 
-  public Moderation(
+  public ModerationBase(
           HttpClient httpClient,
           int timeout,
           String inferenceType,

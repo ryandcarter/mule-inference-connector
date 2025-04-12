@@ -1,7 +1,9 @@
 package com.mulesoft.connectors.internal.utils;
 
+import com.mulesoft.connectors.internal.config.ModerationConfig;
 import com.mulesoft.connectors.internal.config.TextGenerationConfig;
 import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
+import com.mulesoft.connectors.internal.connection.ModerationImageGenerationBase;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.operations.obsolete_InferenceOperations;
 import org.json.JSONArray;
@@ -242,23 +244,48 @@ public class ConnectionUtils {
         return processResponse(response);
     }
 
-//    /**
-//     * Execute a REST API call with an existing request.
-//     * @param request the HttpRequest to execute
-//     * @param payload the payload to send
-//     * @param configuration the connector configuration
-//     * @return the response string
-//     * @throws IOException if an error occurs during the API call
-//     */
-//    public static String executeREST(HttpRequest request, String payload, TextGenerationConfig configuration, BaseConnection connection) throws IOException, TimeoutException {
-//        request = HttpRequest.builder()
-//                .entity(new ByteArrayHttpEntity(payload.getBytes(StandardCharsets.UTF_8)))
-//                .build();
-//        HttpRequestOptions options = getRequestOptions(configuration, connection);
-//
-//        HttpResponse response = httpClient.send(request, options);
-//        return processResponse(response);
-//    }
+    /**
+     * Execute a REST API call.
+     * @param resourceUrl the URL to call
+     * @param configuration the connector configuration
+     * @param payload the payload to send
+     * @return the response string
+     * @throws IOException if an error occurs during the API call
+     */
+    public static String executeREST(URL resourceUrl, ModerationConfig configuration, ModerationImageGenerationBase connection, String payload) throws IOException, TimeoutException {
+        if (resourceUrl == null) {
+            throw new IllegalArgumentException("Resource URL cannot be null");
+        }
+
+        ChatCompletionBase baseConnection = ProviderUtils.convertToBaseConnection(connection);
+        TextGenerationConfig inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
+
+        // Build initial request for headers and URI
+        HttpRequest initialRequest = buildHttpRequest(resourceUrl, inferenceConfig, baseConnection);
+        // Convert MultiMap to Map
+        MultiMap<String, String> headersMultiMap = initialRequest.getHeaders();
+        Map<String, String> headersMap = new HashMap<>();
+        headersMultiMap.forEach((key, values) -> {
+            // Take the first value or concatenate if multiple values exist
+            headersMap.put(key, String.join(",", values));
+        });
+        // Build final request with payload
+        HttpRequestBuilder builder = HttpRequest.builder()
+                .uri(initialRequest.getUri())
+                .method(initialRequest.getMethod())
+                .entity(new ByteArrayHttpEntity(payload.getBytes(StandardCharsets.UTF_8)));
+        // Add headers individually
+        headersMap.forEach(builder::addHeader);
+        HttpRequest finalRequest = builder.build();
+        HttpRequestOptions options = getRequestOptions(inferenceConfig, baseConnection);
+
+        HttpClient httpClient = connection.getHttpClient();
+        if (httpClient == null) {
+            throw new IllegalStateException("HttpClient is not initialized");
+        }
+        HttpResponse response = httpClient.send(finalRequest, options);
+        return processResponse(response);
+    }
 
     /**
      * Execute a REST API call for Hugging Face image generation.
