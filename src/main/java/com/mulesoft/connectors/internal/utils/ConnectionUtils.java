@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +85,20 @@ public class ConnectionUtils {
                 break;
             case "AZURE_AI_FOUNDRY":
                 conn.setRequestProperty("api-key", configuration.getApiKey());
+                break;
+            case "IBM_WATSON":
+                Map<String, String> params = new HashMap<>();
+                params.put("grant_type", "urn:ibm:params:oauth:grant-type:apikey");
+                params.put("apikey", "J5vUq2nUUSfxKhZHzPNnssxn1DKFgblXHCAOjafAcn-k");
+        
+                String urlEncodedData = getURLEncodedData(params);
+                URL tokenUrl = new URL(InferenceConstants.IBM_WATSON_Token_URL);
+                HttpURLConnection tokenconn = getTokenConnectionObject(tokenUrl, configuration);
+                String response = executeREST(tokenconn, urlEncodedData);
+                // Parse the JSON response
+                JSONObject jsonResponse = new JSONObject(response);
+                String accessToken = jsonResponse.getString("access_token");
+                conn.setRequestProperty("Authorization", "Bearer " + accessToken);
                 break;
             default:
                 conn.setRequestProperty("Authorization", "Bearer " + configuration.getApiKey());
@@ -168,6 +183,11 @@ public class ConnectionUtils {
                 return new URL(InferenceConstants.ZHIPU_AI_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "OPENAI_COMPATIBLE_ENDPOINT":
                 return new URL(configuration.getOpenAICompatibleURL() + InferenceConstants.CHAT_COMPLETIONS);
+            case "IBM_WATSON":
+                String ibmwurlStr = InferenceConstants.IBM_WATSON_URL + InferenceConstants.CHAT_COMPLETIONS_IBM_WATSON;
+                ibmwurlStr = ibmwurlStr
+                    .replace("{api-version}", configuration.getIBMWatsonApiVersion());
+                return new URL(ibmwurlStr);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
         }
@@ -269,5 +289,47 @@ public class ConnectionUtils {
                  .append(URLEncoder.encode(entry.getValue(), "UTF-8"));
         }
         return query.toString();
+    }
+
+    /**
+     * Build the HTTP connection for the Token request
+     * @param url the URL to connect to
+     * @param configuration the connector configuration
+     * @return the configured HTTP connection
+     * @throws IOException if an error occurs during connection setup
+     */
+    public static HttpURLConnection getTokenConnectionObject(URL url, InferenceConfiguration configuration) throws IOException {
+    	
+        HttpURLConnection conn;
+
+        conn = (HttpURLConnection) url.openConnection();
+
+        LOGGER.debug("path : ", conn.getURL().getPath());
+        
+        conn.setDoOutput(true);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+        conn.setRequestProperty("Accept", "application/json");
+
+        // Set appropriate timeouts
+        conn.setConnectTimeout(30000);
+        conn.setReadTimeout(configuration.getTimeout() != null ? Integer.parseInt(configuration.getTimeout()) : 600000);
+
+        return conn;
+    }
+
+    private static String getURLEncodedData(Map<String, String> params) throws IOException {
+        StringBuilder result = new StringBuilder();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            result.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+            result.append("=");
+            result.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+            result.append("&");
+        }
+        String resultString = result.toString();
+        return resultString.length() > 0
+               ? resultString.substring(0, resultString.length() - 1)
+               : resultString;
     }
 } 

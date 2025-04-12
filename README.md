@@ -36,6 +36,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [DeepSeek](https://api-docs.deepseek.com/)
 - [ZHIPU AI](https://open.bigmodel.cn/dev/api/normal-model/glm-4)
 - [OpenAI Compatible Endpoints](https://platform.openai.com/docs/api-reference/introduction)
+- [IBM Watson](https://www.ibm.com/products/watsonx-ai)
 
 ## Supported Moderation Providers
 - [OpenAI](https://openai.com/)

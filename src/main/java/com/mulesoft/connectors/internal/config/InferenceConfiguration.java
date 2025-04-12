@@ -189,4 +189,24 @@ public class InferenceConfiguration {
 
 	public String getAzureAIFoundryResourceName() { return azureAIFoundryResourceName; }
 	public void setAzureAIFoundryResourceName(String azureAIFoundryResourceName) { this.azureAIFoundryResourceName = azureAIFoundryResourceName; }
+
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Placement(order = 1, tab = "IBM Watson Parameters")
+	@Optional
+	@DisplayName("API Version")
+	private String ibmWatsonApiVersion;
+
+	public String getIBMWatsonApiVersion() { return ibmWatsonApiVersion; }
+	public void setIBMWatsonApiVersion(String ibmWatsonApiVersion) { this.ibmWatsonApiVersion = ibmWatsonApiVersion; }
+
+	@Parameter
+	@Expression(ExpressionSupport.SUPPORTED)
+	@Placement(order = 2, tab = "IBM Watson Parameters")
+	@Optional
+	@DisplayName("Project ID")
+	private String ibmWatsonProjectID;
+	
+	public String getibmWatsonProjectID() { return ibmWatsonProjectID; }
+	public void setibmWatsonProjectID(String ibmWatsonProjectID) { this.ibmWatsonProjectID = ibmWatsonProjectID; }
 }
