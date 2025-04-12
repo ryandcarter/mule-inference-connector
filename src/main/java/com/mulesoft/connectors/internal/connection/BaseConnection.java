@@ -1,7 +1,6 @@
 package com.mulesoft.connectors.internal.connection;
 
 
-import com.mulesoft.connectors.internal.config.options.AzureModelInference;
 import org.mule.runtime.http.api.client.HttpClient;
 
 public interface BaseConnection {

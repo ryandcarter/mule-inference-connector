@@ -1,8 +1,6 @@
 package com.mulesoft.connectors.internal.utils;
 
-import com.mulesoft.connectors.internal.config.ImageGenerationConfiguration;
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
-import com.mulesoft.connectors.internal.config.VisionConfiguration;
+import com.mulesoft.connectors.internal.config.*;
 import com.mulesoft.connectors.internal.connection.BaseConnection;
 import org.jetbrains.annotations.NotNull;
 
@@ -82,35 +80,34 @@ public class MuleHttpClientProviderUtils {
     }
 
 
-    public static @NotNull InferenceConfiguration convertToInferenceConfig(VisionConfiguration visionConfig) {
+    public static @NotNull TextGenerationConfig convertToInferenceConfig(VisionConfig visionConfig) {
         return convert(visionConfig);
     }
 
-    public static @NotNull InferenceConfiguration convertToInferenceConfig(ImageGenerationConfiguration imageConfig) {
+    public static @NotNull TextGenerationConfig convertToInferenceConfig(ImageGenerationConfiguration imageConfig) {
         return convert(imageConfig);
     }
 
-    private static @NotNull InferenceConfiguration convert(Object config) {
-        InferenceConfiguration inferenceConfig = new InferenceConfiguration();
+    private static @NotNull TextGenerationConfig convert(Object config) {
+        TextGenerationConfig inferenceConfig = new TextGenerationConfig();
 
-        if (config instanceof VisionConfiguration) {
-            VisionConfiguration vision = (VisionConfiguration) config;
-            inferenceConfig.setInferenceType(vision.getInferenceType());
-            inferenceConfig.setApiKey(vision.getApiKey());
-            inferenceConfig.setModelName(vision.getModelName());
-            inferenceConfig.setMaxTokens(vision.getMaxTokens());
-            inferenceConfig.setTemperature(vision.getTemperature());
-            inferenceConfig.setTopP(vision.getTopP());
-            inferenceConfig.setTimeout(vision.getTimeout());
+        if (config instanceof VisionConfig vision) {
+//            inferenceConfig.setInferenceType(vision.getInferenceType());
+//            inferenceConfig.setApiKey(vision.getApiKey());
+//            inferenceConfig.setModelName(vision.getModelName());
+//            inferenceConfig.setMaxTokens(vision.getMaxTokens());
+//            inferenceConfig.setTemperature(vision.getTemperature());
+//            inferenceConfig.setTopP(vision.getTopP());
+//            inferenceConfig.setTimeout(vision.getTimeout());
             inferenceConfig.setOllamaUrl(vision.getOllamaUrl());
             inferenceConfig.setVirtualKey(vision.getVirtualKey());
             inferenceConfig.setOpenAICompatibleURL(vision.getOpenAICompatibleURL());
         } else if (config instanceof ImageGenerationConfiguration) {
             ImageGenerationConfiguration image = (ImageGenerationConfiguration) config;
-            inferenceConfig.setInferenceType(image.getInferenceType());
-            inferenceConfig.setApiKey(image.getApiKey());
-            inferenceConfig.setModelName(image.getModelName());
-            inferenceConfig.setTimeout("600000");
+//            inferenceConfig.setInferenceType(image.getInferenceType());
+//            inferenceConfig.setApiKey(image.getApiKey());
+//            inferenceConfig.setModelName(image.getModelName());
+//            inferenceConfig.setTimeout("600000");
         }
 
         return inferenceConfig;
