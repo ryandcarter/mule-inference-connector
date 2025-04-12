@@ -549,6 +549,8 @@ public class PayloadUtils {
 
         if (provider.equalsIgnoreCase("OPENAI")) {
             return createImageGenerationRequestOpenaI(prompt);
+        } else if(provider.equalsIgnoreCase("HUGGING_FACE")){
+            return createImageGenerationRequestHuggingface(prompt);
         } else {
             return createImageGenerationRequestOpenaI(prompt);
         }
@@ -565,6 +567,18 @@ public class PayloadUtils {
         requestPayload.put("prompt", prompt);
         requestPayload.put("response_format", "b64_json");
 
+        return requestPayload;
+    }
+
+    /**
+     * Creates a messages array with system prompt and user message
+     * @param prompt of the user
+     * @return JSONArray containing the messages
+     */
+    private static JSONObject createImageGenerationRequestHuggingface(String prompt) throws IOException {
+
+        JSONObject requestPayload = new JSONObject();
+        requestPayload.put("inputs", prompt);
         return requestPayload;
     }
 

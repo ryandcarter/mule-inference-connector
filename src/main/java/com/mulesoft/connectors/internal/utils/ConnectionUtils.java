@@ -4,12 +4,7 @@ import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.operations.InferenceOperations;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,9 +14,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.mulesoft.connectors.internal.utils.ResponseUtils.encodeImageToBase64;
 
 /**
  * Utility class for HTTP connection operations.
@@ -205,6 +203,8 @@ public class ConnectionUtils {
         switch (configuration.getInferenceType()) {
             case "OPENAI":
                 return new URL(InferenceConstants.OPEN_AI_URL + InferenceConstants.OPENAI_GENERATE_IMAGES);
+            case "HUGGING_FACE":
+                return new URL(InferenceConstants.HUGGINGFACE_URL + "/models/" + configuration.getModelName());
             default:
                 throw new MalformedURLException("Unsupported inference type: " + configuration.getInferenceType());
         }
@@ -253,6 +253,54 @@ public class ConnectionUtils {
                     " and message: " + errorResponse);
         }
     }
+
+
+    public static String executeRESTHuggingFaceImage(URL resourceUrl, InferenceConfiguration configuration, String payload) throws IOException {
+        HttpURLConnection conn = getConnectionObject(resourceUrl, configuration);
+
+        // Send the payload
+        try (OutputStream os = conn.getOutputStream()) {
+            byte[] input = payload.getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+            os.flush();
+        }
+
+        int responseCode = conn.getResponseCode();
+
+        JSONObject responseWrapper = new JSONObject();
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            String contentType = conn.getContentType();
+
+            if (contentType != null && contentType.startsWith("image/")) {
+                byte[] responseBytes = readResponseBytes(conn.getInputStream());
+
+                String base64Image = encodeImageToBase64(responseBytes);
+
+                JSONObject base64Object = new JSONObject();
+                base64Object.put("b64_json", base64Image);
+
+                JSONObject revisedPrompt = new JSONObject(payload);
+                revisedPrompt.put("revised_prompt", revisedPrompt.getString("inputs"));
+
+                JSONArray dataArray = new JSONArray();
+                dataArray.put(base64Object);
+                dataArray.put(revisedPrompt);
+
+                responseWrapper.put("data", dataArray);
+
+            }
+
+            return responseWrapper.toString();
+
+        } else {
+            String errorResponse = readResponseStream(conn.getErrorStream());
+            LOGGER.error("API request failed with status code: {} and message: {}", responseCode, errorResponse);
+            throw new IOException("API request failed with status code: " + responseCode +
+                    " and message: " + errorResponse);
+        }
+    }
+
 
     /**
      * Read data from an input stream into a string
@@ -331,5 +379,19 @@ public class ConnectionUtils {
         return resultString.length() > 0
                ? resultString.substring(0, resultString.length() - 1)
                : resultString;
+    }
+    
+    public static byte[] readResponseBytes(InputStream inputStream) throws IOException {
+
+        if (inputStream == null) return new byte[0];
+
+        try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+            byte[] data = new byte[4096];
+            int nRead;
+            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            return buffer.toByteArray();
+        }
     }
 } 
