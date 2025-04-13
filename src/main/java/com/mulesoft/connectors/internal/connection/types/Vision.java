@@ -18,6 +18,9 @@ public class Vision implements ChatCompletionBase {
   private Number maxTokens;
   private Number temperature;
   private Number topP;
+  private String ollamaUrl;
+  private String openCompatibleURL;
+  private String virtualKey;
 
 
   public Vision(
@@ -28,7 +31,10 @@ public class Vision implements ChatCompletionBase {
           String modelName,
           Number maxTokens,
           Number temperature,
-          Number topP
+          Number topP,
+          String ollamaUrl,
+          String openCompatibleURL,
+          String virtualKey
   ) {
 
     this.httpClient = httpClient;
@@ -39,6 +45,9 @@ public class Vision implements ChatCompletionBase {
     this.maxTokens = maxTokens;
     this.temperature = temperature;
     this.topP = topP;
+    this.ollamaUrl = ollamaUrl;
+    this.openCompatibleURL = openCompatibleURL;
+    this.virtualKey = virtualKey;
   }
 
   public HttpClient getHttpClient() {
@@ -76,6 +85,61 @@ public class Vision implements ChatCompletionBase {
     return topP;
   }
 
+  @Override
+  public String getAzureAIFoundryApiVersion() {
+    return "";
+  }
+
+  @Override
+  public String getAzureAIFoundryResourceName() {
+    return "";
+  }
+
+  @Override
+  public String getAzureOpenaiDeploymentId() {
+    return "";
+  }
+
+  @Override
+  public String getAzureOpenaiResourceName() {
+    return "";
+  }
+
+  @Override
+  public String getDockerModelUrl() {
+    return "";
+  }
+
+  @Override
+  public String getGpt4All() {
+    return "";
+  }
+
+  @Override
+  public String getIBMWatsonApiVersion() {
+    return "";
+  }
+
+  @Override
+  public String getibmWatsonProjectID() {
+    return "";
+  }
+
+  @Override
+  public String getLmStudio() {
+    return "";
+  }
+
+  public String getOllamaUrl() { return ollamaUrl; }
+
+  public String getOpenAICompatibleURL() { return openCompatibleURL; }
+
+  public String getVirtualKey() { return virtualKey; }
+
+  @Override
+  public String getxinferenceUrl() {
+    return "";
+  }
 
   public boolean validate() throws ConnectionException {
     return true;

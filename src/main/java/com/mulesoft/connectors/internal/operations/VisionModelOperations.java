@@ -55,14 +55,12 @@ public class VisionModelOperations {
 
             JSONArray messagesArray = createRequestImageURL(connection.getInferenceType(), prompt, imageUrl);
 
-            TextGenerationConfig inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
-
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(inferenceConfig, connection);
+            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
             LOGGER.debug("Chatting with {}", chatCompUrl);
 
-            JSONObject payload = PayloadUtils.buildPayload(inferenceConfig, connection, messagesArray, null);
+            JSONObject payload = PayloadUtils.buildPayload(connection, messagesArray, null);
 
-            String response = ConnectionUtils.executeREST(chatCompUrl, inferenceConfig, connection, payload.toString());
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
             LOGGER.debug("Read Image result {}", response);
             return ResponseUtils.processLLMResponse(response, connection);

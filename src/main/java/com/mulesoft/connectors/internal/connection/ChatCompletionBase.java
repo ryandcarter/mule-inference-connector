@@ -12,4 +12,17 @@ public interface ChatCompletionBase {
     Number getMaxTokens();
     Number getTemperature();
     Number getTopP();
+    String getAzureAIFoundryApiVersion();
+    String getAzureAIFoundryResourceName();
+    String getAzureOpenaiDeploymentId();
+    String getAzureOpenaiResourceName();
+    String getDockerModelUrl();
+    String getGpt4All();
+    String getIBMWatsonApiVersion();
+    String getibmWatsonProjectID();
+    String getLmStudio();
+    String getOllamaUrl();
+    String getOpenAICompatibleURL();
+    String getVirtualKey();
+    String getxinferenceUrl();
 }

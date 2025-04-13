@@ -1,5 +1,6 @@
 package com.mulesoft.connectors.internal.connection.types;
 
+import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.models.ModelNameProvider;
 import com.mulesoft.connectors.internal.models.ModelTypeProvider;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
@@ -90,6 +91,124 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
 
   public void setTimeout(int timeout) { this.timeout = timeout; }
 
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Azure AI Foundry] API Version")
+  private String azureAIFoundryApiVersion;
+
+  public void setAzureAIFoundryApiVersion(String azureAIFoundryApiVersion) { this.azureAIFoundryApiVersion = azureAIFoundryApiVersion; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Azure AI Foundry] Resource Name")
+  private String azureAIFoundryResourceName;
+
+  public void setAzureAIFoundryResourceName(String azureAIFoundryResourceName) { this.azureAIFoundryResourceName = azureAIFoundryResourceName; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Azure OpenAI] Deployment ID")
+  private String azureOpenaiDeploymentId;
+
+  public void setAzureOpenaiDeploymentId(String azureOpenaiDeploymentId) { this.azureOpenaiDeploymentId = azureOpenaiDeploymentId; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Azure OpenAI] Resource Name")
+  private String azureOpenaiResourceName;
+
+  public void setAzureOpenaiResourceName(String azureOpenaiResourceName) { this.azureOpenaiResourceName = azureOpenaiResourceName; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = InferenceConstants.DOCKER_MODEL_URL)
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Docker Models] Base URL")
+  private String dockerModelUrl;
+
+  public void setDockerModelUrl(String dockerModelUrl) { this.dockerModelUrl = dockerModelUrl; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = InferenceConstants.GPT4ALL_URL)
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[GPT4ALL] Base URL")
+  private String gpt4All;
+
+  public void setGpt4All(String gpt4All) { this.gpt4All = gpt4All; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "Additional Properties")
+  @Optional
+  @DisplayName("[IBM Watson] API Version")
+  private String ibmWatsonApiVersion;
+
+  public void setIBMWatsonApiVersion(String ibmWatsonApiVersion) { this.ibmWatsonApiVersion = ibmWatsonApiVersion; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "Additional Properties")
+  @Optional
+  @DisplayName("[IBM Watson] Project ID")
+  private String ibmWatsonProjectID;
+
+  public void setibmWatsonProjectID(String ibmWatsonProjectID) { this.ibmWatsonProjectID = ibmWatsonProjectID; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = InferenceConstants.LMSTUDIO_URL)
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[LM Studio] Base URL")
+  private String lmStudio;
+
+  public void setLmStudio(String lmStudio) { this.lmStudio = lmStudio; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = "http://localhost:11434/api")
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Ollama] Base URL")
+  private String ollamaUrl;
+
+  public void setOllamaUrl(String ollamaUrl) { this.ollamaUrl = ollamaUrl; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = InferenceConstants.OPENAI_COMPATIBLE_ENDPOINT)
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[OpenAI Compatible] Base URL")
+  private String openCompatibleURL;
+
+  public void setOpenAICompatibleURL(String openCompatibleURL) { this.openCompatibleURL = openCompatibleURL; }
+
+  @Parameter
+  @Optional(defaultValue = "Portkey-virtual-key")
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Portkey] Virtual Key")
+  private String virtualKey;
+
+  public void setVirtualKey(String virtualKey) { this.virtualKey = virtualKey; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = "http://127.0.0.1:9997/v1 or https://inference.top/api/v1")
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Xinference] Base URL")
+  private String xnferenceUrl;
+
+  public void setXinferenceUrl(String xnferenceUrl) { this.xnferenceUrl = xnferenceUrl; }
+
   @Parameter
   @Placement(order = 2, tab = "Advanced")
   @Optional
@@ -106,8 +225,20 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
             modelName,
             maxTokens,
             temperature,
-            topP
-
+            topP,
+            azureAIFoundryApiVersion,
+            azureAIFoundryResourceName,
+            azureOpenaiDeploymentId,
+            azureOpenaiResourceName,
+            dockerModelUrl,
+            gpt4All,
+            ibmWatsonApiVersion,
+            ibmWatsonProjectID,
+            lmStudio,
+            ollamaUrl,
+            openCompatibleURL,
+            virtualKey,
+            xnferenceUrl
     );
   }
 

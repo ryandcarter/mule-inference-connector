@@ -18,7 +18,19 @@ public class TextGeneration implements ChatCompletionBase {
   private Number maxTokens;
   private Number temperature;
   private Number topP;
-
+  private String azureAIFoundryApiVersion;
+  private String azureAIFoundryResourceName;
+  private String azureOpenaiDeploymentId;
+  private String azureOpenaiResourceName;
+  private String dockerModelUrl;
+  private String gpt4All;
+  private String ibmWatsonApiVersion;
+  private String ibmWatsonProjectID;
+  private String lmStudio;
+  private String ollamaUrl;
+  private String openCompatibleURL;
+  private String virtualKey;
+  private String xnferenceUrl;
 
   public TextGeneration(
           HttpClient httpClient,
@@ -28,7 +40,20 @@ public class TextGeneration implements ChatCompletionBase {
           String modelName,
           Number maxTokens,
           Number temperature,
-          Number topP
+          Number topP,
+          String azureAIFoundryApiVersion,
+          String azureAIFoundryResourceName,
+          String azureOpenaiDeploymentId,
+          String azureOpenaiResourceName,
+          String dockerModelUrl,
+          String gpt4All,
+          String ibmWatsonApiVersion,
+          String ibmWatsonProjectID,
+          String lmStudio,
+          String ollamaUrl,
+          String openCompatibleURL,
+          String virtualKey,
+          String xnferenceUrl
   ) {
 
     this.httpClient = httpClient;
@@ -39,6 +64,19 @@ public class TextGeneration implements ChatCompletionBase {
     this.maxTokens = maxTokens;
     this.temperature = temperature;
     this.topP = topP;
+    this.azureAIFoundryApiVersion = azureAIFoundryApiVersion;
+    this.azureAIFoundryResourceName = azureAIFoundryResourceName;
+    this.azureOpenaiDeploymentId = azureOpenaiDeploymentId;
+    this.azureOpenaiResourceName = azureOpenaiResourceName;
+    this.dockerModelUrl = dockerModelUrl;
+    this.gpt4All = gpt4All;
+    this.ibmWatsonApiVersion = ibmWatsonApiVersion;
+    this.ibmWatsonProjectID = ibmWatsonProjectID;
+    this.lmStudio = lmStudio;
+    this.ollamaUrl = ollamaUrl;
+    this.openCompatibleURL = openCompatibleURL;
+    this.virtualKey = virtualKey;
+    this.xnferenceUrl = xnferenceUrl;
   }
 
   public HttpClient getHttpClient() {
@@ -76,6 +114,31 @@ public class TextGeneration implements ChatCompletionBase {
     return topP;
   }
 
+  public String getAzureAIFoundryApiVersion() { return azureAIFoundryApiVersion; }
+
+  public String getAzureAIFoundryResourceName() { return azureAIFoundryResourceName; }
+
+  public String getAzureOpenaiDeploymentId() { return azureOpenaiDeploymentId; }
+
+  public String getAzureOpenaiResourceName() { return azureOpenaiResourceName; }
+
+  public String getDockerModelUrl() { return dockerModelUrl; }
+
+  public String getGpt4All() { return gpt4All; }
+
+  public String getIBMWatsonApiVersion() { return ibmWatsonApiVersion; }
+
+  public String getibmWatsonProjectID() { return ibmWatsonProjectID; }
+
+  public String getLmStudio() { return lmStudio; }
+
+  public String getOllamaUrl() { return ollamaUrl; }
+
+  public String getOpenAICompatibleURL() { return openCompatibleURL; }
+
+  public String getVirtualKey() { return virtualKey; }
+
+  public String getxinferenceUrl() { return xnferenceUrl; }
 
 
   public boolean validate() throws ConnectionException {
