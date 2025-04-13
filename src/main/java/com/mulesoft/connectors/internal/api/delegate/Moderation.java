@@ -109,7 +109,7 @@ public abstract class Moderation {
             if (connection == null) {
                 throw new IllegalStateException("Moderation connection is not initialized");
             }
-            return ConnectionUtils.executeREST(moderationURL, configuration, connection, requestPayload);
+            return ConnectionUtils.executeREST(moderationURL, connection, requestPayload);
         } catch (Exception e) {
             LOGGER.error("Error in moderation: {}", e.getMessage(), e);
             throw new ModuleException("MODERATION ERROR", InferenceErrorType.TEXT_MODERATION, e);

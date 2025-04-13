@@ -44,13 +44,13 @@ public class ConnectionUtils {
     /**
      * Build the HTTP request for the API call.
      * @param url the URL to connect to
-     * @param configuration the connector configuration
+     * @param connection the connector configuration
      * @return the configured HttpRequest
      * @throws IOException if an error occurs during request setup
      */
 
 
-    public static HttpRequest buildHttpRequest(URL url, TextGenerationConfig configuration, ChatCompletionBase connection) throws IOException, TimeoutException {
+    public static HttpRequest buildHttpRequest(URL url, ChatCompletionBase connection) throws IOException, TimeoutException {
         HttpRequestBuilder requestBuilder = HttpRequest.builder();
        String finalUri = url.toString();
 
@@ -79,7 +79,7 @@ public class ConnectionUtils {
             case "PORTKEY":
                 requestBuilder
                         .addHeader("x-portkey-api-key", connection.getApiKey())
-                        .addHeader("x-portkey-virtual-key", configuration.getVirtualKey());
+                        .addHeader("x-portkey-virtual-key", connection.getVirtualKey());
                 break;
             case "AZURE_OPENAI":
                 requestBuilder.addHeader("api-key", connection.getApiKey());
@@ -112,10 +112,10 @@ public class ConnectionUtils {
 
     /**
      * Get request options based on configuration.
-     * @param configuration the connector configuration
+     * @param connection the connector configuration
      * @return the configured HttpRequestOptions
      */
-    public static HttpRequestOptions getRequestOptions(TextGenerationConfig configuration, ChatCompletionBase connection) {
+    public static HttpRequestOptions getRequestOptions( ChatCompletionBase connection) {
         return HttpRequestOptions.builder()
                 .responseTimeout(String.valueOf(connection.getTimeout()) != null ? Integer.parseInt(String.valueOf(connection.getTimeout())) : 600000)
                 .followsRedirect(true)
@@ -124,11 +124,11 @@ public class ConnectionUtils {
 
     /**
      * Get the static appropriate URL for chat completion based on the configuration.
-     * @param configuration the connector configuration
+     * @param connection the connector configuration
      * @return the URL for the chat completion endpoint
      * @throws MalformedURLException if the URL is invalid
      */
-    public static URL getConnectionURLChatCompletion(TextGenerationConfig configuration, ChatCompletionBase connection) throws MalformedURLException {
+    public static URL getConnectionURLChatCompletion(ChatCompletionBase connection) throws MalformedURLException {
         switch (connection.getInferenceType()) {
             case "PORTKEY":
                 return new URL(InferenceConstants.PORTKEY_URL + InferenceConstants.CHAT_COMPLETIONS);
@@ -141,9 +141,9 @@ public class ConnectionUtils {
             case "GITHUB":
                 return new URL(InferenceConstants.GITHUB_MODELS_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "OLLAMA":
-                return new URL(configuration.getOllamaUrl() + InferenceConstants.CHAT_COMPLETIONS_OLLAMA);
+                return new URL(connection.getOllamaUrl() + InferenceConstants.CHAT_COMPLETIONS_OLLAMA);
             case "XINFERENCE":
-                return new URL(configuration.getxinferenceUrl() + InferenceConstants.CHAT_COMPLETIONS);
+                return new URL(connection.getxinferenceUrl() + InferenceConstants.CHAT_COMPLETIONS);
             case "CEREBRAS":
                 return new URL(InferenceConstants.CEREBRAS_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "NVIDIA":
@@ -171,8 +171,8 @@ public class ConnectionUtils {
             case "AZURE_OPENAI":
                 String urlStr = InferenceConstants.AZURE_OPENAI_URL + InferenceConstants.CHAT_COMPLETIONS_AZURE;
                 urlStr = urlStr
-                        .replace("{resource-name}", configuration.getAzureOpenaiResourceName())
-                        .replace("{deployment-id}", configuration.getAzureOpenaiDeploymentId());
+                        .replace("{resource-name}", connection.getAzureOpenaiResourceName())
+                        .replace("{deployment-id}", connection.getAzureOpenaiDeploymentId());
                 return new URL(urlStr);
             case "VERTEX_AI_EXPRESS":
                 String vertexAIUrlStr = InferenceConstants.VERTEX_AI_EXPRESS_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI;
@@ -182,25 +182,25 @@ public class ConnectionUtils {
             case "AZURE_AI_FOUNDRY":
                 String aifurlStr = InferenceConstants.AZURE_AI_FOUNDRY_URL + InferenceConstants.CHAT_COMPLETIONS_AZURE_AI_FOUNDRY;
                 aifurlStr = aifurlStr
-                        .replace("{resource-name}", configuration.getAzureAIFoundryResourceName())
-                        .replace("{api-version}", configuration.getAzureAIFoundryApiVersion());
+                        .replace("{resource-name}", connection.getAzureAIFoundryResourceName())
+                        .replace("{api-version}", connection.getAzureAIFoundryApiVersion());
                 return new URL(aifurlStr);
             case "GPT4ALL":
-                return new URL(configuration.getGpt4All() + InferenceConstants.CHAT_COMPLETIONS);
+                return new URL(connection.getGpt4All() + InferenceConstants.CHAT_COMPLETIONS);
             case "LMSTUDIO":
-                return new URL(configuration.getLmStudio() + InferenceConstants.CHAT_COMPLETIONS);
+                return new URL(connection.getLmStudio() + InferenceConstants.CHAT_COMPLETIONS);
             case "DOCKER_MODELS":
-                return new URL(configuration.getDockerModelUrl() + "/engines/llama.cpp/v1" + InferenceConstants.CHAT_COMPLETIONS);
+                return new URL(connection.getDockerModelUrl() + "/engines/llama.cpp/v1" + InferenceConstants.CHAT_COMPLETIONS);
             case "DEEPSEEK":
                 return new URL(InferenceConstants.DEEPSEEK_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "ZHIPU_AI":
                 return new URL(InferenceConstants.ZHIPU_AI_URL + InferenceConstants.CHAT_COMPLETIONS);
             case "OPENAI_COMPATIBLE_ENDPOINT":
-                return new URL(configuration.getOpenAICompatibleURL() + InferenceConstants.CHAT_COMPLETIONS);
+                return new URL(connection.getOpenAICompatibleURL() + InferenceConstants.CHAT_COMPLETIONS);
             case "IBM_WATSON":
                 String ibmwurlStr = InferenceConstants.IBM_WATSON_URL + InferenceConstants.CHAT_COMPLETIONS_IBM_WATSON;
                 ibmwurlStr = ibmwurlStr
-                        .replace("{api-version}", configuration.getIBMWatsonApiVersion());
+                        .replace("{api-version}", connection.getIBMWatsonApiVersion());
                 return new URL(ibmwurlStr);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + connection.getInferenceType());
@@ -227,17 +227,17 @@ public class ConnectionUtils {
     /**
      * Execute a REST API call.
      * @param resourceUrl the URL to call
-     * @param configuration the connector configuration
+     * @param connection the connector configuration
      * @param payload the payload to send
      * @return the response string
      * @throws IOException if an error occurs during the API call
      */
-    public static String executeREST(URL resourceUrl, TextGenerationConfig configuration, ChatCompletionBase connection, String payload) throws IOException, TimeoutException {
+    public static String executeREST(URL resourceUrl,  ChatCompletionBase connection, String payload) throws IOException, TimeoutException {
         if (resourceUrl == null) {
             throw new IllegalArgumentException("Resource URL cannot be null");
         }
         // Build initial request for headers and URI
-        HttpRequest initialRequest = buildHttpRequest(resourceUrl, configuration, connection);
+        HttpRequest initialRequest = buildHttpRequest(resourceUrl, connection);
         // Convert MultiMap to Map
         MultiMap<String, String> headersMultiMap = initialRequest.getHeaders();
         Map<String, String> headersMap = new HashMap<>();
@@ -253,7 +253,7 @@ public class ConnectionUtils {
         // Add headers individually
         headersMap.forEach(builder::addHeader);
         HttpRequest finalRequest = builder.build();
-        HttpRequestOptions options = getRequestOptions(configuration, connection);
+        HttpRequestOptions options = getRequestOptions(connection);
 
         HttpClient httpClient = connection.getHttpClient();
         if (httpClient == null) {
@@ -271,16 +271,16 @@ public class ConnectionUtils {
      * @return the response string
      * @throws IOException if an error occurs during the API call
      */
-    public static String executeREST(URL resourceUrl, ModerationConfig configuration, ModerationImageGenerationBase connection, String payload) throws IOException, TimeoutException {
+    public static String executeREST(URL resourceUrl, ModerationImageGenerationBase connection, String payload) throws IOException, TimeoutException {
         if (resourceUrl == null) {
             throw new IllegalArgumentException("Resource URL cannot be null");
         }
 
         ChatCompletionBase baseConnection = ProviderUtils.convertToBaseConnection(connection);
-        TextGenerationConfig inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
+        //TextGenerationConfig inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
 
         // Build initial request for headers and URI
-        HttpRequest initialRequest = buildHttpRequest(resourceUrl, inferenceConfig, baseConnection);
+        HttpRequest initialRequest = buildHttpRequest(resourceUrl, baseConnection);
         // Convert MultiMap to Map
         MultiMap<String, String> headersMultiMap = initialRequest.getHeaders();
         Map<String, String> headersMap = new HashMap<>();
@@ -296,7 +296,7 @@ public class ConnectionUtils {
         // Add headers individually
         headersMap.forEach(builder::addHeader);
         HttpRequest finalRequest = builder.build();
-        HttpRequestOptions options = getRequestOptions(inferenceConfig, baseConnection);
+        HttpRequestOptions options = getRequestOptions(baseConnection);
 
         HttpClient httpClient = connection.getHttpClient();
         if (httpClient == null) {
@@ -309,17 +309,17 @@ public class ConnectionUtils {
     /**
      * Execute a REST API call for Hugging Face image generation.
      * @param resourceUrl the URL to call
-     * @param configuration the connector configuration
+     * @param connection the connector configuration
      * @param payload the payload to send
      * @return the response string
      * @throws IOException if an error occurs during the API call
      */
-    public static String executeRESTHuggingFaceImage(URL resourceUrl, TextGenerationConfig configuration, ChatCompletionBase connection, String payload) throws IOException, TimeoutException {
+    public static String executeRESTHuggingFaceImage(URL resourceUrl, ChatCompletionBase connection, String payload) throws IOException, TimeoutException {
         if (resourceUrl == null) {
             throw new IllegalArgumentException("Resource URL cannot be null");
         }
         // Build initial request for headers and URI
-        HttpRequest initialRequest = buildHttpRequest(resourceUrl, configuration, connection);
+        HttpRequest initialRequest = buildHttpRequest(resourceUrl, connection);
         // Convert MultiMap to Map
         MultiMap<String, String> headersMultiMap = initialRequest.getHeaders();
         Map<String, String> headersMap = new HashMap<>();
@@ -335,7 +335,7 @@ public class ConnectionUtils {
         // Add headers individually
         headersMap.forEach(builder::addHeader);
         HttpRequest finalRequest = builder.build();
-        HttpRequestOptions options = getRequestOptions(configuration, connection);
+        HttpRequestOptions options = getRequestOptions(connection);
 
         HttpClient httpClient = connection.getHttpClient();
         if (httpClient == null) {

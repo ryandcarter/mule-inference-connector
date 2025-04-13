@@ -19,37 +19,4 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 @ConnectionProviders({VisionProvider.class})
 @Operations(VisionModelOperations.class)
 public class VisionConfig {
-
-
-    @Parameter
-    @Expression(ExpressionSupport.SUPPORTED)
-    @Optional(defaultValue = "http://localhost:11434/api")
-    @Placement(tab = "Additional Properties")
-    @DisplayName("[Ollama] Base URL")
-    private String ollamaUrl;
-
-    public String getOllamaUrl() { return ollamaUrl; }
-    public void setOllamaUrl(String ollamaUrl) { this.ollamaUrl = ollamaUrl; }
-
-    @Parameter
-    @Expression(ExpressionSupport.SUPPORTED)
-    @Optional(defaultValue = InferenceConstants.OPENAI_COMPATIBLE_ENDPOINT)
-    @Placement(tab = "Additional Properties")
-    @DisplayName("[OpenAI Compatible] Base URL")
-    private String openCompatibleURL;
-
-    public String getOpenAICompatibleURL() { return openCompatibleURL; }
-    public void setOpenAICompatibleURL(String openCompatibleURL) { this.openCompatibleURL = openCompatibleURL; }
-
-    @Parameter
-    @Optional(defaultValue = "Portkey-virtual-key")
-    @Expression(ExpressionSupport.SUPPORTED)
-    @Placement(tab = "Additional Properties")
-    @DisplayName("[Portkey] Virtual Key")
-    private String virtualKey;
-
-    public String getVirtualKey() { return virtualKey; }
-    public void setVirtualKey(String virtualKey) { this.virtualKey = virtualKey; }
-
-
 }

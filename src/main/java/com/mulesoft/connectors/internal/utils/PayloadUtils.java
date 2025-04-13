@@ -26,18 +26,15 @@ public class PayloadUtils {
      * @param toolsArray the tools array (can be null)
      * @return the payload as a JSON object
      */
-    public static JSONObject buildPayload(TextGenerationConfig inferenceConfig, ChatCompletionBase configuration, JSONArray messagesArray, JSONArray toolsArray) {
+    public static JSONObject buildPayload(ChatCompletionBase configuration, JSONArray messagesArray, JSONArray toolsArray) {
         JSONObject payload = new JSONObject();
         
 		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
-			//add contents to the payload
 	        payload.put(InferenceConstants.CONTENTS, messagesArray);
 	        
-	        //create the generationConfig
-	        JSONObject generationConfig = buildVertexAIGenerationConfig(configuration);	        
+	        JSONObject generationConfig = buildVertexAIGenerationConfig(configuration);
 	        
-	        //add generationConfig to the payload
-	        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);	        
+	        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);
 
 		} else {
 
@@ -46,7 +43,7 @@ public class PayloadUtils {
             }
             if ("IBM_WATSON".equals(configuration.getInferenceType())) {
                 payload.put("model_id", configuration.getModelName());
-                payload.put("project_id", inferenceConfig.getibmWatsonProjectID());
+                payload.put("project_id", configuration.getibmWatsonProjectID());
             }
 	        payload.put(InferenceConstants.MESSAGES, messagesArray);
 	
@@ -81,11 +78,11 @@ public class PayloadUtils {
 
     /**
      * Build the payload for the API request
-     * @param configuration the connector configuration
+     * @param connection the connector configuration
      * @param requestJson the payload with prompt
      * @return the payload as a JSON object
      */
-    public static JSONObject buildPayloadImageGeneration(TextGenerationConfig configuration, ModerationImageGenerationBase connection, JSONObject requestJson) {
+    public static JSONObject buildPayloadImageGeneration(ModerationImageGenerationBase connection, JSONObject requestJson) {
         JSONObject payload = requestJson;
 
         if ("OPENAI".equalsIgnoreCase(connection.getInferenceType())) {
@@ -401,7 +398,7 @@ public class PayloadUtils {
 	        usersPrompt.put("role", "user");
 	        usersPrompt.put("content", prompt);
 	        messagesArray.put(usersPrompt);
-	        payload = PayloadUtils.buildPayload(inferenceConfig, configuration, messagesArray, null);
+	        payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
 		}
 	
 		return payload;
@@ -442,7 +439,7 @@ public class PayloadUtils {
 	        JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
 	                configuration, template + " - " + instructions, data);
 	
-	        payload = PayloadUtils.buildPayload(inferenceConfig, configuration, messagesArray, null);
+	        payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
 	
 		}
 
@@ -491,7 +488,7 @@ public class PayloadUtils {
         		JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools);
         		JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
         				configuration, template + " - " + instructions, data);
-        		payload = PayloadUtils.buildPayload(inferenceConfig, configuration, messagesArray, toolsArray);
+        		payload = PayloadUtils.buildPayload(configuration, messagesArray, toolsArray);
             }
     
     		return payload;

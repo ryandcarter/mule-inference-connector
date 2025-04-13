@@ -52,12 +52,12 @@ public class TextGenerationOperations {
 
             JSONArray messagesArray = PayloadUtils.parseInputStreamToJsonArray(messages);
 
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration, connection);
+            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
             LOGGER.debug("Chatting with {}", chatCompUrl);
 
-            JSONObject payload = PayloadUtils.buildPayload(configuration, connection, messagesArray, null);
+            JSONObject payload = PayloadUtils.buildPayload(connection, messagesArray, null);
 
-            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
             LOGGER.debug("Chat completions result {}", response);
             return ResponseUtils.processLLMResponse(response, connection);
@@ -86,8 +86,8 @@ public class TextGenerationOperations {
         try {        
         	JSONObject payload = PayloadUtils.buildChatAnswerPromptPayload(configuration, connection, prompt);
 
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration, connection);
-            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
+            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
             LOGGER.debug("Chat answer prompt result {}", response);
             return ResponseUtils.processLLMResponse(response, connection);
@@ -121,8 +121,8 @@ public class TextGenerationOperations {
         	        	
         	JSONObject payload = PayloadUtils.buildPromptTemplatePayload(configuration, connection, template, instructions, data);
 
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration,connection);
-            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
+            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
             LOGGER.debug("Agent define prompt template result {}", response);
             return ResponseUtils.processLLMResponse(response, connection);
@@ -159,8 +159,8 @@ public class TextGenerationOperations {
         	        	
         	JSONObject payload = PayloadUtils.buildToolsTemplatePayload(configuration, connection, template, instructions, data, tools);
         	
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration, connection);
-            String response = ConnectionUtils.executeREST(chatCompUrl, configuration, connection, payload.toString());
+            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
             LOGGER.debug("Tools use native template result {}", response);
             return ResponseUtils.processToolsResponse(response, connection);

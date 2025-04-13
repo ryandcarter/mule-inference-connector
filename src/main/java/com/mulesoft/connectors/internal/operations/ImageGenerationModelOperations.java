@@ -53,17 +53,16 @@ public class ImageGenerationModelOperations {
             JSONObject requestJson = createRequestImageGeneration(connection.getInferenceType(), prompt);
             String response;
             ChatCompletionBase baseConnection = ProviderUtils.convertToBaseConnection(connection);
-            TextGenerationConfig inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
 
             URL imageGenerationUrl = ConnectionUtils.getConnectionURLImageGeneration(baseConnection);
             LOGGER.debug("Generate Image with {}", imageGenerationUrl);
 
-            JSONObject payload = PayloadUtils.buildPayloadImageGeneration(inferenceConfig, connection, requestJson);
+            JSONObject payload = PayloadUtils.buildPayloadImageGeneration(connection, requestJson);
 
             if ((ProviderUtils.isHuggingFace((baseConnection)))) {
-                response = ConnectionUtils.executeRESTHuggingFaceImage(imageGenerationUrl, inferenceConfig, baseConnection, payload.toString());
+                response = ConnectionUtils.executeRESTHuggingFaceImage(imageGenerationUrl, baseConnection, payload.toString());
             } else {
-                response = ConnectionUtils.executeREST(imageGenerationUrl, inferenceConfig, baseConnection, payload.toString());
+                response = ConnectionUtils.executeREST(imageGenerationUrl, baseConnection, payload.toString());
             }
 
             LOGGER.debug("Generate Image result {}", response);

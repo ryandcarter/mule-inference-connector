@@ -1,5 +1,6 @@
 package com.mulesoft.connectors.internal.connection.types;
 
+import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.models.vision.ModelNameProvider;
 import com.mulesoft.connectors.internal.models.vision.ModelTypeProvider;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
@@ -52,7 +53,6 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
   @DisplayName("API Key")
   private String apiKey;
 
-  public String getApiKey() { return apiKey; }
   public void setApiKey(String apiKey) { this.apiKey = apiKey; }
 
   @Parameter
@@ -97,6 +97,32 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
   public int getTimeout() { return timeout; }
   public void setTimeout(int timeout) { this.timeout = timeout; }
 
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = "http://localhost:11434/api")
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Ollama] Base URL")
+  private String ollamaUrl;
+
+  public void setOllamaUrl(String ollamaUrl) { this.ollamaUrl = ollamaUrl; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = InferenceConstants.OPENAI_COMPATIBLE_ENDPOINT)
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[OpenAI Compatible] Base URL")
+  private String openCompatibleURL;
+
+  public void setOpenAICompatibleURL(String openCompatibleURL) { this.openCompatibleURL = openCompatibleURL; }
+
+  @Parameter
+  @Optional(defaultValue = "Portkey-virtual-key")
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Portkey] Virtual Key")
+  private String virtualKey;
+
+  public void setVirtualKey(String virtualKey) { this.virtualKey = virtualKey; }
 
   @Override
   public Vision connect() throws ConnectionException {
@@ -108,7 +134,10 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
             modelName,
             maxTokens,
             temperature,
-            topP
+            topP,
+            ollamaUrl,
+            openCompatibleURL,
+            virtualKey
     );  }
 
   @Override
