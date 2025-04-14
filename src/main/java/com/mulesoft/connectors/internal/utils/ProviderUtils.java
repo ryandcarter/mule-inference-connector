@@ -147,6 +147,7 @@ public class ProviderUtils {
         private String azureAIFoundryResourceName;
         private String azureOpenaiDeploymentId;
         private String azureOpenaiResourceName;
+        private String dataBricksModelUrl;
         private String dockerModelUrl;
         private String gpt4All;
         private String ibmWatsonApiVersion;
@@ -212,6 +213,11 @@ public class ProviderUtils {
             return azureOpenaiResourceName;
         }
         public void setAzureOpenaiResourceName(String azureOpenaiResourceName) { this.azureOpenaiResourceName = azureOpenaiResourceName; }
+
+        @Override
+        public String getDataBricksModelUrl() { return dataBricksModelUrl; }
+
+        public void dataBricksModelUrl(String dataBricksModelUrl) { this.dataBricksModelUrl = dataBricksModelUrl; }
 
         @Override
         public String getDockerModelUrl() {

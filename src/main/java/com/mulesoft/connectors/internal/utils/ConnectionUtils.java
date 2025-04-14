@@ -1,7 +1,5 @@
 package com.mulesoft.connectors.internal.utils;
 
-import com.mulesoft.connectors.internal.config.ModerationConfig;
-import com.mulesoft.connectors.internal.config.TextGenerationConfig;
 import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.connection.ModerationImageGenerationBase;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
@@ -202,6 +200,11 @@ public class ConnectionUtils {
                 ibmwurlStr = ibmwurlStr
                         .replace("{api-version}", connection.getIBMWatsonApiVersion());
                 return new URL(ibmwurlStr);
+            case "DATABRICKS":
+                String dBricksUrlStr = connection.getDataBricksModelUrl() + InferenceConstants.CHAT_COMPLETIONS_DATABRICKS;
+                dBricksUrlStr = dBricksUrlStr
+                        .replace("{model_name}", connection.getModelName());
+                return new URL(dBricksUrlStr);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + connection.getInferenceType());
         }

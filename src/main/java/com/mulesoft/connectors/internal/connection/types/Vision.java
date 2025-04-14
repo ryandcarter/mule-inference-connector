@@ -101,6 +101,9 @@ public class Vision implements ChatCompletionBase {
   }
 
   @Override
+  public String getDataBricksModelUrl() {return "";}
+
+  @Override
   public String getAzureOpenaiResourceName() {
     return "";
   }
