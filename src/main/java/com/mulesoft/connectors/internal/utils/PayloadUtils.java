@@ -30,23 +30,20 @@ public class PayloadUtils {
         JSONObject payload = new JSONObject();
         
 		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
-			//add contents to the payload
 	        payload.put(InferenceConstants.CONTENTS, messagesArray);
 	        
-	        //create the generationConfig
-	        JSONObject generationConfig = buildVertexAIGenerationConfig(configuration);	        
+	        JSONObject generationConfig = buildVertexAIGenerationConfig(configuration);
 	        
-	        //add generationConfig to the payload
-	        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);	        
+	        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);
 
 		} else {
-		
-	        if (!"AZURE_OPENAI".equals(configuration.getInferenceType()) && !"IBM_WATSON".equals(configuration.getInferenceType())) {
-	            payload.put(InferenceConstants.MODEL, configuration.getModelName());
-	        }
+
+            if (!"AZURE_OPENAI".equals(configuration.getInferenceType()) && !"IBM_WATSON".equals(configuration.getInferenceType())) {
+                payload.put(InferenceConstants.MODEL, configuration.getModelName());
+            }
             if ("IBM_WATSON".equals(configuration.getInferenceType())) {
-	            payload.put("model_id", configuration.getModelName());
-	            payload.put("project_id", configuration.getibmWatsonProjectID());
+                payload.put("model_id", configuration.getModelName());
+                payload.put("project_id", configuration.getibmWatsonProjectID());
             }
 	        payload.put(InferenceConstants.MESSAGES, messagesArray);
 	
@@ -81,11 +78,11 @@ public class PayloadUtils {
 
     /**
      * Build the payload for the API request
-     * @param configuration the connector configuration
+     * @param connection the connector configuration
      * @param requestJson the payload with prompt
      * @return the payload as a JSON object
      */
-    public static JSONObject buildPayloadImageGeneration(TextGenerationConfig configuration, ModerationImageGenerationBase connection, JSONObject requestJson) {
+    public static JSONObject buildPayloadImageGeneration(ModerationImageGenerationBase connection, JSONObject requestJson) {
         JSONObject payload = requestJson;
 
         if ("OPENAI".equalsIgnoreCase(connection.getInferenceType())) {
@@ -387,7 +384,7 @@ public class PayloadUtils {
      * @param prompt The prompt
      * @return The payload as a JSON object
      */
-    public static JSONObject buildChatAnswerPromptPayload(ChatCompletionBase configuration, String prompt) {
+    public static JSONObject buildChatAnswerPromptPayload(TextGenerationConfig inferenceConfig, ChatCompletionBase configuration, String prompt) {
     	JSONObject payload;
 	
 		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
@@ -415,7 +412,7 @@ public class PayloadUtils {
      * @param data The primary data content
      * @return The payload as a JSON object
      */
-    public static JSONObject buildPromptTemplatePayload(ChatCompletionBase configuration, String template, String instructions, String data) {
+    public static JSONObject buildPromptTemplatePayload(TextGenerationConfig inferenceConfig,ChatCompletionBase configuration, String template, String instructions, String data) {
     	JSONObject payload;
 	
 	
@@ -459,7 +456,7 @@ public class PayloadUtils {
      * @param tools The tools set to be used
      * @return The payload as a JSON object
      */
-    public static JSONObject buildToolsTemplatePayload(ChatCompletionBase configuration, String template,
+    public static JSONObject buildToolsTemplatePayload(TextGenerationConfig inferenceConfig, ChatCompletionBase configuration, String template,
                                                        String instructions, String data, InputStream tools) throws IOException {
 
         	JSONObject payload;
