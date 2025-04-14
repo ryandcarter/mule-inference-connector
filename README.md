@@ -16,6 +16,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
 - [Cerebras](https://cerebras.ai/inference)
 - [Cohere](https://cohere.com/)
+- [Databricks](https://docs.databricks.com/aws/en/machine-learning/model-serving/score-foundation-models?language=REST%C2%A0API)
 - [DeepInfra](https://deepinfra.com/)
 - [DeepSeek](https://api-docs.deepseek.com/)
 - [Docker Models](https://docs.docker.com/desktop/features/model-runner/)
