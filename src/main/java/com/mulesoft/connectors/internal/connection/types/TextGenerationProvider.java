@@ -128,6 +128,16 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
 
   public void setAzureOpenaiResourceName(String azureOpenaiResourceName) { this.azureOpenaiResourceName = azureOpenaiResourceName; }
 
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = "https://<instance>.cloud.databricks.com/")
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Databricks] Model URL")
+  private String dataBricksModelUrl;
+
+  public void dataBricksModelUrl(String dataBricksModelUrl) { this.dataBricksModelUrl = dataBricksModelUrl; }
+
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Optional(defaultValue = InferenceConstants.DOCKER_MODEL_URL)
@@ -230,6 +240,7 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
             azureAIFoundryResourceName,
             azureOpenaiDeploymentId,
             azureOpenaiResourceName,
+            dataBricksModelUrl,
             dockerModelUrl,
             gpt4All,
             ibmWatsonApiVersion,

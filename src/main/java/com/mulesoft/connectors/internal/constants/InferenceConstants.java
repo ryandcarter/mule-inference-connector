@@ -45,6 +45,7 @@ public class InferenceConstants {
   public static final String GENERATION_OLLAMA = "/generate";
   public static final String GENERATE_CONTENT_VERTEX_AI = "generateContent";
   public static final String OPENAI_GENERATE_IMAGES = "/images/generations";
+  public static final String CHAT_COMPLETIONS_DATABRICKS = "/serving-endpoints/{model_name}/invocations";
 
   // Configuration Parameters
   public static final String MAX_TOKENS = "max_tokens";

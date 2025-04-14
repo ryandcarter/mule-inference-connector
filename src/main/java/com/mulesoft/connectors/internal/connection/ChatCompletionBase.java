@@ -16,6 +16,7 @@ public interface ChatCompletionBase {
     String getAzureAIFoundryResourceName();
     String getAzureOpenaiDeploymentId();
     String getAzureOpenaiResourceName();
+    String getDataBricksModelUrl();
     String getDockerModelUrl();
     String getGpt4All();
     String getIBMWatsonApiVersion();

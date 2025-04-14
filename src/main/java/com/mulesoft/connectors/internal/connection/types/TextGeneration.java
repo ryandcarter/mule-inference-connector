@@ -22,6 +22,7 @@ public class TextGeneration implements ChatCompletionBase {
   private String azureAIFoundryResourceName;
   private String azureOpenaiDeploymentId;
   private String azureOpenaiResourceName;
+  private String dataBricksModelUrl;
   private String dockerModelUrl;
   private String gpt4All;
   private String ibmWatsonApiVersion;
@@ -45,6 +46,7 @@ public class TextGeneration implements ChatCompletionBase {
           String azureAIFoundryResourceName,
           String azureOpenaiDeploymentId,
           String azureOpenaiResourceName,
+          String dataBricksModelUrl,
           String dockerModelUrl,
           String gpt4All,
           String ibmWatsonApiVersion,
@@ -68,6 +70,7 @@ public class TextGeneration implements ChatCompletionBase {
     this.azureAIFoundryResourceName = azureAIFoundryResourceName;
     this.azureOpenaiDeploymentId = azureOpenaiDeploymentId;
     this.azureOpenaiResourceName = azureOpenaiResourceName;
+    this.dataBricksModelUrl = dataBricksModelUrl;
     this.dockerModelUrl = dockerModelUrl;
     this.gpt4All = gpt4All;
     this.ibmWatsonApiVersion = ibmWatsonApiVersion;
@@ -121,6 +124,8 @@ public class TextGeneration implements ChatCompletionBase {
   public String getAzureOpenaiDeploymentId() { return azureOpenaiDeploymentId; }
 
   public String getAzureOpenaiResourceName() { return azureOpenaiResourceName; }
+
+  public String getDataBricksModelUrl() { return dataBricksModelUrl; }
 
   public String getDockerModelUrl() { return dockerModelUrl; }
 
