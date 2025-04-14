@@ -15,8 +15,9 @@ import org.mule.runtime.extension.api.values.ValueResolvingException;
 public class ModelNameProvider implements ValueProvider {
 
   @Parameter
-  @Placement(order = 1, tab = Placement.DEFAULT_TAB)
+  @Placement(order = 1)
   private String inferenceType;
+
 
   @Override
   public Set<Value> resolve() throws ValueResolvingException {

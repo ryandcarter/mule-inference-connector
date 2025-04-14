@@ -1,17 +1,17 @@
 package com.mulesoft.connectors.internal.utils;
 
-import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
+import com.mulesoft.connectors.internal.config.TextGenerationConfig;
+import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
+import com.mulesoft.connectors.internal.connection.ModerationImageGenerationBase;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Utility class for payload operations.
@@ -26,7 +26,7 @@ public class PayloadUtils {
      * @param toolsArray the tools array (can be null)
      * @return the payload as a JSON object
      */
-    public static JSONObject buildPayload(InferenceConfiguration configuration, JSONArray messagesArray, JSONArray toolsArray) {
+    public static JSONObject buildPayload(ChatCompletionBase configuration, JSONArray messagesArray, JSONArray toolsArray) {
         JSONObject payload = new JSONObject();
         
 		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
@@ -85,12 +85,12 @@ public class PayloadUtils {
      * @param requestJson the payload with prompt
      * @return the payload as a JSON object
      */
-    public static JSONObject buildPayloadImageGeneration(InferenceConfiguration configuration, JSONObject requestJson) {
+    public static JSONObject buildPayloadImageGeneration(TextGenerationConfig configuration, ModerationImageGenerationBase connection, JSONObject requestJson) {
         JSONObject payload = requestJson;
 
-        if ("OPENAI".equalsIgnoreCase(configuration.getInferenceType())) {
+        if ("OPENAI".equalsIgnoreCase(connection.getInferenceType())) {
             //add contents to the payload
-            payload.put("model", configuration.getModelName());
+            payload.put("model", connection.getModelName());
         }
 
         return payload;
@@ -102,8 +102,8 @@ public class PayloadUtils {
      * @param prompt the prompt
      * @return the payload as a JSON object
      */
-    public static JSONObject buildVertexAIPayload(InferenceConfiguration configuration, String prompt, 
-    		JSONArray safetySettings, JSONObject systemInstruction, JSONArray tools) {
+    public static JSONObject buildVertexAIPayload(ChatCompletionBase configuration, String prompt,
+                                                  JSONArray safetySettings, JSONObject systemInstruction, JSONArray tools) {
         JSONObject payload = new JSONObject();
         
         //create the parts of the contents
@@ -188,12 +188,12 @@ public class PayloadUtils {
      * @return JSONArray containing the messages
      */
     public static JSONArray createMessagesArrayWithSystemPrompt(
-            InferenceConfiguration configuration, String systemContent, String userContent) {
+            ChatCompletionBase configuration, String systemContent, String userContent) {
         JSONArray messagesArray = new JSONArray();
 
         // Create system/assistant message based on provider
         JSONObject systemMessage = new JSONObject();
-        systemMessage.put("role", ProviderUtils.isAnthropic(configuration) ? "assistant" : "system");
+        systemMessage.put("role", "ANTHROPIC".equals(configuration.getInferenceType()) ? "assistant" : "system");
         systemMessage.put("content", systemContent);
         messagesArray.put(systemMessage);
 
@@ -387,7 +387,7 @@ public class PayloadUtils {
      * @param prompt The prompt
      * @return The payload as a JSON object
      */
-    public static JSONObject buildChatAnswerPromptPayload(InferenceConfiguration configuration, String prompt) {
+    public static JSONObject buildChatAnswerPromptPayload(ChatCompletionBase configuration, String prompt) {
     	JSONObject payload;
 	
 		if ("VERTEX_AI_EXPRESS".equalsIgnoreCase(configuration.getInferenceType())) {
@@ -415,7 +415,7 @@ public class PayloadUtils {
      * @param data The primary data content
      * @return The payload as a JSON object
      */
-    public static JSONObject buildPromptTemplatePayload(InferenceConfiguration configuration, String template, String instructions, String data) {
+    public static JSONObject buildPromptTemplatePayload(ChatCompletionBase configuration, String template, String instructions, String data) {
     	JSONObject payload;
 	
 	
@@ -459,8 +459,8 @@ public class PayloadUtils {
      * @param tools The tools set to be used
      * @return The payload as a JSON object
      */
-    public static JSONObject buildToolsTemplatePayload(InferenceConfiguration configuration, String template, 
-    		String instructions, String data, InputStream tools) throws IOException {
+    public static JSONObject buildToolsTemplatePayload(ChatCompletionBase configuration, String template,
+                                                       String instructions, String data, InputStream tools) throws IOException {
 
         	JSONObject payload;
 
@@ -480,7 +480,7 @@ public class PayloadUtils {
                 JSONObject systemInstruction = new JSONObject();
                 systemInstruction.put("parts", parts);
             	
-            	JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools); 
+            	JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools);
 
             	JSONArray safetySettings = new JSONArray(); // Empty array
 
@@ -533,7 +533,7 @@ public class PayloadUtils {
         return "image/jpeg"; // Default fallback
     }
     
-    public static JSONObject buildVertexAIGenerationConfig(InferenceConfiguration configuration) {
+    public static JSONObject buildVertexAIGenerationConfig(ChatCompletionBase configuration) {
 	    //create the generationConfig
 	    JSONObject generationConfig = new JSONObject();
 	    generationConfig.put("responseModalities", new String[]{"TEXT"});
