@@ -39,7 +39,6 @@ public enum ModelType {
       ZHIPU_AI("ZHIPU_AI", getCHATGLMModelNameStream()),
       OPENAI_COMPATIBLE_ENDPOINT("OPENAI_COMPATIBLE_ENDPOINT", getOpenAIModelNameStream()),
       IBM_WATSON("IBM_WATSON", getIBMWatsonModelNameStream()),
-
   ;
 
 
@@ -67,6 +66,9 @@ public enum ModelType {
     return Arrays.stream(GroqModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getIBMWatsonModelNameStream() {
+    return Arrays.stream(IBMWatsonModelName.values()).map(String::valueOf);
+  }
 
   private static Stream<String> getPortkeyModelNameStream() {
     return Arrays.stream(PortkeyModelName.values()).map(String::valueOf);
@@ -163,17 +165,12 @@ public enum ModelType {
   private static Stream<String> getDOCKER_MODELSNameStream() {
     return Arrays.stream(DockerModelName.values()).map(String::valueOf);
   }
-
   private static Stream<String> getDEEPSEEKModelNameStream() {
     return Arrays.stream(DEEPSEEKModelName.values()).map(String::valueOf);
   }
 
   private static Stream<String> getCHATGLMModelNameStream() {
     return Arrays.stream(CHATGLMModelName.values()).map(String::valueOf);
-  }
-  
-  private static Stream<String> getIBMWatsonModelNameStream() {
-    return Arrays.stream(IBMWatsonModelName.values()).map(String::valueOf);
   }
 
   public static ModelType fromValue(String value) {
