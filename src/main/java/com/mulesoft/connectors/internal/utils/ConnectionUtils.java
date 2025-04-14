@@ -236,21 +236,16 @@ public class ConnectionUtils {
         if (resourceUrl == null) {
             throw new IllegalArgumentException("Resource URL cannot be null");
         }
-        // Build initial request for headers and URI
         HttpRequest initialRequest = buildHttpRequest(resourceUrl, connection);
-        // Convert MultiMap to Map
         MultiMap<String, String> headersMultiMap = initialRequest.getHeaders();
         Map<String, String> headersMap = new HashMap<>();
         headersMultiMap.forEach((key, values) -> {
-            // Take the first value or concatenate if multiple values exist
             headersMap.put(key, String.join(",", values));
         });
-        // Build final request with payload
         HttpRequestBuilder builder = HttpRequest.builder()
                 .uri(initialRequest.getUri())
                 .method(initialRequest.getMethod())
                 .entity(new ByteArrayHttpEntity(payload.getBytes(StandardCharsets.UTF_8)));
-        // Add headers individually
         headersMap.forEach(builder::addHeader);
         HttpRequest finalRequest = builder.build();
         HttpRequestOptions options = getRequestOptions(connection);
@@ -266,7 +261,7 @@ public class ConnectionUtils {
     /**
      * Execute a REST API call.
      * @param resourceUrl the URL to call
-     * @param configuration the connector configuration
+     * @param connection the connector configuration
      * @param payload the payload to send
      * @return the response string
      * @throws IOException if an error occurs during the API call
