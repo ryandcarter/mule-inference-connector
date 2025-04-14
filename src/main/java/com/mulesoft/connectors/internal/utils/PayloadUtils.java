@@ -193,7 +193,7 @@ public class PayloadUtils {
 
         // Create system/assistant message based on provider
         JSONObject systemMessage = new JSONObject();
-        systemMessage.put("role", "Anthropic".equals(configuration.getInferenceType()) ? "assistant" : "system");
+        systemMessage.put("role", "ANTHROPIC".equals(configuration.getInferenceType()) ? "assistant" : "system");
         systemMessage.put("content", systemContent);
         messagesArray.put(systemMessage);
 

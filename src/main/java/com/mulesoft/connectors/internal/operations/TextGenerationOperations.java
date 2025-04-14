@@ -5,6 +5,7 @@ import com.mulesoft.connectors.internal.config.TextGenerationConfig;
 import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
 import com.mulesoft.connectors.internal.utils.*;
+import org.codehaus.plexus.interpolation.PrefixAwareRecursionInterceptor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.runtime.extension.api.annotation.Alias;
