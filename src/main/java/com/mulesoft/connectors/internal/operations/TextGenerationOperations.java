@@ -91,6 +91,8 @@ public class TextGenerationOperations {
             String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
             LOGGER.debug("Chat answer prompt result {}", response);
+
+
             return ResponseUtils.processLLMResponse(response, connection);
         } catch (Exception e) {
             LOGGER.error("Error in chat answer prompt: {}", e.getMessage(), e);

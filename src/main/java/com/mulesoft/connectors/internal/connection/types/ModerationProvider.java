@@ -1,5 +1,6 @@
 package com.mulesoft.connectors.internal.connection.types;
 
+import com.mulesoft.connectors.internal.api.proxy.HttpProxyConfig;
 import com.mulesoft.connectors.internal.models.moderation.ModerationNameProvider;
 import com.mulesoft.connectors.internal.models.moderation.ModerationTypeProvider;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
@@ -76,6 +77,10 @@ public class ModerationProvider implements CachedConnectionProvider<ModerationBa
   @Optional
   private TlsContextFactory tlsContext;
 
+  @Parameter
+  @Optional
+  @Placement(tab = "Proxy", order = 1)
+  private HttpProxyConfig proxyConfig;
 
   @Override
   public ModerationBase connect() throws ConnectionException {
@@ -120,9 +125,11 @@ public class ModerationProvider implements CachedConnectionProvider<ModerationBa
     } else {
       builder.setTlsContextFactory(TlsContextFactory.builder().buildDefault());
     }
+    if (proxyConfig != null) {
+      builder.setProxyConfig(proxyConfig);
+    }
     return builder.build();
   }
-
   @Override
   public void stop() throws MuleException {
     if (httpClient != null) {

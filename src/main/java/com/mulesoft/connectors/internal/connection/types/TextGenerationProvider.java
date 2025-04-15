@@ -1,5 +1,6 @@
 package com.mulesoft.connectors.internal.connection.types;
 
+import com.mulesoft.connectors.internal.api.proxy.HttpProxyConfig;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.models.ModelNameProvider;
 import com.mulesoft.connectors.internal.models.ModelTypeProvider;
@@ -224,6 +225,10 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
   @Optional
   private TlsContextFactory tlsContext;
 
+  @Parameter
+  @Optional
+  @Placement(tab = "Proxy", order = 1)
+  private HttpProxyConfig proxyConfig;
 
   @Override
   public TextGeneration connect() throws ConnectionException {
@@ -284,6 +289,9 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
       builder.setTlsContextFactory(tlsContext);
     } else {
       builder.setTlsContextFactory(TlsContextFactory.builder().buildDefault());
+    }
+    if (proxyConfig != null) {
+      builder.setProxyConfig(proxyConfig);
     }
     return builder.build();
   }

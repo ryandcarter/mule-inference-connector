@@ -1,5 +1,6 @@
 package com.mulesoft.connectors.internal.connection.types;
 
+import com.mulesoft.connectors.internal.api.proxy.HttpProxyConfig;
 import com.mulesoft.connectors.internal.models.images.ModelNameProvider;
 import com.mulesoft.connectors.internal.models.images.ModelTypeProvider;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
@@ -74,6 +75,11 @@ public class ImageGenerationProvider implements CachedConnectionProvider<ImageGe
   @Optional
   private TlsContextFactory tlsContext;
 
+  @Parameter
+  @Optional
+  @Placement(tab = "Proxy", order = 1)
+  private HttpProxyConfig proxyConfig;
+
 
   @Override
   public ImageGeneration connect() throws ConnectionException {
@@ -118,9 +124,11 @@ public class ImageGenerationProvider implements CachedConnectionProvider<ImageGe
     } else {
       builder.setTlsContextFactory(TlsContextFactory.builder().buildDefault());
     }
+    if (proxyConfig != null) {
+      builder.setProxyConfig(proxyConfig);
+    }
     return builder.build();
   }
-
   @Override
   public void stop() throws MuleException {
     if (httpClient != null) {
