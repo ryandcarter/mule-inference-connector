@@ -81,6 +81,10 @@ public class ProviderUtils {
         return "STABILITY_AI".equals(configuration.getInferenceType());
     }
 
+    public static boolean isXAI(ChatCompletionBase configuration) {
+        return "XAI".equals(configuration.getInferenceType());
+    }
+
     public static @NotNull ChatCompletionBase convertToBaseConnection(ModerationImageGenerationBase imageGenerationBase) {
         BaseConnectionImpl baseConnection = new BaseConnectionImpl();
 

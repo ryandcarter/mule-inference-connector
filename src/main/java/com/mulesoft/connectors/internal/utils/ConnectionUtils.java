@@ -229,6 +229,8 @@ public class ConnectionUtils {
                 return new URL(InferenceConstants.HUGGINGFACE_URL + "/models/" + connection.getModelName());
             case "STABILITY_AI":
                 return new URL(InferenceConstants.STABILITY_AI_URL + InferenceConstants.STABILITY_AI_GENERATE_IMAGES);
+            case "XAI":
+                return new URL(InferenceConstants.X_AI_URL + InferenceConstants.OPENAI_GENERATE_IMAGES);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + connection.getInferenceType());
         }

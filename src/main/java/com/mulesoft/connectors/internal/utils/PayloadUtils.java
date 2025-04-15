@@ -85,7 +85,8 @@ public class PayloadUtils {
     public static JSONObject buildPayloadImageGeneration(ModerationImageGenerationBase connection, JSONObject requestJson) {
         JSONObject payload = requestJson;
 
-        if ("OPENAI".equalsIgnoreCase(connection.getInferenceType())) {
+        if (("OPENAI".equalsIgnoreCase(connection.getInferenceType()))
+            || ("XAI".equalsIgnoreCase(connection.getInferenceType()))){
             payload.put("model", connection.getModelName());
         }
 

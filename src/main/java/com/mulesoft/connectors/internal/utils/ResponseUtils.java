@@ -328,7 +328,11 @@ public class ResponseUtils {
         JSONObject jsonObject = new JSONObject();
         Map<String, String> responseAttributes = new HashMap<>();
 
-        if ((ProviderUtils.isOpenAI(configuration)  || ProviderUtils.isHuggingFace(configuration) || ProviderUtils.isStabilityAI(configuration))  && root.has("data")) {
+        if ((ProviderUtils.isOpenAI(configuration)
+                || ProviderUtils.isHuggingFace(configuration)
+                || ProviderUtils.isStabilityAI(configuration)
+                || ProviderUtils.isXAI(configuration))
+                && root.has("data")) {
             JSONArray dataArray = root.getJSONArray("data");
 
             if (dataArray.length() > 0) {
