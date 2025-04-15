@@ -58,15 +58,12 @@ public class ImageGenerationModelOperations {
 
             URL imageGenerationUrl = ConnectionUtils.getConnectionURLImageGeneration(baseConnection);
             LOGGER.debug("Generate Image with {}", imageGenerationUrl);
-            System.out.println(imageGenerationUrl);
 
             JSONObject payload = PayloadUtils.buildPayloadImageGeneration(connection, requestJson);
-            System.out.println(payload);
 
             response = executeRestImageGeneration(imageGenerationUrl, baseConnection, payload.toString());
 
             LOGGER.debug("Generate Image result {}", response);
-            System.out.println(response);
 
             return ResponseUtils.processImageGenResponse(response, baseConnection);
         } catch (Exception e) {
