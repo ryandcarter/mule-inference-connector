@@ -13,6 +13,7 @@ public enum ModelType {
       OPENAI("OPENAI", getOpenAIModelNameStream()),
       HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
       STABILITY_AI("STABILITY_AI", getStabilityModelNameStream()),
+      XAI("XAI", getXAIModelNameStream()),
 
   ;
 
@@ -34,6 +35,10 @@ public enum ModelType {
 
   private static Stream<String> getHuggingFaceModelNameStream() {
     return Arrays.stream(HuggingFaceModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getXAIModelNameStream() {
+    return Arrays.stream(XAIModelName.values()).map(String::valueOf);
   }
 
   private static Stream<String> getOpenAIModelNameStream() {
@@ -97,6 +102,23 @@ public enum ModelType {
     private final String value;
 
     StabilityModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum XAIModelName {
+
+    grok_2_image("grok-2-image"),
+    ;
+
+    private final String value;
+
+    XAIModelName(String value) {
       this.value = value;
     }
 
