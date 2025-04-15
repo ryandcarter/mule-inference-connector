@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.net.URL;
 
+import static com.mulesoft.connectors.internal.utils.ConnectionUtils.executeRestImageGeneration;
 import static com.mulesoft.connectors.internal.utils.PayloadUtils.createRequestImageGeneration;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
@@ -51,6 +52,7 @@ public class ImageGenerationModelOperations {
         try {
 
             JSONObject requestJson = createRequestImageGeneration(connection.getInferenceType(), prompt);
+
             String response;
             ChatCompletionBase baseConnection = ProviderUtils.convertToBaseConnection(connection);
 
@@ -59,13 +61,10 @@ public class ImageGenerationModelOperations {
 
             JSONObject payload = PayloadUtils.buildPayloadImageGeneration(connection, requestJson);
 
-            if ((ProviderUtils.isHuggingFace((baseConnection)))) {
-                response = ConnectionUtils.executeRESTHuggingFaceImage(imageGenerationUrl, baseConnection, payload.toString());
-            } else {
-                response = ConnectionUtils.executeREST(imageGenerationUrl, baseConnection, payload.toString());
-            }
+            response = executeRestImageGeneration(imageGenerationUrl, baseConnection, payload.toString());
 
             LOGGER.debug("Generate Image result {}", response);
+
             return ResponseUtils.processImageGenResponse(response, baseConnection);
         } catch (Exception e) {
             LOGGER.error("Error in Generate Image: {}", e.getMessage(), e);

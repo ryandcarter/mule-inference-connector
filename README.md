@@ -59,6 +59,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 ## Supported Image Models Providers
 - [Hugging Face](https://huggingface.co/)
 - [OpenAI](https://platform.openai.com/docs/guides/images?api-mode=chat)
+- [Stability_AI](https://platform.stability.ai/docs/api-reference#tag/Generate/paths/~1v2beta~1stable-image~1generate~1sd3/post)
 
 ## HTTPS Security
 The MuleSoft Inference Connector support [TLS for Mule Apps](https://docs.mulesoft.com/mule-runtime/latest/tls-configuration)

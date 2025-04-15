@@ -86,7 +86,6 @@ public class PayloadUtils {
         JSONObject payload = requestJson;
 
         if ("OPENAI".equalsIgnoreCase(connection.getInferenceType())) {
-            //add contents to the payload
             payload.put("model", connection.getModelName());
         }
 
@@ -546,8 +545,10 @@ public class PayloadUtils {
 
         if (provider.equalsIgnoreCase("OPENAI")) {
             return createImageGenerationRequestOpenaI(prompt);
-        } else if(provider.equalsIgnoreCase("HUGGING_FACE")){
+        } else if(provider.equalsIgnoreCase("HUGGING_FACE")) {
             return createImageGenerationRequestHuggingface(prompt);
+        } else if (provider.equalsIgnoreCase("STABILITY_AI")) {
+            return createImageGenerationRequestStabilityAI(prompt);
         } else {
             return createImageGenerationRequestOpenaI(prompt);
         }
@@ -576,6 +577,12 @@ public class PayloadUtils {
 
         JSONObject requestPayload = new JSONObject();
         requestPayload.put("inputs", prompt);
+        return requestPayload;
+    }
+
+    private static JSONObject createImageGenerationRequestStabilityAI(String prompt) throws IOException {
+        JSONObject requestPayload = new JSONObject();
+        requestPayload.put("prompt", prompt);
         return requestPayload;
     }
 

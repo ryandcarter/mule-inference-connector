@@ -35,6 +35,7 @@ public class InferenceConstants {
   public static final String OPENAI_COMPATIBLE_ENDPOINT = "https://server.endpoint.com";
   public static final String IBM_WATSON_URL = "https://us-south.ml.cloud.ibm.com/ml/v1/text";
   public static final String IBM_WATSON_Token_URL = "https://iam.cloud.ibm.com/identity/token";
+  public static final String STABILITY_AI_URL = "https://api.stability.ai";
 
   // Resources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
@@ -46,6 +47,7 @@ public class InferenceConstants {
   public static final String GENERATE_CONTENT_VERTEX_AI = "generateContent";
   public static final String OPENAI_GENERATE_IMAGES = "/images/generations";
   public static final String CHAT_COMPLETIONS_DATABRICKS = "/serving-endpoints/{model_name}/invocations";
+  public static final String STABILITY_AI_GENERATE_IMAGES = "/v2beta/stable-image/generate/sd3";
 
   // Configuration Parameters
   public static final String MAX_TOKENS = "max_tokens";

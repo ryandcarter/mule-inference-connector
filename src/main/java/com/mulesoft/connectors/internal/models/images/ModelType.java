@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 public enum ModelType {
       OPENAI("OPENAI", getOpenAIModelNameStream()),
       HUGGING_FACE("HUGGING_FACE", getHuggingFaceModelNameStream()),
+      STABILITY_AI("STABILITY_AI", getStabilityModelNameStream()),
 
   ;
 
@@ -37,6 +38,10 @@ public enum ModelType {
 
   private static Stream<String> getOpenAIModelNameStream() {
     return Arrays.stream(OpenAIModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getStabilityModelNameStream() {
+    return Arrays.stream(StabilityModelName.values()).map(String::valueOf);
   }
 
 
@@ -74,6 +79,24 @@ public enum ModelType {
     private final String value;
 
     HuggingFaceModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum StabilityModelName {
+    sd3_5_large("sd3.5-large"),
+    sd3_medium("sd3-medium"),
+    sd3_5_large_turbo("sd3-large-turbo"),
+    ;
+
+    private final String value;
+
+    StabilityModelName(String value) {
       this.value = value;
     }
 
