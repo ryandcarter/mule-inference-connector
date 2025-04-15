@@ -11,6 +11,9 @@ import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.entity.HttpEntity;
+import org.mule.runtime.http.api.domain.entity.multipart.HttpPart;
+import org.mule.runtime.http.api.domain.entity.multipart.MultipartHttpEntity;
+import org.mule.runtime.http.api.domain.entity.multipart.Part;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.request.HttpRequestBuilder;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
@@ -24,7 +27,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.net.URL;
 import java.util.concurrent.TimeoutException;
@@ -222,6 +227,8 @@ public class ConnectionUtils {
                 return new URL(InferenceConstants.OPEN_AI_URL + InferenceConstants.OPENAI_GENERATE_IMAGES);
             case "HUGGING_FACE":
                 return new URL(InferenceConstants.HUGGINGFACE_URL + "/models/" + connection.getModelName());
+            case "STABILITY_AI":
+                return new URL(InferenceConstants.STABILITY_AI_URL + InferenceConstants.STABILITY_AI_GENERATE_IMAGES);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + connection.getInferenceType());
         }
@@ -304,6 +311,19 @@ public class ConnectionUtils {
         return processResponse(response);
     }
 
+    public static String executeRestImageGeneration(URL resourceUrl,ChatCompletionBase connection, String payload ) throws IOException, TimeoutException {
+        String response = "";
+
+        if ((ProviderUtils.isHuggingFace((connection)))) {
+            response = ConnectionUtils.executeRESTHuggingFaceImage(resourceUrl, connection, payload.toString());
+        } else if (ProviderUtils.isStabilityAI(connection)) {
+            response = executeRESTStabilityAIImage(resourceUrl, connection, payload);
+        } else {
+            response = ConnectionUtils.executeREST(resourceUrl, connection, payload.toString());
+        }
+        return response;
+    }
+
     /**
      * Execute a REST API call for Hugging Face image generation.
      * @param resourceUrl the URL to call
@@ -342,6 +362,49 @@ public class ConnectionUtils {
         HttpResponse response = httpClient.send(finalRequest, options);
         return processHuggingFaceImageResponse(response, payload);
     }
+
+
+
+    public static String executeRESTStabilityAIImage(URL resourceUrl, ChatCompletionBase connection, String payload) throws IOException, TimeoutException {
+        if (resourceUrl == null) {
+            throw new IllegalArgumentException("Resource URL cannot be null");
+        }
+        HttpRequest initialRequest = buildHttpRequest(resourceUrl, connection);
+        MultiMap<String, String> headersMultiMap = initialRequest.getHeaders();
+        Map<String, String> headersMap = new HashMap<>();
+        headersMultiMap.forEach((key, values) -> {
+            headersMap.put(key, String.join(",", values));
+        });
+
+        // Remove any existing Content-Type to avoid conflicts
+        headersMap.remove("Content-Type");
+        headersMap.remove("content-type");
+
+        JSONObject payloadJson = new JSONObject(payload);
+        List<HttpPart> parts = new ArrayList<>();
+        byte[] promptBytes = payloadJson.getString("prompt").getBytes(StandardCharsets.UTF_8);
+        parts.add(new HttpPart("prompt", promptBytes, "text/plain", promptBytes.length));
+        HttpEntity entity = new MultipartHttpEntity(parts);
+
+        HttpRequestBuilder builder = HttpRequest.builder()
+                .uri(initialRequest.getUri())
+                .method(initialRequest.getMethod())
+                .addHeader("Content-Type", "multipart/form-data")
+                .entity(entity);
+        headersMap.forEach(builder::addHeader);
+        HttpRequest finalRequest = builder.build();
+
+        HttpRequestOptions options = getRequestOptions(connection);
+
+        HttpClient httpClient = connection.getHttpClient();
+        if (httpClient == null) {
+            throw new IllegalStateException("HttpClient is not initialized in BaseConnection");
+        }
+        HttpResponse response = httpClient.send(finalRequest, options);
+        return processStabilityAIImageResponse(response, payload);
+    }
+
+
     /**
      * Process the HTTP response for standard REST calls.
      * @param response the HttpResponse to process
@@ -382,15 +445,52 @@ public class ConnectionUtils {
                 base64Object.put("b64_json", base64Image);
 
                 JSONObject revisedPrompt = new JSONObject(payload);
-                revisedPrompt.put("revised_prompt", revisedPrompt.getString("inputs"));
+                base64Object.put("revised_prompt", revisedPrompt.getString("inputs"));
 
                 JSONArray dataArray = new JSONArray();
                 dataArray.put(base64Object);
-                dataArray.put(revisedPrompt);
 
                 responseWrapper.put("data", dataArray);
             }
 
+            return responseWrapper.toString();
+        } else {
+            String errorResponse = new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
+            LOGGER.error("API request failed with status code: {} and message: {}", statusCode, errorResponse);
+            throw new IOException("API request failed with status code: " + statusCode + " and message: " + errorResponse);
+        }
+    }
+
+
+    private static String processStabilityAIImageResponse(HttpResponse response, String payload) throws IOException {
+        int statusCode = response.getStatusCode();
+        JSONObject responseWrapper = new JSONObject();
+
+        if (statusCode == 200) {
+            String responseBody = new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
+            JSONObject stabilityResponse = new JSONObject(responseBody);
+            String contentType = response.getHeaderValue("Content-Type");
+
+            if (contentType != null && contentType.contains("application/json") && stabilityResponse.has("image")) {
+                String base64Image = stabilityResponse.getString("image");
+                // Clean base64 string if it contains data URI prefix
+                if (base64Image.startsWith("data:image")) {
+                    base64Image = base64Image.substring(base64Image.indexOf(",") + 1);
+                }
+                // Log base64 length for debugging
+                LOGGER.debug("Base64 image length: {}", base64Image.length());
+                JSONObject base64Object = new JSONObject();
+                base64Object.put("b64_json", base64Image);
+                JSONObject payloadJson = new JSONObject(payload);
+
+                base64Object.put("revised_prompt", payloadJson.getString("prompt"));
+                JSONArray dataArray = new JSONArray();
+                dataArray.put(base64Object);
+                responseWrapper.put("data", dataArray);
+            } else {
+                LOGGER.error("Unexpected response format: Content-Type is {} and response body is {}", contentType, responseBody);
+                throw new IOException("Unexpected response format from Stability AI API");
+            }
             return responseWrapper.toString();
         } else {
             String errorResponse = new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);

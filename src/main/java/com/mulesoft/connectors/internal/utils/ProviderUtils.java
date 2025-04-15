@@ -76,51 +76,10 @@ public class ProviderUtils {
 
     }
 
-//    public static @NotNull TextGenerationConfig convertToInferenceConfig(VisionConfig visionConfig) {
-//        return convert(visionConfig);
-//    }
-//
-//    public static @NotNull TextGenerationConfig convertToInferenceConfig(ImageGenerationConfig imageConfig) {
-//        return convert(imageConfig);
-//    }
-//
-//    public static @NotNull TextGenerationConfig convertToInferenceConfig(ModerationConfig imageConfig) {
-//        return convert(imageConfig);
-//    }
-//
-//    private static @NotNull TextGenerationConfig convert(Object config) {
-//        TextGenerationConfig inferenceConfig = new TextGenerationConfig();
-//
-//        if (config instanceof VisionConfig vision) {
-////            inferenceConfig.setInferenceType(vision.getInferenceType());
-////            inferenceConfig.setApiKey(vision.getApiKey());
-////            inferenceConfig.setModelName(vision.getModelName());
-////            inferenceConfig.setMaxTokens(vision.getMaxTokens());
-////            inferenceConfig.setTemperature(vision.getTemperature());
-////            inferenceConfig.setTopP(vision.getTopP());
-////            inferenceConfig.setTimeout(vision.getTimeout());
-//            inferenceConfig.setOllamaUrl(vision.getOllamaUrl());
-//            inferenceConfig.setVirtualKey(vision.getVirtualKey());
-//            inferenceConfig.setOpenAICompatibleURL(vision.getOpenAICompatibleURL());
-//        } else if (config instanceof ImageGenerationConfig) {
-//            ImageGenerationConfig image = (ImageGenerationConfig) config;
-////            inferenceConfig.setInferenceType(image.getInferenceType());
-////            inferenceConfig.setApiKey(image.getApiKey());
-////            inferenceConfig.setModelName(image.getModelName());
-////            inferenceConfig.setTimeout("600000");
-//        } else if (config instanceof ModerationConfig) {
-//            ModerationConfig moderation = (ModerationConfig) config;
-////            inferenceConfig.setInferenceType(image.getInferenceType());
-////            inferenceConfig.setApiKey(image.getApiKey());
-////            inferenceConfig.setModelName(image.getModelName());
-////            inferenceConfig.setTimeout("600000");
-//
-//        }
-//
-//        return inferenceConfig;
-//    }
 
-
+    public static boolean isStabilityAI(ChatCompletionBase configuration) {
+        return "STABILITY_AI".equals(configuration.getInferenceType());
+    }
 
     public static @NotNull ChatCompletionBase convertToBaseConnection(ModerationImageGenerationBase imageGenerationBase) {
         BaseConnectionImpl baseConnection = new BaseConnectionImpl();
@@ -133,6 +92,8 @@ public class ProviderUtils {
 
         return baseConnection;
     }
+
+
 
     private static class BaseConnectionImpl implements ChatCompletionBase {
         private HttpClient httpClient;

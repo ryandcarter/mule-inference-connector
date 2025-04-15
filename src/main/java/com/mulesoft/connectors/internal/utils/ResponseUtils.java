@@ -148,6 +148,7 @@ public class ResponseUtils {
      */
     private static ResponseInfo extractResponseInfo(JSONObject root, ChatCompletionBase configuration) {
         ResponseInfo info = new ResponseInfo();
+
         info.model = !("AI21LABS".equals(configuration.getInferenceType())
                 || "COHERE".equals(configuration.getInferenceType())
                 || "VERTEX_AI_EXPRESS".equals(configuration.getInferenceType()))
@@ -212,9 +213,12 @@ public class ResponseUtils {
             // Default case for other models (OpenAI, etc.)
             JSONArray choicesArray = root.getJSONArray("choices");
             JSONObject firstChoice = choicesArray.getJSONObject(0);
+
+
             info.finishReason = ProviderUtils.isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
             info.message = firstChoice.getJSONObject("message");
         }
+
 
         return info;
     }
@@ -324,7 +328,7 @@ public class ResponseUtils {
         JSONObject jsonObject = new JSONObject();
         Map<String, String> responseAttributes = new HashMap<>();
 
-        if ((ProviderUtils.isOpenAI(configuration)  || ProviderUtils.isHuggingFace(configuration))  && root.has("data")) {
+        if ((ProviderUtils.isOpenAI(configuration)  || ProviderUtils.isHuggingFace(configuration) || ProviderUtils.isStabilityAI(configuration))  && root.has("data")) {
             JSONArray dataArray = root.getJSONArray("data");
 
             if (dataArray.length() > 0) {

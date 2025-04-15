@@ -1,5 +1,6 @@
 package com.mulesoft.connectors.internal.connection.types;
 
+import com.mulesoft.connectors.internal.api.proxy.HttpProxyConfig;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.models.vision.ModelNameProvider;
 import com.mulesoft.connectors.internal.models.vision.ModelTypeProvider;
@@ -124,6 +125,18 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
 
   public void setVirtualKey(String virtualKey) { this.virtualKey = virtualKey; }
 
+
+  @Parameter
+  @Placement(order = 2, tab = "Advanced")
+  @Optional
+  private TlsContextFactory tlsContext;
+
+  @Parameter
+  @Optional
+  @Placement(tab = "Proxy", order = 1)
+  private HttpProxyConfig proxyConfig;
+
+
   @Override
   public Vision connect() throws ConnectionException {
     return new Vision(
@@ -167,12 +180,16 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
   private HttpClientConfiguration createClientConfiguration() {
 
     HttpClientConfiguration.Builder builder = new HttpClientConfiguration.Builder().setName(configName);
-
-    builder.setTlsContextFactory(TlsContextFactory.builder().buildDefault());
-
+    if (null != tlsContext) {
+      builder.setTlsContextFactory(tlsContext);
+    } else {
+      builder.setTlsContextFactory(TlsContextFactory.builder().buildDefault());
+    }
+    if (proxyConfig != null) {
+      builder.setProxyConfig(proxyConfig);
+    }
     return builder.build();
   }
-
 
   @Override
   public void stop() throws MuleException {
