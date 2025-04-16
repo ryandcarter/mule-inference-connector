@@ -2,24 +2,20 @@ package com.mulesoft.connectors.internal.utils;
 
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.internal.api.metadata.TokenUsage;
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
+import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import com.mulesoft.connectors.internal.helpers.ResponseHelper;
 import com.mulesoft.connectors.internal.helpers.TokenHelper;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utility class for processing API responses.
@@ -35,11 +31,10 @@ public class ResponseUtils {
      * @return result containing the LLM response
      * @throws Exception if an error occurs during processing
      */
-    public static Result<InputStream, LLMResponseAttributes> processResponse(
-            String response, InferenceConfiguration configuration, boolean isToolsResponse) throws Exception {
-    	
-       	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
+    public static Result<InputStream, LLMResponseAttributes> processResponse(    	
+            String response, ChatCompletionBase configuration, boolean isToolsResponse) throws Exception {
 
+               	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
 
         JSONObject root = new JSONObject(response);
         ResponseInfo responseInfo = extractResponseInfo(root, configuration);
@@ -123,7 +118,7 @@ public class ResponseUtils {
      * @throws Exception if an error occurs during processing
      */
     public static Result<InputStream, LLMResponseAttributes> processLLMResponse(
-            String response, InferenceConfiguration configuration) throws Exception {
+            String response, ChatCompletionBase configuration) throws Exception {
         return processResponse(response, configuration, false);
     }
 
@@ -135,7 +130,7 @@ public class ResponseUtils {
      * @throws Exception if an error occurs during processing
      */
     public static Result<InputStream, LLMResponseAttributes> processToolsResponse(
-            String response, InferenceConfiguration configuration) throws Exception {
+            String response, ChatCompletionBase configuration) throws Exception {
         return processResponse(response, configuration, true);
     }
 
@@ -156,12 +151,13 @@ public class ResponseUtils {
      * @param configuration the connector configuration
      * @return ResponseInfo containing the extracted information
      */
-    private static ResponseInfo extractResponseInfo(JSONObject root, InferenceConfiguration configuration) {
+    private static ResponseInfo extractResponseInfo(JSONObject root, ChatCompletionBase configuration) {
         ResponseInfo info = new ResponseInfo();
         
     	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
 
     	info.model = !("AI21LABS".equals(configuration.getInferenceType())
+
                 || "COHERE".equals(configuration.getInferenceType())
                 || "VERTEX_AI_EXPRESS".equals(configuration.getInferenceType())
                 || "VERTEX_AI".equals(configuration.getInferenceType())
@@ -231,9 +227,12 @@ public class ResponseUtils {
             // Default case for other models (OpenAI, etc.)
             JSONArray choicesArray = root.getJSONArray("choices");
             JSONObject firstChoice = choicesArray.getJSONObject(0);
+
+
             info.finishReason = ProviderUtils.isNvidia(configuration) ? "" : firstChoice.getString("finish_reason");
             info.message = firstChoice.getJSONObject("message");
         }
+
 
         return info;
     }
@@ -337,13 +336,17 @@ public class ResponseUtils {
 
 
     public static Result<InputStream, LLMResponseAttributes> processImageGenResponse(
-            String response, InferenceConfiguration configuration) throws Exception {
+            String response, ChatCompletionBase configuration) throws Exception {
 
         JSONObject root = new JSONObject(response);
         JSONObject jsonObject = new JSONObject();
         Map<String, String> responseAttributes = new HashMap<>();
 
-        if ((ProviderUtils.isOpenAI(configuration)  || ProviderUtils.isHuggingFace(configuration))  && root.has("data")) {
+        if ((ProviderUtils.isOpenAI(configuration)
+                || ProviderUtils.isHuggingFace(configuration)
+                || ProviderUtils.isStabilityAI(configuration)
+                || ProviderUtils.isXAI(configuration))
+                && root.has("data")) {
             JSONArray dataArray = root.getJSONArray("data");
 
             if (dataArray.length() > 0) {

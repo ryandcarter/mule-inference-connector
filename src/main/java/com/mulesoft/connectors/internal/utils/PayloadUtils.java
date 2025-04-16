@@ -1,9 +1,11 @@
 package com.mulesoft.connectors.internal.utils;
 
-import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
+import com.mulesoft.connectors.internal.config.TextGenerationConfig;
+import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
+import com.mulesoft.connectors.internal.connection.ModerationImageGenerationBase;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
-import com.mulesoft.connectors.internal.operations.InferenceOperations;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.URL;
@@ -12,11 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * Utility class for payload operations.
@@ -35,7 +34,7 @@ public class PayloadUtils {
      * @param toolsArray the tools array (can be null)
      * @return the payload as a JSON object
      */
-    public static JSONObject buildPayload(InferenceConfiguration configuration, JSONArray messagesArray, JSONArray toolsArray) {
+    public static JSONObject buildPayload(ChatCompletionBase configuration, JSONArray messagesArray, JSONArray toolsArray) {
         JSONObject payload = new JSONObject();
     	
     	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
@@ -45,13 +44,12 @@ public class PayloadUtils {
 
     	if ("Google".equalsIgnoreCase(provider)) {
 			//add contents to the payload
+        
 	        payload.put(InferenceConstants.CONTENTS, messagesArray);
 	        
-	        //create the generationConfig
-	        JSONObject generationConfig = buildVertexAIGenerationConfig(configuration);	        
+	        JSONObject generationConfig = buildVertexAIGenerationConfig(configuration);
 	        
-	        //add generationConfig to the payload
-	        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);	        
+	        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);
 
 		} else {
 			
@@ -61,7 +59,13 @@ public class PayloadUtils {
 				    payload.put(InferenceConstants.MODEL, configuration.getModelName());
 			}
 
-		
+            if (!"AZURE_OPENAI".equals(configuration.getInferenceType()) && !"IBM_WATSON".equals(configuration.getInferenceType())) {
+                payload.put(InferenceConstants.MODEL, configuration.getModelName());
+            }
+            if ("IBM_WATSON".equals(configuration.getInferenceType())) {
+                payload.put("model_id", configuration.getModelName());
+                payload.put("project_id", configuration.getibmWatsonProjectID());
+            }
 	        payload.put(InferenceConstants.MESSAGES, messagesArray);
 	
 	        // Different max token parameter names for different providers
@@ -95,16 +99,16 @@ public class PayloadUtils {
 
     /**
      * Build the payload for the API request
-     * @param configuration the connector configuration
+     * @param connection the connector configuration
      * @param requestJson the payload with prompt
      * @return the payload as a JSON object
      */
-    public static JSONObject buildPayloadImageGeneration(InferenceConfiguration configuration, JSONObject requestJson) {
+    public static JSONObject buildPayloadImageGeneration(ModerationImageGenerationBase connection, JSONObject requestJson) {
         JSONObject payload = requestJson;
 
-        if ("OPENAI".equalsIgnoreCase(configuration.getInferenceType())) {
-            //add contents to the payload
-            payload.put("model", configuration.getModelName());
+        if (("OPENAI".equalsIgnoreCase(connection.getInferenceType()))
+            || ("XAI".equalsIgnoreCase(connection.getInferenceType()))){
+            payload.put("model", connection.getModelName());
         }
 
         return payload;
@@ -116,8 +120,8 @@ public class PayloadUtils {
      * @param prompt the prompt
      * @return the payload as a JSON object
      */
-    public static JSONObject buildVertexAIPayload(InferenceConfiguration configuration, String prompt, 
-    		JSONArray safetySettings, JSONObject systemInstruction, JSONArray tools) {
+    public static JSONObject buildVertexAIPayload(ChatCompletionBase configuration, String prompt,
+                                                  JSONArray safetySettings, JSONObject systemInstruction, JSONArray tools) {
         JSONObject payload = new JSONObject();
         
         //create the parts of the contents
@@ -202,12 +206,12 @@ public class PayloadUtils {
      * @return JSONArray containing the messages
      */
     public static JSONArray createMessagesArrayWithSystemPrompt(
-            InferenceConfiguration configuration, String systemContent, String userContent) {
+            ChatCompletionBase configuration, String systemContent, String userContent) {
         JSONArray messagesArray = new JSONArray();
 
         // Create system/assistant message based on provider
         JSONObject systemMessage = new JSONObject();
-        systemMessage.put("role", ProviderUtils.isAnthropic(configuration) ? "assistant" : "system");
+        systemMessage.put("role", "ANTHROPIC".equals(configuration.getInferenceType()) ? "assistant" : "system");
         systemMessage.put("content", systemContent);
         messagesArray.put(systemMessage);
 
@@ -401,7 +405,7 @@ public class PayloadUtils {
      * @param prompt The prompt
      * @return The payload as a JSON object
      */
-    public static JSONObject buildChatAnswerPromptPayload(InferenceConfiguration configuration, String prompt) {
+    public static JSONObject buildChatAnswerPromptPayload(TextGenerationConfig inferenceConfig, ChatCompletionBase configuration, String prompt) {
     	JSONObject payload;
     	
 //    	String type = configuration.getInferenceType();
@@ -451,7 +455,7 @@ public class PayloadUtils {
      * @param data The primary data content
      * @return The payload as a JSON object
      */
-    public static JSONObject buildPromptTemplatePayload(InferenceConfiguration configuration, String template, String instructions, String data) {
+    public static JSONObject buildPromptTemplatePayload(TextGenerationConfig inferenceConfig,ChatCompletionBase configuration, String template, String instructions, String data) {
     	JSONObject payload;
 
     	String type = configuration.getInferenceType();
@@ -521,8 +525,8 @@ public class PayloadUtils {
      * @param tools The tools set to be used
      * @return The payload as a JSON object
      */
-    public static JSONObject buildToolsTemplatePayload(InferenceConfiguration configuration, String template, 
-    		String instructions, String data, InputStream tools) throws IOException {
+    public static JSONObject buildToolsTemplatePayload(TextGenerationConfig inferenceConfig, ChatCompletionBase configuration, String template,
+                                                       String instructions, String data, InputStream tools) throws IOException {
 
         	JSONObject payload;
 
@@ -546,6 +550,9 @@ public class PayloadUtils {
                 JSONObject systemInstruction = new JSONObject();
                 systemInstruction.put("parts", parts);
             	
+
+            	JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools);
+
             	JSONArray safetySettings = new JSONArray(); // Empty array
 
             	payload = PayloadUtils.buildVertexAIPayload(configuration, data, safetySettings, systemInstruction, toolsArray);
@@ -623,7 +630,7 @@ public class PayloadUtils {
         return "image/jpeg"; // Default fallback
     }
     
-    public static JSONObject buildVertexAIGenerationConfig(InferenceConfiguration configuration) {
+    public static JSONObject buildVertexAIGenerationConfig(ChatCompletionBase configuration) {
 	    //create the generationConfig
 	    JSONObject generationConfig = new JSONObject();
 	    generationConfig.put("responseModalities", new String[]{"TEXT"});
@@ -639,8 +646,10 @@ public class PayloadUtils {
 
         if (provider.equalsIgnoreCase("OPENAI")) {
             return createImageGenerationRequestOpenaI(prompt);
-        } else if(provider.equalsIgnoreCase("HUGGING_FACE")){
+        } else if(provider.equalsIgnoreCase("HUGGING_FACE")) {
             return createImageGenerationRequestHuggingface(prompt);
+        } else if (provider.equalsIgnoreCase("STABILITY_AI")) {
+            return createImageGenerationRequestStabilityAI(prompt);
         } else {
             return createImageGenerationRequestOpenaI(prompt);
         }
@@ -669,6 +678,12 @@ public class PayloadUtils {
 
         JSONObject requestPayload = new JSONObject();
         requestPayload.put("inputs", prompt);
+        return requestPayload;
+    }
+
+    private static JSONObject createImageGenerationRequestStabilityAI(String prompt) throws IOException {
+        JSONObject requestPayload = new JSONObject();
+        requestPayload.put("prompt", prompt);
         return requestPayload;
     }
 

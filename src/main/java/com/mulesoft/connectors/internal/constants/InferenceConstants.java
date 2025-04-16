@@ -1,5 +1,5 @@
 /**
- * (c) 2003-2024 MuleSoft, Inc. The software in this package is published under the terms of the Commercial Free Software license V.1 a copy of which has been included with this distribution in the LICENSE.md file.
+ * (c) 2003-2025 MuleSoft, Inc. The software in this package is published under the terms of the Commercial Free Software license V.1 a copy of which has been included with this distribution in the LICENSE.md file.
  */
 package com.mulesoft.connectors.internal.constants;
 
@@ -36,11 +36,15 @@ public class InferenceConstants {
   public static final String VERTEX_AI_ANTHROPIC_URL = "https://{LOCATION_ID}-aiplatform.googleapis.com/v1/projects/{PROJECT_ID}/locations/{LOCATION_ID}/publishers/anthropic/models/{MODEL_ID}:";
   public static final String VERTEX_AI_META_URL = "https://{LOCATION_ID}-aiplatform.googleapis.com/v1beta1/projects/{PROJECT_ID}/locations/{LOCATION_ID}/endpoints/openapi/chat/completions";
   public static final String OPENAI_COMPATIBLE_ENDPOINT = "https://server.endpoint.com";
+  public static final String IBM_WATSON_URL = "https://us-south.ml.cloud.ibm.com/ml/v1/text";
+  public static final String IBM_WATSON_Token_URL = "https://iam.cloud.ibm.com/identity/token";
+  public static final String STABILITY_AI_URL = "https://api.stability.ai";
 
   // Resources
   public static final String CHAT_COMPLETIONS = "/chat/completions";
   public static final String CHAT_COMPLETIONS_AZURE = "/chat/completions?api-version=2024-10-21";
   public static final String CHAT_COMPLETIONS_AZURE_AI_FOUNDRY = "/chat/completions?api-version={api-version}";
+  public static final String CHAT_COMPLETIONS_IBM_WATSON = "/chat?version={api-version}";
   public static final String CHAT_COMPLETIONS_OLLAMA = "/chat";
   public static final String GENERATION_OLLAMA = "/generate";
   public static final String GENERATE_CONTENT_VERTEX_AI_GEMINI = "generateContent";
@@ -48,6 +52,8 @@ public class InferenceConstants {
   public static final String OPENAI_GENERATE_IMAGES = "/images/generations";
   public static final String VERTEX_AI_ANTHROPIC_VERSION = "anthropic_version";
   public static final String VERTEX_AI_ANTHROPIC_VERSION_VALUE = "vertex-2023-10-16";
+  public static final String CHAT_COMPLETIONS_DATABRICKS = "/serving-endpoints/{model_name}/invocations";
+  public static final String STABILITY_AI_GENERATE_IMAGES = "/v2beta/stable-image/generate/sd3";
 
   // Configuration Parameters
   public static final String MAX_TOKENS = "max_tokens";
