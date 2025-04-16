@@ -3,8 +3,10 @@ package com.mulesoft.connectors.internal.utils;
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
+import com.mulesoft.connectors.internal.operations.InferenceOperations;
 
 import java.io.*;
+import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -12,11 +14,18 @@ import java.util.Base64;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Utility class for payload operations.
  */
 public class PayloadUtils {
+	
+    private static final Logger LOGGER = LoggerFactory.getLogger(InferenceOperations.class);
+
+
     private static final String[] NO_TEMPERATURE_MODELS = {"o3-mini", "o1", "o1-mini"};
 
     /**
@@ -28,10 +37,13 @@ public class PayloadUtils {
      */
     public static JSONObject buildPayload(InferenceConfiguration configuration, JSONArray messagesArray, JSONArray toolsArray) {
         JSONObject payload = new JSONObject();
-        
-    	String type = configuration.getInferenceType();
+    	
+    	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
+    	
+    	LOGGER.debug("provider {}", provider);
 
-    	if ("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) {
+
+    	if ("Google".equalsIgnoreCase(provider)) {
 			//add contents to the payload
 	        payload.put(InferenceConstants.CONTENTS, messagesArray);
 	        
@@ -42,10 +54,14 @@ public class PayloadUtils {
 	        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);	        
 
 		} else {
+			
+			if ("Anthropic".equalsIgnoreCase(provider)) {
+				payload.put(InferenceConstants.VERTEX_AI_ANTHROPIC_VERSION, InferenceConstants.VERTEX_AI_ANTHROPIC_VERSION_VALUE);
+			} else if (!("AZURE_OPENAI".equalsIgnoreCase(configuration.getInferenceType()))) {
+				    payload.put(InferenceConstants.MODEL, configuration.getModelName());
+			}
+
 		
-	        if (!"AZURE_OPENAI".equals(configuration.getInferenceType())) {
-	            payload.put(InferenceConstants.MODEL, configuration.getModelName());
-	        }
 	        payload.put(InferenceConstants.MESSAGES, messagesArray);
 	
 	        // Different max token parameter names for different providers
@@ -388,13 +404,33 @@ public class PayloadUtils {
     public static JSONObject buildChatAnswerPromptPayload(InferenceConfiguration configuration, String prompt) {
     	JSONObject payload;
     	
-    	String type = configuration.getInferenceType();
+//    	String type = configuration.getInferenceType();
+    	
+    	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
 
-    	if ("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) {
+    	if ("Google".equalsIgnoreCase(provider)) {
    	    	JSONArray safetySettings = new JSONArray(); // Empty array
 	    	JSONObject systemInstruction = new JSONObject(); // Empty object
 	    	JSONArray tools = new JSONArray(); // Empty array
 			payload = PayloadUtils.buildVertexAIPayload(configuration, prompt, safetySettings, systemInstruction, tools);
+		} else if ("Anthropic".equalsIgnoreCase(provider)) {
+			//for ANthropic
+			
+			JSONObject textObject = new JSONObject()
+		            .put("type", "text")
+		            .put("text", prompt);
+
+		    JSONArray contentArray = new JSONArray()
+		            .put(textObject);
+
+		    JSONObject messageObject = new JSONObject()
+		            .put("role", "user")
+		            .put("content", contentArray);
+
+		    JSONArray messagesArray = new JSONArray()
+		            .put(messageObject);
+	        payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
+		
 		} else {
 	        JSONArray messagesArray = new JSONArray();
 	        JSONObject usersPrompt = new JSONObject();
@@ -419,8 +455,11 @@ public class PayloadUtils {
     	JSONObject payload;
 
     	String type = configuration.getInferenceType();
+    	
+       	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
 
-    	if ("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) {
+
+    	if (("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) && !"Anthropic".equalsIgnoreCase(provider)) {
 	    	//Create systemInstruction object
 	    	//Step 1: Wrap text in a part object
 	        JSONObject part = new JSONObject();
@@ -439,6 +478,28 @@ public class PayloadUtils {
 	    	JSONArray tools = new JSONArray(); // Empty array
 
 	    	payload = PayloadUtils.buildVertexAIPayload(configuration, data, safetySettings, systemInstruction, tools);
+		} else if ("Anthropic".equalsIgnoreCase(provider)) {
+			//for Anthropic thru Vertex AI
+			
+			JSONObject textObject = new JSONObject()
+		            .put("type", "text")
+		            .put("text", data);
+
+		    JSONArray contentArray = new JSONArray()
+		            .put(textObject);
+
+		    JSONObject messageObject = new JSONObject()
+		            .put("role", "user")
+		            .put("content", contentArray);
+
+		    JSONArray messagesArray = new JSONArray()
+		            .put(messageObject);
+	        payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
+	        
+	        //add the template+instructions to "system" field
+	        payload.put(InferenceConstants.SYSTEM, template + " - " + instructions);	    
+	        
+		
 		} else {
 	        JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
 	                configuration, template + " - " + instructions, data);
@@ -466,8 +527,11 @@ public class PayloadUtils {
         	JSONObject payload;
 
         	String type = configuration.getInferenceType();
+        	
+           	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
+        	JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools); 
 
-        	if ("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) {
+        	if (("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) && !"Anthropic".equalsIgnoreCase(provider)) {
             	
             	//Create systemInstruction object
             	//Step 1: Wrap text in a part object
@@ -482,15 +546,39 @@ public class PayloadUtils {
                 JSONObject systemInstruction = new JSONObject();
                 systemInstruction.put("parts", parts);
             	
-            	JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools); 
-
             	JSONArray safetySettings = new JSONArray(); // Empty array
 
             	payload = PayloadUtils.buildVertexAIPayload(configuration, data, safetySettings, systemInstruction, toolsArray);
+        	} else if ("Anthropic".equalsIgnoreCase(provider)) {
+    			//for Anthropic thru Vertex AI
+        		//Support for custom tools is planned, but not yet fully available or documented across all Claude models and endpoints. 
+        		//As of now (April 2025), Claude 3 models via Vertex AI reject tools[].custom despite the field appearing valid.
+        		
+            	//the code below can be used when the support is available
+            	
+        		JSONObject textObject = new JSONObject()
+    		            .put("type", "text")
+    		            .put("text", data);
+
+    		    JSONArray contentArray = new JSONArray()
+    		            .put(textObject);
+
+    		    JSONObject messageObject = new JSONObject()
+    		            .put("role", "user")
+    		            .put("content", contentArray);
+
+    		    JSONArray messagesArray = new JSONArray()
+    		            .put(messageObject);
+    	        payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
+    	        
+    	        //add the template+instructions to "system" field
+    	        payload.put(InferenceConstants.SYSTEM, template + " - " + instructions);
+    	        payload = PayloadUtils.buildPayload(configuration, messagesArray, toolsArray);
+    	        
+        	
         	} else {
         	
         	
-        		JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools);
         		JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
         				configuration, template + " - " + instructions, data);
         		payload = PayloadUtils.buildPayload(configuration, messagesArray, toolsArray);
@@ -583,6 +671,7 @@ public class PayloadUtils {
         requestPayload.put("inputs", prompt);
         return requestPayload;
     }
+
 
 
 }

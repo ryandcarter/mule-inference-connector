@@ -692,6 +692,7 @@ public enum ModelType {
 	    GEMINI_20_FLASH_EXP_IMAGE_GENERATION("gemini-2.0-flash-exp(image generation)"),      //gemini-2.0-flash-exp (image generation)
 	    GEMINI_25_FLASH_THINKING_EXP_0121("gemini-2.0-flash-thinking-exp-01-21"),
 	    CLAUDE_37_SONNET_20250219("claude-3-7-sonnet@20250219"),
+	    CLAUDE_35_HAIKU_20241022("claude-3-5-haiku@20241022"),
 	    META_LLAMA_32_90B_INSTRUCT("meta/llama-3.2-90b-vision-instruct-maas");      
 
 	    private final String value;

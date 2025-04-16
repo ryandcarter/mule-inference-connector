@@ -161,6 +161,7 @@ public class InferenceOperations {
     	try {
         	        	
         	JSONObject payload = PayloadUtils.buildToolsTemplatePayload(configuration, template, instructions, data, tools);
+        	LOGGER.debug("payload sent to the LLM {}", payload.toString());
         	
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(configuration);
             String response = ConnectionUtils.executeREST(chatCompUrl, configuration, payload.toString());

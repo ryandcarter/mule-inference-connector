@@ -37,6 +37,9 @@ public class ResponseUtils {
      */
     public static Result<InputStream, LLMResponseAttributes> processResponse(
             String response, InferenceConfiguration configuration, boolean isToolsResponse) throws Exception {
+    	
+       	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
+
 
         JSONObject root = new JSONObject(response);
         ResponseInfo responseInfo = extractResponseInfo(root, configuration);
@@ -80,8 +83,9 @@ public class ResponseUtils {
                     content = firstContent.getString("text"); // Extract the "text" field
                 }
             }
-        } else if (ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) {
-
+        } else if ((ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) &&
+            	    !"Anthropic".equalsIgnoreCase(provider)) {
+            	 
             content = responseInfo.message.has("text") && !responseInfo.message.isNull("text")
                     ? responseInfo.message.getString("text") : null;
 
@@ -154,18 +158,25 @@ public class ResponseUtils {
      */
     private static ResponseInfo extractResponseInfo(JSONObject root, InferenceConfiguration configuration) {
         ResponseInfo info = new ResponseInfo();
-        info.model = !("AI21LABS".equals(configuration.getInferenceType())
+        
+    	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
+
+    	info.model = !("AI21LABS".equals(configuration.getInferenceType())
                 || "COHERE".equals(configuration.getInferenceType())
                 || "VERTEX_AI_EXPRESS".equals(configuration.getInferenceType())
                 || "VERTEX_AI".equals(configuration.getInferenceType())
+                || ("VERTEX_AI".equals(configuration.getInferenceType()) && "Anthropic".equalsIgnoreCase(provider))
                 )
-                ? root.getString("model")   //if model is notAI21LABS or COHERE or VERTEX_AI_EXPRESS or VERTEX_AI
+                ? root.getString("model")   //if model is not AI21LABS or COHERE or VERTEX_AI_EXPRESS or VERTEX_AI AND provider is Anthropic
                 : configuration.getModelName();
 
         if (ProviderUtils.isOllama(configuration)) {
             info.id = null;
-        } else if (ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) {
-        	info.id = root.getString("responseId");
+        } else if (
+        	    (ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) &&
+        	    !"Anthropic".equalsIgnoreCase(provider)
+        	) {
+        	    info.id = root.getString("responseId");
         } else {
         	info.id = root.getString("id");
         }
@@ -178,7 +189,7 @@ public class ResponseUtils {
         } else if (ProviderUtils.isCohere(configuration)) {
             info.message = root.getJSONObject("message");
             info.finishReason = root.getString("finish_reason");
-        } else if (ProviderUtils.isAnthropic(configuration)) {
+        } else if (ProviderUtils.isAnthropic(configuration) || "Anthropic".equalsIgnoreCase(provider)) {
             info.finishReason = root.getString("stop_reason");
 
             // Extract text from content array

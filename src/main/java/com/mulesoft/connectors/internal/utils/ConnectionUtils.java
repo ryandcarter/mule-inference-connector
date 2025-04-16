@@ -150,18 +150,42 @@ public class ConnectionUtils {
                     .replace("{deployment-id}", configuration.getAzureOpenaiDeploymentId());
                 return new URL(urlStr);
             case "VERTEX_AI_EXPRESS":
-                String vertexAIExpressUrlStr = InferenceConstants.VERTEX_AI_EXPRESS_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI;
+                String vertexAIExpressUrlStr = InferenceConstants.VERTEX_AI_EXPRESS_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI_GEMINI;
                 vertexAIExpressUrlStr = vertexAIExpressUrlStr
                     .replace("{MODEL_ID}", configuration.getModelName());
                 return new URL(vertexAIExpressUrlStr);
             case "VERTEX_AI":
-                String vertexAIUrlStr = InferenceConstants.VERTEX_AI_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI;
-                vertexAIUrlStr = vertexAIUrlStr
-                	.replace("{LOCATION_ID}", configuration.getVertexAILocationId())
-                	.replace("{PROJECT_ID}", configuration.getVertexAIProjectId())
-                    .replace("{MODEL_ID}", configuration.getModelName());
-                return new URL(vertexAIUrlStr);
-               
+            	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
+            	String vertexAIUrlStr = "";
+            	switch (provider) {
+	                case "Google":
+	                	vertexAIUrlStr = InferenceConstants.VERTEX_AI_GEMINI_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI_GEMINI;
+	                    vertexAIUrlStr = vertexAIUrlStr
+	                    	.replace("{LOCATION_ID}", configuration.getVertexAILocationId())
+	                    	.replace("{PROJECT_ID}", configuration.getVertexAIProjectId())
+	                        .replace("{MODEL_ID}", configuration.getModelName());
+	                    return new URL(vertexAIUrlStr);
+	  
+	                case "Anthropic":
+	                	vertexAIUrlStr = InferenceConstants.VERTEX_AI_ANTHROPIC_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI_ANTHROPIC;
+	                    vertexAIUrlStr = vertexAIUrlStr
+	                    	.replace("{LOCATION_ID}", configuration.getVertexAILocationId())
+	                    	.replace("{PROJECT_ID}", configuration.getVertexAIProjectId())
+	                        .replace("{MODEL_ID}", configuration.getModelName());
+	                    return new URL(vertexAIUrlStr);
+	
+	                case "Meta":
+	                	vertexAIUrlStr = InferenceConstants.VERTEX_AI_META_URL;
+	                    vertexAIUrlStr = vertexAIUrlStr
+	                    	.replace("{LOCATION_ID}", configuration.getVertexAILocationId())
+	                    	.replace("{PROJECT_ID}", configuration.getVertexAIProjectId());
+	                    return new URL(vertexAIUrlStr);
+	
+	                default:
+	                    System.out.println("Unknown provider. Skipping...");
+	                    // TO DO: Need to handle unknown case
+	                    break;
+            	}
 
             case "AZURE_AI_FOUNDRY":
                 String aifurlStr = InferenceConstants.AZURE_AI_FOUNDRY_URL + InferenceConstants.CHAT_COMPLETIONS_AZURE_AI_FOUNDRY;
@@ -343,7 +367,6 @@ public class ConnectionUtils {
         
         String token = credentials.getAccessToken().getTokenValue();
         
-        //System.out.println();
         LOGGER.debug("gcp access token {}", token);
         
 
@@ -364,4 +387,7 @@ public class ConnectionUtils {
             return buffer.toByteArray();
         }
     }
-} 
+    
+    
+ } 
+

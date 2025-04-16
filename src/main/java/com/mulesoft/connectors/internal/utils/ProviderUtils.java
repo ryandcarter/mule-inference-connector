@@ -3,12 +3,21 @@ package com.mulesoft.connectors.internal.utils;
 import com.mulesoft.connectors.internal.config.ImageGenerationConfiguration;
 import com.mulesoft.connectors.internal.config.InferenceConfiguration;
 import com.mulesoft.connectors.internal.config.VisionConfiguration;
+import com.mulesoft.connectors.internal.operations.InferenceOperations;
+
 import org.jetbrains.annotations.NotNull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Utility class for provider-specific operations.
  */
 public class ProviderUtils {
+	
+    private static final Logger LOGGER = LoggerFactory.getLogger(InferenceOperations.class);
+
 
     /**
      * Check if the inference type is OLLAMA
@@ -125,4 +134,26 @@ public class ProviderUtils {
         return "OPENAI".equals(configuration.getInferenceType());
 
     }
+    
+    //get the providers based on the models
+    public static String getProviderByModel(String modelName) {
+        LOGGER.debug("model name {}", modelName);
+
+        if (modelName == null || modelName.isEmpty()) {
+            return "Unknown";
+        }
+
+        String upperName = modelName.toUpperCase();
+        
+        if (upperName.startsWith("GEMINI")) {
+            return "Google";
+        } else if (upperName.startsWith("CLAUDE")) {
+            return "Anthropic";
+        } else if (upperName.startsWith("META")) {
+            return "Meta";
+        } else {
+            return "Unknown";
+        }
+    }
+
 }
