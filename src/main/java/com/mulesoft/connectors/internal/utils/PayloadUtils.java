@@ -25,7 +25,7 @@ public class PayloadUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(PayloadUtils.class);
 
 
-    private static final String[] NO_TEMPERATURE_MODELS = {"o3-mini", "o1", "o1-mini"};
+    private static final String[] NO_TEMPERATURE_MODELS = {"o3-mini","o3","o4-mini","o4", "o1", "o1-mini"};
 
     /**
      * Build the payload for the API request
