@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PayloadUtils {
 	
-    private static final Logger LOGGER = LoggerFactory.getLogger(InferenceOperations.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PayloadUtils.class);
 
 
     private static final String[] NO_TEMPERATURE_MODELS = {"o3-mini", "o1", "o1-mini"};
@@ -36,10 +36,12 @@ public class PayloadUtils {
      */
     public static JSONObject buildPayload(ChatCompletionBase configuration, JSONArray messagesArray, JSONArray toolsArray) {
         JSONObject payload = new JSONObject();
+        
+        String inferenceType = configuration.getInferenceType();
     	
     	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
     	
-    	LOGGER.debug("provider {}", provider);
+    	LOGGER.debug("provider {} inferenceType {}", provider, inferenceType);
 
 
     	if ("Google".equalsIgnoreCase(provider)) {
@@ -55,14 +57,19 @@ public class PayloadUtils {
 			
 			if ("Anthropic".equalsIgnoreCase(provider)) {
 				payload.put(InferenceConstants.VERTEX_AI_ANTHROPIC_VERSION, InferenceConstants.VERTEX_AI_ANTHROPIC_VERSION_VALUE);
-			} else if (!("AZURE_OPENAI".equalsIgnoreCase(configuration.getInferenceType()))) {
+			} 
+			
+			if (!"AZURE_OPENAI".equalsIgnoreCase(inferenceType) &&
+				    !"IBM_WATSON".equalsIgnoreCase(inferenceType) &&
+				    !"Anthropic".equalsIgnoreCase(provider)) {
+				    //set the model only if:
+					//The inference type is not "AZURE_OPENAI" and
+					//The inference type is not "IBM_WATSON" and
+					//The provider is not "Anthropic"
 				    payload.put(InferenceConstants.MODEL, configuration.getModelName());
 			}
 
-            if (!"AZURE_OPENAI".equals(configuration.getInferenceType()) && !"IBM_WATSON".equals(configuration.getInferenceType())) {
-                payload.put(InferenceConstants.MODEL, configuration.getModelName());
-            }
-            if ("IBM_WATSON".equals(configuration.getInferenceType())) {
+			if ("IBM_WATSON".equals(configuration.getInferenceType())) {
                 payload.put("model_id", configuration.getModelName());
                 payload.put("project_id", configuration.getibmWatsonProjectID());
             }
@@ -89,7 +96,7 @@ public class PayloadUtils {
 	        }
 	
 	        // Special handling for Ollama's and Azure OpenAI's stream parameter
-	        if ("OLLAMA".equals(configuration.getInferenceType()) || "AZURE_OPENAI".equals(configuration.getInferenceType())) {
+	        if ("OLLAMA".equals(configuration.getInferenceType()) || "AZURE_OPENAI".equals(configuration.getInferenceType()) || "Meta".equalsIgnoreCase(provider)) {
 	            payload.put("stream", false);
 	        }
 		}
@@ -408,8 +415,6 @@ public class PayloadUtils {
     public static JSONObject buildChatAnswerPromptPayload(TextGenerationConfig inferenceConfig, ChatCompletionBase configuration, String prompt) {
     	JSONObject payload;
     	
-//    	String type = configuration.getInferenceType();
-    	
     	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
 
     	if ("Google".equalsIgnoreCase(provider)) {
@@ -457,14 +462,12 @@ public class PayloadUtils {
      */
     public static JSONObject buildPromptTemplatePayload(TextGenerationConfig inferenceConfig,ChatCompletionBase configuration, String template, String instructions, String data) {
     	JSONObject payload;
-
-    	String type = configuration.getInferenceType();
     	
        	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
 
-
-    	if (("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) && !"Anthropic".equalsIgnoreCase(provider)) {
-	    	//Create systemInstruction object
+       	if ("Google".equalsIgnoreCase(provider)) {
+    		//for google/gemini
+    		//Create systemInstruction object
 	    	//Step 1: Wrap text in a part object
 	        JSONObject part = new JSONObject();
 	        part.put("text", template + " - " + instructions);
@@ -533,9 +536,12 @@ public class PayloadUtils {
         	String type = configuration.getInferenceType();
         	
            	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
-        	JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools); 
 
-        	if (("VERTEX_AI".equalsIgnoreCase(type) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(type)) && !"Anthropic".equalsIgnoreCase(provider)) {
+           	JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools); 
+           	
+           	LOGGER.debug("provider: {} toolsArray: {}", provider, toolsArray.toString());
+
+        	if ("Google".equalsIgnoreCase(provider)) {
             	
             	//Create systemInstruction object
             	//Step 1: Wrap text in a part object
@@ -550,8 +556,6 @@ public class PayloadUtils {
                 JSONObject systemInstruction = new JSONObject();
                 systemInstruction.put("parts", parts);
             	
-
-            	JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools);
 
             	JSONArray safetySettings = new JSONArray(); // Empty array
 
@@ -585,7 +589,10 @@ public class PayloadUtils {
         	
         	} else {
         	
-        	
+        	    //As of April 2025, Meta LLaMA models on Vertex AI (including meta/llama-4-maverick-17b-128e-instruct-maas) do not support tools or function calling 
+        		//via the OpenAI-compatible /chat/completions endpoint or the text generation endpoint.
+        		
+        		
         		JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
         				configuration, template + " - " + instructions, data);
         		payload = PayloadUtils.buildPayload(configuration, messagesArray, toolsArray);

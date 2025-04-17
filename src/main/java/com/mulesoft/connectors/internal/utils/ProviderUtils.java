@@ -1,12 +1,10 @@
 package com.mulesoft.connectors.internal.utils;
 
-import com.mulesoft.connectors.internal.config.ImageGenerationConfiguration;
-import com.mulesoft.connectors.internal.config.VisionConfiguration;
-import com.mulesoft.connectors.internal.operations.InferenceOperations;
-
 import com.mulesoft.connectors.internal.config.*;
 import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.connection.ModerationImageGenerationBase;
+import com.mulesoft.connectors.internal.operations.TextGenerationOperations;
+
 import org.jetbrains.annotations.NotNull;
 import org.mule.runtime.http.api.client.HttpClient;
 
@@ -19,8 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ProviderUtils {
 	
-    private static final Logger LOGGER = LoggerFactory.getLogger(InferenceOperations.class);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProviderUtils.class);
 
     /**
      * Check if the inference type is OLLAMA
@@ -80,63 +77,6 @@ public class ProviderUtils {
         return "VERTEX_AI".equals(configuration.getInferenceType());
     }
     
-    public static @NotNull InferenceConfiguration convertToInferenceConfig_old(VisionConfiguration visionConfig) {
-        InferenceConfiguration inferenceConfig = new InferenceConfiguration();
-
-        inferenceConfig.setInferenceType(visionConfig.getInferenceType());
-        inferenceConfig.setApiKey(visionConfig.getApiKey());
-        inferenceConfig.setModelName(visionConfig.getModelName());
-        inferenceConfig.setMaxTokens(visionConfig.getMaxTokens());
-        inferenceConfig.setTemperature(visionConfig.getTemperature());
-        inferenceConfig.setTopP(visionConfig.getTopP());
-        inferenceConfig.setTimeout(visionConfig.getTimeout());
-        inferenceConfig.setOllamaUrl(visionConfig.getOllamaUrl());
-        inferenceConfig.setVirtualKey(visionConfig.getVirtualKey());
-
-        return inferenceConfig;
-    }
-
-
-    public static @NotNull InferenceConfiguration convertToInferenceConfig(VisionConfiguration visionConfig) {
-        return convert(visionConfig);
-    }
-
-    public static @NotNull InferenceConfiguration convertToInferenceConfig(ImageGenerationConfiguration imageConfig) {
-        return convert(imageConfig);
-    }
-
-    private static @NotNull InferenceConfiguration convert(Object config) {
-        InferenceConfiguration inferenceConfig = new InferenceConfiguration();
-
-        if (config instanceof VisionConfiguration) {
-            VisionConfiguration vision = (VisionConfiguration) config;
-            inferenceConfig.setInferenceType(vision.getInferenceType());
-            inferenceConfig.setApiKey(vision.getApiKey());
-            inferenceConfig.setModelName(vision.getModelName());
-            inferenceConfig.setMaxTokens(vision.getMaxTokens());
-            inferenceConfig.setTemperature(vision.getTemperature());
-            inferenceConfig.setTopP(vision.getTopP());
-            inferenceConfig.setTimeout(vision.getTimeout());
-            inferenceConfig.setOllamaUrl(vision.getOllamaUrl());
-            inferenceConfig.setVirtualKey(vision.getVirtualKey());
-            inferenceConfig.setVertexAILocationId(vision.getVertexAILocationId());
-            inferenceConfig.setVertexAIProjectId(vision.getVertexAIProjectId());
-            inferenceConfig.setOpenAICompatibleURL(vision.getOpenAICompatibleURL());
-        } else if (config instanceof ImageGenerationConfiguration) {
-            ImageGenerationConfiguration image = (ImageGenerationConfiguration) config;
-            inferenceConfig.setInferenceType(image.getInferenceType());
-            inferenceConfig.setApiKey(image.getApiKey());
-            inferenceConfig.setModelName(image.getModelName());
-            inferenceConfig.setTimeout("600000");
-        }
-
-        return inferenceConfig;
-    }
-
-    public static boolean isOpenAI(InferenceConfiguration configuration) {
-        return "OPENAI".equals(configuration.getInferenceType());
-
-    }
     
     //get the providers based on the models
     public static String getProviderByModel(String modelName) {
@@ -157,7 +97,7 @@ public class ProviderUtils {
         } else {
             return "Unknown";
         }
-
+    }
 
 
     /**
@@ -216,6 +156,9 @@ public class ProviderUtils {
         private String openCompatibleURL;
         private String virtualKey;
         private String xnferenceUrl;
+        private String vertexAIProjectId;
+        private String vertexAILocationId;          
+
 
         @Override
         public HttpClient getHttpClient() { return httpClient; }
@@ -331,6 +274,15 @@ public class ProviderUtils {
             return xnferenceUrl;
         }
         public void setXinferenceUrl(String xnferenceUrl) { this.xnferenceUrl = xnferenceUrl; }
+        
+        @Override
+        public String getVertexAIProjectId() { return vertexAIProjectId; }
+        public void setVertexAIProjectId(String vertexAIProjectId) { this.vertexAIProjectId = vertexAIProjectId; }
+
+        @Override
+        public String getVertexAILocationId() { return vertexAILocationId; }        
+        public void setVertexAILocationId(String vertexAILocationId) { this.vertexAILocationId = vertexAILocationId; }
+
 
     }
 

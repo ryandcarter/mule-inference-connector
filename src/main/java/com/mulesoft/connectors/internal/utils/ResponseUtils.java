@@ -59,8 +59,8 @@ public class ResponseUtils {
         }
 
         // Handle Vertex AI tools responses (functionCall)
-        if (isToolsResponse && 
-        		   (ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration))) {
+        if (isToolsResponse && ("Google".equalsIgnoreCase(provider))) {
+        	//for Google/Gemini
             JSONArray functionCalls = extractVertexAIFunctionCalls(root);
             if (!functionCalls.isEmpty()) {
                 responseInfo.message.put("tool_calls", functionCalls);
@@ -78,9 +78,8 @@ public class ResponseUtils {
                     content = firstContent.getString("text"); // Extract the "text" field
                 }
             }
-        } else if ((ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) &&
-            	    !"Anthropic".equalsIgnoreCase(provider)) {
-            	 
+        } else if (("Google".equalsIgnoreCase(provider))) {
+            	 //for google/gemini
             content = responseInfo.message.has("text") && !responseInfo.message.isNull("text")
                     ? responseInfo.message.getString("text") : null;
 
@@ -168,13 +167,13 @@ public class ResponseUtils {
 
         if (ProviderUtils.isOllama(configuration)) {
             info.id = null;
-        } else if (
-        	    (ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) &&
-        	    !"Anthropic".equalsIgnoreCase(provider)
-        	) {
+        } else if ((ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) &&
+        	    !"Anthropic".equalsIgnoreCase(provider) &&
+        	    !"Meta".equalsIgnoreCase(provider)) {
+        	    
         	    info.id = root.getString("responseId");
         } else {
-        	info.id = root.getString("id");
+        	    info.id = root.getString("id");
         }
 
         info.message = new JSONObject();
@@ -202,7 +201,8 @@ public class ResponseUtils {
 
             info.message = new JSONObject();
             info.message.put("content", info.text);
-        } else if (ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) {
+        } else if ((ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) && !"Meta".equalsIgnoreCase(provider)) {
+        	//for google models
         	// Extract candidates array
             JSONArray candidatesArray = root.getJSONArray("candidates");
 

@@ -125,6 +125,22 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
 
   public void setVirtualKey(String virtualKey) { this.virtualKey = virtualKey; }
 
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = "us-central1")
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[VertexAI] Location Id")
+  private String vertexAILocationId;
+
+  public void setVertexAILocationId(String vertexAILocationId) { this.vertexAILocationId = vertexAILocationId; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[VertexAI] Project Id")
+  private String vertexAIProjectId;
+
+  public void setVertexAIProjectId(String vertexAIProjectId) { this.vertexAIProjectId = vertexAIProjectId; }
 
   @Parameter
   @Placement(order = 2, tab = "Advanced")
@@ -150,7 +166,10 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
             topP,
             ollamaUrl,
             openCompatibleURL,
-            virtualKey
+            virtualKey,
+            vertexAIProjectId,
+            vertexAILocationId  
+
     );  }
 
   @Override

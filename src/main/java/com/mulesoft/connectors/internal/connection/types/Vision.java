@@ -21,6 +21,9 @@ public class Vision implements ChatCompletionBase {
   private String ollamaUrl;
   private String openCompatibleURL;
   private String virtualKey;
+  private String vertexAIProjectId;
+  private String vertexAILocationId;          
+
 
 
   public Vision(
@@ -34,7 +37,9 @@ public class Vision implements ChatCompletionBase {
           Number topP,
           String ollamaUrl,
           String openCompatibleURL,
-          String virtualKey
+          String virtualKey,
+          String vertexAIProjectId,
+          String vertexAILocationId      
   ) {
 
     this.httpClient = httpClient;
@@ -48,6 +53,9 @@ public class Vision implements ChatCompletionBase {
     this.ollamaUrl = ollamaUrl;
     this.openCompatibleURL = openCompatibleURL;
     this.virtualKey = virtualKey;
+    this.vertexAIProjectId = vertexAIProjectId;
+    this.vertexAILocationId = vertexAILocationId;
+
   }
 
   public HttpClient getHttpClient() {
@@ -143,6 +151,11 @@ public class Vision implements ChatCompletionBase {
   public String getxinferenceUrl() {
     return "";
   }
+  
+  public String getVertexAIProjectId() { return vertexAIProjectId; }
+
+  public String getVertexAILocationId() { return vertexAILocationId; }
+
 
   public boolean validate() throws ConnectionException {
     return true;

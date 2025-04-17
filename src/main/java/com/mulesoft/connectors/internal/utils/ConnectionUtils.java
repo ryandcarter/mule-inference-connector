@@ -53,7 +53,7 @@ import static com.mulesoft.connectors.internal.utils.ResponseUtils.encodeImageTo
  * Utility class for HTTP connection operations using Mule's HttpClient.
  */
 public class ConnectionUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TextGenerationOperations.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionUtils.class);
     private static HttpClient httpClient;
 
 
@@ -75,14 +75,6 @@ public class ConnectionUtils {
             queryParams.put("key", connection.getApiKey());
             finalUri = url.toString() + "?" + getQueryParams(queryParams);
         }
-
-        
-        //HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setDoOutput(true);
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0");
-        conn.setRequestProperty("Accept", "application/json");
 
         LOGGER.debug("Request path: {}", finalUri);
 
@@ -127,7 +119,7 @@ public class ConnectionUtils {
                 requestBuilder.addHeader("Authorization", "Bearer " + accessToken);
                 break;
             case "VERTEX_AI":
-                conn.setRequestProperty("Authorization", "Bearer " + getAccessTokenFromServiceAccountKey(configuration));
+            	requestBuilder.addHeader("Authorization", "Bearer " + getAccessTokenFromServiceAccountKey(connection));
                 break;
             default:
                 requestBuilder.addHeader("Authorization", "Bearer " + connection.getApiKey());
@@ -204,37 +196,37 @@ public class ConnectionUtils {
             case "VERTEX_AI_EXPRESS":
                 String vertexAIExpressUrlStr = InferenceConstants.VERTEX_AI_EXPRESS_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI_GEMINI;
                 vertexAIExpressUrlStr = vertexAIExpressUrlStr
-                    .replace("{MODEL_ID}", configuration.getModelName());
+                    .replace("{MODEL_ID}", connection.getModelName());
                 return new URL(vertexAIExpressUrlStr);
             case "VERTEX_AI":
-            	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
+            	String provider = ProviderUtils.getProviderByModel(connection.getModelName());
             	String vertexAIUrlStr = "";
             	switch (provider) {
 	                case "Google":
 	                	vertexAIUrlStr = InferenceConstants.VERTEX_AI_GEMINI_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI_GEMINI;
 	                    vertexAIUrlStr = vertexAIUrlStr
-	                    	.replace("{LOCATION_ID}", configuration.getVertexAILocationId())
-	                    	.replace("{PROJECT_ID}", configuration.getVertexAIProjectId())
-	                        .replace("{MODEL_ID}", configuration.getModelName());
+	                    	.replace("{LOCATION_ID}", connection.getVertexAILocationId())
+	                    	.replace("{PROJECT_ID}", connection.getVertexAIProjectId())
+	                        .replace("{MODEL_ID}", connection.getModelName());
 	                    return new URL(vertexAIUrlStr);
 	  
 	                case "Anthropic":
 	                	vertexAIUrlStr = InferenceConstants.VERTEX_AI_ANTHROPIC_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI_ANTHROPIC;
 	                    vertexAIUrlStr = vertexAIUrlStr
-	                    	.replace("{LOCATION_ID}", configuration.getVertexAILocationId())
-	                    	.replace("{PROJECT_ID}", configuration.getVertexAIProjectId())
-	                        .replace("{MODEL_ID}", configuration.getModelName());
+	                    	.replace("{LOCATION_ID}", connection.getVertexAILocationId())
+	                    	.replace("{PROJECT_ID}", connection.getVertexAIProjectId())
+	                        .replace("{MODEL_ID}", connection.getModelName());
 	                    return new URL(vertexAIUrlStr);
 	
 	                case "Meta":
 	                	vertexAIUrlStr = InferenceConstants.VERTEX_AI_META_URL;
 	                    vertexAIUrlStr = vertexAIUrlStr
-	                    	.replace("{LOCATION_ID}", configuration.getVertexAILocationId())
-	                    	.replace("{PROJECT_ID}", configuration.getVertexAIProjectId());
+	                    	.replace("{LOCATION_ID}", connection.getVertexAILocationId())
+	                    	.replace("{PROJECT_ID}", connection.getVertexAIProjectId());
 	                    return new URL(vertexAIUrlStr);
 	
 	                default:
-	                    System.out.println("Unknown provider. Skipping...");
+	                	LOGGER.error("Unknown provider. Skipping... {}", provider);
 	                    // TO DO: Need to handle unknown case
 	                    break;
             	}
@@ -578,7 +570,7 @@ public class ConnectionUtils {
     }
 
     //get access token from google service acc key file	
-    public static String getAccessTokenFromServiceAccountKey(InferenceConfiguration configuration) throws IOException {
+    public static String getAccessTokenFromServiceAccountKey(ChatCompletionBase connection) throws IOException {
         GoogleCredentials credentials = GoogleCredentials.getApplicationDefault()
             .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
 
@@ -613,7 +605,7 @@ public class ConnectionUtils {
     }
     
     
- } 
+  
 
 
     /**

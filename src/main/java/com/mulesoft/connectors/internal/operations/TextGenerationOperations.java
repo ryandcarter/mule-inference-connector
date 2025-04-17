@@ -86,6 +86,8 @@ public class TextGenerationOperations {
             @Content String prompt) throws ModuleException {
         try {        
         	JSONObject payload = PayloadUtils.buildChatAnswerPromptPayload(configuration, connection, prompt);
+            LOGGER.debug("payload sent to the LLM {}", payload.toString());
+
 
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
             LOGGER.debug("Chat answer prompt Url: {}", chatCompUrl.toString());
@@ -124,6 +126,8 @@ public class TextGenerationOperations {
         try {
         	        	
         	JSONObject payload = PayloadUtils.buildPromptTemplatePayload(configuration, connection, template, instructions, data);
+            LOGGER.debug("payload sent to the LLM {}", payload.toString());
+
 
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
             String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
@@ -163,8 +167,7 @@ public class TextGenerationOperations {
         	JSONObject payload = PayloadUtils.buildToolsTemplatePayload(configuration, connection, template, instructions, data, tools);
             LOGGER.debug("payload sent to the LLM {}", payload.toString());
 
-        	
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
+             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
             String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
             LOGGER.debug("Tools use native template result {}", response);

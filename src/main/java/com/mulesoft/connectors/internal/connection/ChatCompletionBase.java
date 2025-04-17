@@ -26,4 +26,7 @@ public interface ChatCompletionBase {
     String getOpenAICompatibleURL();
     String getVirtualKey();
     String getxinferenceUrl();
+    String getVertexAIProjectId();
+    String getVertexAILocationId();
+
 }
