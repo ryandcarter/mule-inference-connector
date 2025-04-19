@@ -31,9 +31,16 @@ public enum ModelType {
       XAI("XAI", getXAIModelNameStream()),
       AZURE_OPENAI("AZURE_OPENAI", getAzureOpenAIModelNameStream()),
       VERTEX_AI_EXPRESS("VERTEX_AI_EXPRESS", getVertexAIExpressModelNameStream()),
+      VERTEX_AI("VERTEX_AI", getVertexAIModelNameStream()),
       AZURE_AI_FOUNDRY("AZURE_AI_FOUNDRY", getAzureAIFoundryModelNameStream()),
       GPT4ALL("GPT4ALL", getGPT4ALLModelNameStream()),
       LMSTUDIO("LMSTUDIO", getLMSTUDIOModelNameStream()),
+      DOCKER_MODELS("DOCKER_MODELS", getDOCKER_MODELSNameStream()),
+      DEEPSEEK("DEEPSEEK", getDEEPSEEKModelNameStream()),
+      ZHIPU_AI("ZHIPU_AI", getCHATGLMModelNameStream()),
+      OPENAI_COMPATIBLE_ENDPOINT("OPENAI_COMPATIBLE_ENDPOINT", getOpenAIModelNameStream()),
+      IBM_WATSON("IBM_WATSON", getIBMWatsonModelNameStream()),
+      DATABRICKS("DATABRICKS", getDATABRICKSModelNameStream()),
   ;
 
 
@@ -61,9 +68,16 @@ public enum ModelType {
     return Arrays.stream(GroqModelName.values()).map(String::valueOf);
   }
 
+  private static Stream<String> getIBMWatsonModelNameStream() {
+    return Arrays.stream(IBMWatsonModelName.values()).map(String::valueOf);
+  }
 
   private static Stream<String> getPortkeyModelNameStream() {
     return Arrays.stream(PortkeyModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getDATABRICKSModelNameStream() {
+    return Arrays.stream(DatabricksModelName.values()).map(String::valueOf);
   }
 
   private static Stream<String> getOpenRouterModelNameStream() {
@@ -138,9 +152,13 @@ public enum ModelType {
   private static Stream<String> getAzureOpenAIModelNameStream() {
     return Arrays.stream(AzureOpenAIModelName.values()).map(String::valueOf);
   }
-  
+
   private static Stream<String> getVertexAIExpressModelNameStream() {
-	    return Arrays.stream(VertexAIExpressModelName.values()).map(String::valueOf);
+        return Arrays.stream(VertexAIExpressModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getVertexAIModelNameStream() {
+	    return Arrays.stream(VertexAIModelName.values()).map(String::valueOf);
   }
 
   private static Stream<String> getAzureAIFoundryModelNameStream() {
@@ -154,7 +172,16 @@ public enum ModelType {
   private static Stream<String> getLMSTUDIOModelNameStream() {
     return Arrays.stream(LMSTUDIOModelName.values()).map(String::valueOf);
   }
+  private static Stream<String> getDOCKER_MODELSNameStream() {
+    return Arrays.stream(DockerModelName.values()).map(String::valueOf);
+  }
+  private static Stream<String> getDEEPSEEKModelNameStream() {
+    return Arrays.stream(DEEPSEEKModelName.values()).map(String::valueOf);
+  }
 
+  private static Stream<String> getCHATGLMModelNameStream() {
+    return Arrays.stream(CHATGLMModelName.values()).map(String::valueOf);
+  }
 
   public static ModelType fromValue(String value) {
     return Arrays.stream(ModelType.values())
@@ -166,7 +193,9 @@ public enum ModelType {
   enum XAIModelName {
 
     grok_2_1212("grok-2-1212"),
-    grok_2_vision_1212("grok-2-vision-1212");
+    grok_2_vision_1212("grok-2-vision-1212"),
+    grok_3_beta("grok-3-beta"),
+    grok_3_mini_beta("grok-3-mini-beta");
 
     private final String value;
 
@@ -316,15 +345,15 @@ public enum ModelType {
   }
 
   enum DeepinfraModelName {
-    
+
     LLAMA_3_8B_INSTRUCT("meta-llama/Meta-Llama-3-8B-Instruct");
-    
+
     private final String value;
-  
+
     DeepinfraModelName(String value) {
       this.value = value;
     }
-  
+
     @Override
     public String toString() {
       return this.value;
@@ -332,15 +361,15 @@ public enum ModelType {
   }
 
   enum TogetherModelName {
-    
+
     LLAMA_3_1_8B_INSTRUCT_TURBO("meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo");
-    
+
     private final String value;
-  
+
     TogetherModelName(String value) {
       this.value = value;
     }
-  
+
     @Override
     public String toString() {
       return this.value;
@@ -349,13 +378,13 @@ public enum ModelType {
 
   enum FireworksModelName {
     LLAMA_V3P1_405B_INSTRUCT("accounts/fireworks/models/llama-v3p1-405b-instruct");
-    
+
     private final String value;
-  
+
     FireworksModelName(String value) {
       this.value = value;
     }
-  
+
     @Override
     public String toString() {
       return this.value;
@@ -380,7 +409,7 @@ public enum ModelType {
     LLAMA_3_1_70b_VERSATILE("llama-3.1-70b-versatile"),
     GEMMA_7b_IT("gemma-7b-it"),
     LLAMA_GUARD_3_8b("llama-guard-3-8b");
-    
+
     private final String value;
 
     GroqModelName(String value) {
@@ -394,9 +423,9 @@ public enum ModelType {
   }
 
   enum HuggingFaceModelName {
-    TII_UAE_FALCON_7B_INSTRUCT("tiiuae/falcon-7b-instruct"), 
-    PHI3("microsoft/Phi-3.5-mini-instruct"), 
-    MISTRAL_7B_INSTRUCT_V03("mistralai/Mistral-7B-Instruct-v0.3"), 
+    TII_UAE_FALCON_7B_INSTRUCT("tiiuae/falcon-7b-instruct"),
+    PHI3("microsoft/Phi-3.5-mini-instruct"),
+    MISTRAL_7B_INSTRUCT_V03("mistralai/Mistral-7B-Instruct-v0.3"),
     TINY_LLAMA("TinyLlama/TinyLlama-1.1B-Chat-v1.0");
 
     private final String value;
@@ -421,7 +450,7 @@ public enum ModelType {
     GPT_4_TURBO_PREVIEW("gpt-4-turbo-preview"),
     GPT_4("gpt-4"),
     GPT_3_5_TURBO("gpt-3.5-turbo");
-    
+
     private final String value;
 
     PortkeyModelName(String value) {
@@ -442,7 +471,7 @@ public enum ModelType {
     GPT_4_TURBO("gpt-4-turbo"),
     AI21_JAMBA_1_5_LARGE("AI21-Jamba-1.5-Large"),
     COHERE_COMMAND_R("Cohere-command-r");
-    
+
     private final String value;
 
     GithubModelName(String value) {
@@ -487,7 +516,7 @@ public enum ModelType {
     MISTRAL_NEMO("mistralai/mistral-nemo"),
     OPENAI_GPT_4O_MINI_2024_07_18("openai/gpt-4o-mini-2024-07-18"),
     OPENAI_GPT_4O_MINI("openai/gpt-4o-mini"),
-    GOOGLE_GEMMA_2_9B_FREE("google/gemma-2-9b-it:free");    
+    GOOGLE_GEMMA_2_9B_FREE("google/gemma-2-9b-it:free");
 
     private final String value;
 
@@ -568,7 +597,7 @@ public enum ModelType {
 
   enum AzureOpenAIModelName {
     //The Model is not specified in the Azure OpenAI API but rather as part of the deployment configuration. In an ideal world we wouldn't need to specify a mdoel when using Azur OpenAI.
-    AZURE_OPENAI("azure-openai"); 
+    AZURE_OPENAI("azure-openai");
 
     private final String value;
 
@@ -617,17 +646,73 @@ public enum ModelType {
       return this.value;
     }
   }
+
+
+  enum DockerModelName {
+    //The Model is not specified in the Azure OpenAI API but rather as part of the deployment configuration. In an ideal world we wouldn't need to specify a mdoel when using Azur OpenAI.
+    ai_deepseek_r1_distill_llama("ai/deepseek-r1-distill-llama"),
+    ai_gemma3("ai/gemma3"),
+    ai_llama3_3("ai/llama3.3"),
+    ai_mistral("ai/mistral"),
+    ai_mistral_nemo("ai/mistral-nemo"),
+    ai_phi4("ai/phi4"),
+    ;
+
+    private final String value;
+
+    DockerModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
   enum VertexAIExpressModelName {
+        GEMINI_20_FLASH_001("gemini-2.0-flash-001"),
+        GEMINI_20_FLASH_LITE_001("gemini-2.0-flash-lite-001"),
+        GEMINI_20_PRO_EXP_02_05("gemini-2.0-pro-exp-02-05"),  //Experimental
+        GEMINI_15_FLASH_002("gemini-1.5-flash-002"),  //expires 9/24/25
+        GEMINI_15_PRO_002("gemini-1.5-pro-002"),      //expires 9/24/25
+        GEMINI_10_PRO_002("gemini-1.0-pro-002");      //expires 4/9/25
+
+        private final String value;
+
+        VertexAIExpressModelName(String value) {
+          this.value = value;
+        }
+
+        @Override
+        public String toString() {
+          return this.value;
+        }
+      }
+
+  	enum VertexAIModelName {
 	    GEMINI_20_FLASH_001("gemini-2.0-flash-001"), 
 	    GEMINI_20_FLASH_LITE_001("gemini-2.0-flash-lite-001"),
-	    GEMINI_20_PRO_EXP_02_05("gemini-2.0-pro-exp-02-05"),  //Experimental
-	    GEMINI_15_FLASH_002("gemini-1.5-flash-002"),  //expires 9/24/25 
+	    GEMINI_15_FLASH_002("gemini-1.5-flash-002"),    //expires 9/24/25
 	    GEMINI_15_PRO_002("gemini-1.5-pro-002"),      //expires 9/24/25
-	    GEMINI_10_PRO_002("gemini-1.0-pro-002");      //expires 4/9/25
+//	    GEMINI_25_PRO_PREVIEW_0325("gemini-2.5-pro-preview-03-25"),      
+//	    GEMINI_25_PRO_EXP_0325("gemini-2.5-pro-exp-03-25"),      
+//	    GEMINI_20_FLASH_EXP_IMAGE_GENERATION("gemini-2.0-flash-exp(image generation)"),      
+//	    GEMINI_25_FLASH_THINKING_EXP_0121("gemini-2.0-flash-thinking-exp-01-21"),
+	    CLAUDE_37_SONNET_20250219("claude-3-7-sonnet@20250219"),
+	    CLAUDE_35_HAIKU_20241022("claude-3-5-haiku@20241022"),
+	    CLAUDE_35_SONNET_20241022("claude-3-5-haiku@20241022"),
+	    CLAUDE_3_OPUS_20240229("claude-3-opus@20240229"),
+	    META_LLAMA_4_MAVERICK_INSTRUCT("meta/llama-4-maverick-17b-128e-instruct-maas"),
+	    META_LLAMA_4_SCOUT_INSTRUCT("meta/llama-4-scout-17b-16e-instruct-maas"),
+	    META_LLAMA_33_70B_INSTRUCT("meta/llama-3.3-70b-instruct-maas"),
+	    META_LLAMA_31_70B_INSTRUCT("meta/llama-3.1-70b-instruct-maas"),
+	    META_LLAMA_31_405B_INSTRUCT("meta/llama-3.1-405b-instruct-maas"),
+	    META_LLAMA_32_90B_INSTRUCT("meta/llama-3.2-90b-vision-instruct-maas");  
 
 	    private final String value;
 
-	    VertexAIExpressModelName(String value) {
+	    VertexAIModelName(String value) {
 	      this.value = value;
 	    }
 
@@ -635,6 +720,82 @@ public enum ModelType {
 	    public String toString() {
 	      return this.value;
 	    }
-	  }
-  
+	}
+
+    enum DEEPSEEKModelName {
+      deepseek_chat("deepseek-chat");
+
+      private final String value;
+
+      DEEPSEEKModelName(String value) {
+        this.value = value;
+      }
+
+      @Override
+      public String toString() {
+        return this.value;
+      }
+    }
+
+  enum CHATGLMModelName {
+    glm_4_plus("glm-4-plus"),
+    glm_4_0520("glm-4-0520"),
+    ;
+
+    private final String value;
+
+    CHATGLMModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum IBMWatsonModelName {
+    meta_llama_llama_3_2_3b_instruct("meta-llama/llama-3-2-3b-instruct"),
+    ibm_granite_20b_code_instruct("ibm/granite-3-2b-instruct"),
+    meta_llama_llama_3_2_11b_vison_instruct("meta-llama/llama-3-2-11b-vision-instruct"),
+    meta_llama_llama_3_1_70_instruct("meta-llama/llama-3-1-70b-instruct"),
+    ibm_granite_vision_2_2_2b("ibm/granite-vision-3-2-2b"),
+    ibm_granite_3_8b_instruct("ibm/granite-3-8b-instruct"),
+    ibm_granite_3_2b_instruct("ibm/granite-3-2b-instruct"),
+
+    ;
+
+    private final String value;
+
+    IBMWatsonModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum DatabricksModelName {
+    // only using chat model types.
+    databricks_llama_4_maverick("databricks-llama-4-maverick"),
+    databricks_claude_3_7_sonnet("databricks-claude-3-7-sonnet"),
+    databricks_meta_llama_3_1_8b_instruct("databricks-meta-llama-3-1-8b-instruct"),
+    databricks_meta_llama_3_3_70b_instruct("databricks-meta-llama-3-3-70b-instruct"),
+    databricks_meta_llama_3_1_405b_instruct("databricks-meta-llama-3-1-405b-instruct"),
+    databricks_dbrx_instruct("databricks-dbrx-instruct"),
+    databricks_mixtral_8x7b_instruct("databricks-mixtral-8x7b-instruct");
+
+
+    private final String value;
+
+    DatabricksModelName(String value) {
+      this.value = value;
+    }
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
 }

@@ -1,18 +1,17 @@
 package com.mulesoft.connectors.internal.operations;
 
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
-import com.mulesoft.connectors.internal.config.InferenceConfiguration;
-import com.mulesoft.connectors.internal.config.VisionConfiguration;
+import com.mulesoft.connectors.internal.config.TextGenerationConfig;
+import com.mulesoft.connectors.internal.config.VisionConfig;
+import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
-import com.mulesoft.connectors.internal.utils.ConnectionUtils;
-import com.mulesoft.connectors.internal.utils.PayloadUtils;
-import com.mulesoft.connectors.internal.utils.ProviderUtils;
-import com.mulesoft.connectors.internal.utils.ResponseUtils;
+import com.mulesoft.connectors.internal.utils.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
 import org.mule.runtime.extension.api.annotation.param.Config;
+import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
@@ -25,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.net.URL;
 
-
 import static com.mulesoft.connectors.internal.utils.PayloadUtils.createRequestImageURL;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
@@ -33,8 +31,9 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICAT
  * This class contains operations for the inference connector.
  * Each public method represents an extension operation.
  */
-public class VisionOperations {
-    private static final Logger LOGGER = LoggerFactory.getLogger(VisionOperations.class);
+public class VisionModelOperations {
+	
+    private static final Logger LOGGER = LoggerFactory.getLogger(VisionModelOperations.class);
     private static final String ERROR_MSG_FORMAT = "%s result error";
 
     /**
@@ -47,28 +46,26 @@ public class VisionOperations {
      */
     @MediaType(value = APPLICATION_JSON, strict = false)
     @Alias("Read-image")
-    @DisplayName("[Image] Read by URL")
+    @DisplayName("[Image] Read by (Url or Base64)")
     @OutputJsonType(schema = "api/response/Response.json")
     public Result<InputStream, LLMResponseAttributes> readImage(
-            @Config VisionConfiguration configuration,
+            @Config VisionConfig configuration, @Connection ChatCompletionBase connection,
             @Content String prompt,
-            @Content(primary = true) String imageUrl) throws ModuleException {
+            @Content(primary = true) @DisplayName("Image") @Summary("An Image URL or a Base64 Image") String imageUrl) throws ModuleException {
         try {
 
-            JSONArray messagesArray = createRequestImageURL(configuration.getInferenceType(), prompt, imageUrl);
+            JSONArray messagesArray = createRequestImageURL(connection, prompt, imageUrl);
 
-            InferenceConfiguration inferenceConfig = ProviderUtils.convertToInferenceConfig(configuration);
+            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
+            LOGGER.debug("Read Image with {}", chatCompUrl);
 
-            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(inferenceConfig);
-
-            LOGGER.debug("Chatting with {}", chatCompUrl);
-
-            JSONObject payload = PayloadUtils.buildPayload(inferenceConfig, messagesArray, null);
-
-            String response = ConnectionUtils.executeREST(chatCompUrl, inferenceConfig, payload.toString());
+            JSONObject payload = PayloadUtils.buildPayload(connection, messagesArray, null);
+            LOGGER.debug("payload sent to the LLM {}", payload.toString());
+            
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
             LOGGER.debug("Read Image result {}", response);
-            return ResponseUtils.processLLMResponse(response, inferenceConfig);
+            return ResponseUtils.processLLMResponse(response, connection);
         } catch (Exception e) {
             LOGGER.error("Error in Read Image: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Read Image"),

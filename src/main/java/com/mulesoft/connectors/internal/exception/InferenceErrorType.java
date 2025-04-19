@@ -9,5 +9,6 @@ public enum InferenceErrorType implements ErrorTypeDefinition<InferenceErrorType
 
   CHAT_COMPLETION,
   TEXT_MODERATION,
-  VISION
+  VISION,
+  IMAGE_GENERATION
 }
