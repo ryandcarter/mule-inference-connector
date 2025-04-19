@@ -23,7 +23,7 @@ public class Vision implements ChatCompletionBase {
   private String virtualKey;
   private String vertexAIProjectId;
   private String vertexAILocationId;          
-
+  private String vertexAIServiceAccountKey;
 
 
   public Vision(
@@ -39,7 +39,8 @@ public class Vision implements ChatCompletionBase {
           String openCompatibleURL,
           String virtualKey,
           String vertexAIProjectId,
-          String vertexAILocationId      
+          String vertexAILocationId,
+          String vertexAIServiceAccountKey
   ) {
 
     this.httpClient = httpClient;
@@ -55,6 +56,7 @@ public class Vision implements ChatCompletionBase {
     this.virtualKey = virtualKey;
     this.vertexAIProjectId = vertexAIProjectId;
     this.vertexAILocationId = vertexAILocationId;
+    this.vertexAIServiceAccountKey = vertexAIServiceAccountKey;
 
   }
 
@@ -155,6 +157,8 @@ public class Vision implements ChatCompletionBase {
   public String getVertexAIProjectId() { return vertexAIProjectId; }
 
   public String getVertexAILocationId() { return vertexAILocationId; }
+  
+  public String getVertexAIServiceAccountKey() { return vertexAIServiceAccountKey; }
 
 
   public boolean validate() throws ConnectionException {

@@ -136,11 +136,20 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
+  @Optional
   @Placement(tab = "Additional Properties")
   @DisplayName("[VertexAI] Project Id")
   private String vertexAIProjectId;
 
   public void setVertexAIProjectId(String vertexAIProjectId) { this.vertexAIProjectId = vertexAIProjectId; }
+  
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "Additional Properties")
+  @Optional  
+  @DisplayName("[VertexAI] Service Account Key")
+  private String vertexAIServiceAccountKey;
+
 
   @Parameter
   @Placement(order = 2, tab = "Advanced")
@@ -168,7 +177,8 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
             openCompatibleURL,
             virtualKey,
             vertexAIProjectId,
-            vertexAILocationId  
+            vertexAILocationId,
+            vertexAIServiceAccountKey
 
     );  }
 

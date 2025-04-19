@@ -100,6 +100,7 @@ public class PayloadUtils {
 	            payload.put("stream", false);
 	        }
 		}
+    	
 		
         return payload;
     }
@@ -232,17 +233,24 @@ public class PayloadUtils {
     }
 
 
-    public static JSONArray createRequestImageURL(String provider, String prompt, String imageUrl) throws IOException {
-
-        if (provider.equalsIgnoreCase("ANTHROPIC")) {
+    public static JSONArray createRequestImageURL(ChatCompletionBase connection, String prompt, String imageUrl) throws IOException {
+    	
+    	String inferenceTyupe = connection.getInferenceType();
+    	
+       	String provider = ProviderUtils.getProviderByModel(connection.getModelName());
+        
+        if (inferenceTyupe.equalsIgnoreCase("ANTHROPIC") || ("Anthropic".equalsIgnoreCase(provider))) {
             return createAnthropicImageURLRequest(prompt, imageUrl);
-        } else if (provider.equalsIgnoreCase("OLLAMA")) {
+        } else if (inferenceTyupe.equalsIgnoreCase("OLLAMA")) {
             return createOllamaImageURLRequest(prompt, imageUrl);
-        } else if ("VERTEX_AI".equalsIgnoreCase(provider) || "VERTEX_AI_EXPRESS".equalsIgnoreCase(provider)) {
-            return createVertexAIImageURLRequest(prompt, imageUrl);
-        } else {
-            return createImageURLRequest(prompt, imageUrl);
+        } else if (("Google".equalsIgnoreCase(provider))) {
+        		//for Google/Gemini
+        		return createVertexAIImageURLRequest(prompt, imageUrl);
         }
+        
+        //default
+        return createImageURLRequest(prompt, imageUrl);
+        
     }
 
     /**
@@ -560,14 +568,18 @@ public class PayloadUtils {
             	JSONArray safetySettings = new JSONArray(); // Empty array
 
             	payload = PayloadUtils.buildVertexAIPayload(configuration, data, safetySettings, systemInstruction, toolsArray);
-        	} else if ("Anthropic".equalsIgnoreCase(provider)) {
+        	} else if ("Anthropic".equalsIgnoreCase(provider) || "Meta".equalsIgnoreCase(provider)) {
     			//for Anthropic thru Vertex AI
         		//Support for custom tools is planned, but not yet fully available or documented across all Claude models and endpoints. 
         		//As of now (April 2025), Claude 3 models via Vertex AI reject tools[].custom despite the field appearing valid.
+ 
+           	    //As of April 2025, Meta LLaMA models on Vertex AI (including meta/llama-4-maverick-17b-128e-instruct-maas) do not support tools or function calling 
+                //via the OpenAI-compatible /chat/completions endpoint or the text generation endpoint.
+     
         		
-            	//the code below can be used when the support is available
-            	
-        		JSONObject textObject = new JSONObject()
+        		throw new IOException(provider + ":" + configuration.getModelName() + " on Vertex AI do not currently support function calling at this time.");
+            	//the code below can be used when the support is available for Anthropic
+        		/*JSONObject textObject = new JSONObject()
     		            .put("type", "text")
     		            .put("text", data);
 
@@ -583,14 +595,12 @@ public class PayloadUtils {
     	        payload = PayloadUtils.buildPayload(configuration, messagesArray, null);
     	        
     	        //add the template+instructions to "system" field
-    	        payload.put(InferenceConstants.SYSTEM, template + " - " + instructions);
-    	        payload = PayloadUtils.buildPayload(configuration, messagesArray, toolsArray);
+    	        //payload.put(InferenceConstants.SYSTEM, template + " - " + instructions);
+    	        //payload = PayloadUtils.buildPayload(configuration, messagesArray, toolsArray);*/
     	        
         	
         	} else {
         	
-        	    //As of April 2025, Meta LLaMA models on Vertex AI (including meta/llama-4-maverick-17b-128e-instruct-maas) do not support tools or function calling 
-        		//via the OpenAI-compatible /chat/completions endpoint or the text generation endpoint.
         		
         		
         		JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(

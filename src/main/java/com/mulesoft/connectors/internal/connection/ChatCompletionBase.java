@@ -28,5 +28,6 @@ public interface ChatCompletionBase {
     String getxinferenceUrl();
     String getVertexAIProjectId();
     String getVertexAILocationId();
+    String getVertexAIServiceAccountKey();
 
 }

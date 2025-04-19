@@ -33,7 +33,8 @@ public class TextGeneration implements ChatCompletionBase {
   private String virtualKey;
   private String xnferenceUrl;
   private String vertexAIProjectId;
-  private String vertexAILocationId;          
+  private String vertexAILocationId;
+  private String vertexAIServiceAccountKey;
 
   public TextGeneration(
           HttpClient httpClient,
@@ -59,7 +60,8 @@ public class TextGeneration implements ChatCompletionBase {
           String virtualKey,
           String xnferenceUrl,
           String vertexAIProjectId,
-          String vertexAILocationId          
+          String vertexAILocationId,
+          String vertexAIServiceAccountKey
   ) {
 
     this.httpClient = httpClient;
@@ -86,6 +88,7 @@ public class TextGeneration implements ChatCompletionBase {
     this.xnferenceUrl = xnferenceUrl;
     this.vertexAIProjectId = vertexAIProjectId;
     this.vertexAILocationId = vertexAILocationId;
+    this.vertexAIServiceAccountKey = vertexAIServiceAccountKey;
 
     
   }
@@ -156,6 +159,8 @@ public class TextGeneration implements ChatCompletionBase {
   public String getVertexAIProjectId() { return vertexAIProjectId; }
 
   public String getVertexAILocationId() { return vertexAILocationId; }
+  
+  public String getVertexAIServiceAccountKey() { return vertexAIServiceAccountKey; }
 
   public boolean validate() throws ConnectionException {
     return true;

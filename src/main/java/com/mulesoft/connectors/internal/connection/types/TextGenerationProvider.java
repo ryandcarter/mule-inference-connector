@@ -237,7 +237,16 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
   private String vertexAIProjectId;
 
   public void setVertexAIProjectId(String vertexAIProjectId) { this.vertexAIProjectId = vertexAIProjectId; }
-  
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "Additional Properties")
+  @Optional  
+  @DisplayName("[VertexAI] Service Account Key")
+  private String vertexAIServiceAccountKey;
+
+  public void setVertexAIServiceAccountKey(String vertexAIServiceAccountKey) { this.vertexAIServiceAccountKey = vertexAIServiceAccountKey; }
+
   @Parameter
   @Placement(order = 2, tab = "Advanced")
   @Optional
@@ -274,7 +283,8 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
             virtualKey,
             xnferenceUrl,
             vertexAIProjectId,
-            vertexAILocationId  
+            vertexAILocationId,
+            vertexAIServiceAccountKey
     );
   }
 

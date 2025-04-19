@@ -33,10 +33,6 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -571,18 +567,16 @@ public class ConnectionUtils {
 
     //get access token from google service acc key file	
     public static String getAccessTokenFromServiceAccountKey(ChatCompletionBase connection) throws IOException {
-        GoogleCredentials credentials = GoogleCredentials.getApplicationDefault()
-            .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
+    	FileInputStream serviceAccountStream = new FileInputStream(connection.getVertexAIServiceAccountKey());
+        GoogleCredentials credentials = GoogleCredentials
+                .fromStream(serviceAccountStream)
+                .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
 
         credentials.refreshIfExpired();
-        
         String token = credentials.getAccessToken().getTokenValue();
-        
         LOGGER.debug("gcp access token {}", token);
-        
-
         return token;
-        
+    	        
     }
 
     /**

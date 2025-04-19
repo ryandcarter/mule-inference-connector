@@ -157,7 +157,9 @@ public class ProviderUtils {
         private String virtualKey;
         private String xnferenceUrl;
         private String vertexAIProjectId;
-        private String vertexAILocationId;          
+        private String vertexAILocationId;
+        private String vertexAIServiceAccountKey;
+
 
 
         @Override
@@ -282,6 +284,11 @@ public class ProviderUtils {
         @Override
         public String getVertexAILocationId() { return vertexAILocationId; }        
         public void setVertexAILocationId(String vertexAILocationId) { this.vertexAILocationId = vertexAILocationId; }
+        
+        @Override
+        public String getVertexAIServiceAccountKey() { return vertexAIServiceAccountKey; }
+        public void setVertexAIServiceAccountKey(String vertexAIServiceAccountKey) { this.vertexAIServiceAccountKey = vertexAIServiceAccountKey; }
+
 
 
     }
