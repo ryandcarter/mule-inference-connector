@@ -85,9 +85,12 @@ public class TextGenerationOperations {
             @Config TextGenerationConfig configuration, @Connection ChatCompletionBase connection,
             @Content String prompt) throws ModuleException {
         try {        
-        	JSONObject payload = PayloadUtils.buildChatAnswerPromptPayload(configuration, connection, prompt);
+        	JSONObject payload = PayloadUtils.buildChatAnswerPromptPayload(connection, prompt);
+            LOGGER.debug("payload sent to the LLM {}", payload.toString());
+
 
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
+            LOGGER.debug("Chat answer prompt Url: {}", chatCompUrl.toString());
             String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
             LOGGER.debug("Chat answer prompt result {}", response);
@@ -122,7 +125,9 @@ public class TextGenerationOperations {
             @Content(primary = true) String data) throws ModuleException {
         try {
         	        	
-        	JSONObject payload = PayloadUtils.buildPromptTemplatePayload(configuration, connection, template, instructions, data);
+        	JSONObject payload = PayloadUtils.buildPromptTemplatePayload(connection, template, instructions, data);
+            LOGGER.debug("payload sent to the LLM {}", payload.toString());
+
 
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
             String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
@@ -159,9 +164,9 @@ public class TextGenerationOperations {
             @Content @Summary("JSON Array defining the tools set to be used in the template so that the LLM can use them if required") InputStream tools) throws ModuleException {
         
     	try {
-        	        	
         	JSONObject payload = PayloadUtils.buildToolsTemplatePayload(configuration, connection, template, instructions, data, tools);
-        	
+            LOGGER.debug("payload sent to the LLM {}", payload.toString());
+
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
             String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 

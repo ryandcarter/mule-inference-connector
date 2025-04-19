@@ -31,8 +31,10 @@ public class ResponseUtils {
      * @return result containing the LLM response
      * @throws Exception if an error occurs during processing
      */
-    public static Result<InputStream, LLMResponseAttributes> processResponse(
+    public static Result<InputStream, LLMResponseAttributes> processResponse(    	
             String response, ChatCompletionBase configuration, boolean isToolsResponse) throws Exception {
+
+               	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
 
         JSONObject root = new JSONObject(response);
         ResponseInfo responseInfo = extractResponseInfo(root, configuration);
@@ -57,7 +59,8 @@ public class ResponseUtils {
         }
 
         // Handle Vertex AI tools responses (functionCall)
-        if (isToolsResponse && ProviderUtils.isVertexAIExpress(configuration)) {
+        if (isToolsResponse && ("Google".equalsIgnoreCase(provider))) {
+        	//for Google/Gemini
             JSONArray functionCalls = extractVertexAIFunctionCalls(root);
             if (!functionCalls.isEmpty()) {
                 responseInfo.message.put("tool_calls", functionCalls);
@@ -75,7 +78,8 @@ public class ResponseUtils {
                     content = firstContent.getString("text"); // Extract the "text" field
                 }
             }
-        } else if (ProviderUtils.isVertexAIExpress(configuration)) {
+        } else if (("Google".equalsIgnoreCase(provider))) {
+            	 //for google/gemini
             content = responseInfo.message.has("text") && !responseInfo.message.isNull("text")
                     ? responseInfo.message.getString("text") : null;
 
@@ -148,19 +152,28 @@ public class ResponseUtils {
      */
     private static ResponseInfo extractResponseInfo(JSONObject root, ChatCompletionBase configuration) {
         ResponseInfo info = new ResponseInfo();
+        
+    	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
 
-        info.model = !("AI21LABS".equals(configuration.getInferenceType())
+    	info.model = !("AI21LABS".equals(configuration.getInferenceType())
+
                 || "COHERE".equals(configuration.getInferenceType())
-                || "VERTEX_AI_EXPRESS".equals(configuration.getInferenceType()))
-                ? root.getString("model")   //if model is notAI21LABS or COHERE or VERTEX_AI_EXPRESS
+                || "VERTEX_AI_EXPRESS".equals(configuration.getInferenceType())
+                || "VERTEX_AI".equals(configuration.getInferenceType())
+                || ("VERTEX_AI".equals(configuration.getInferenceType()) && "Anthropic".equalsIgnoreCase(provider))
+                )
+                ? root.getString("model")   //if model is not AI21LABS or COHERE or VERTEX_AI_EXPRESS or VERTEX_AI AND provider is Anthropic
                 : configuration.getModelName();
 
         if (ProviderUtils.isOllama(configuration)) {
             info.id = null;
-        } else if (ProviderUtils.isVertexAIExpress(configuration)) {
-        	info.id = root.getString("responseId");
+        } else if ((ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) &&
+        	    !"Anthropic".equalsIgnoreCase(provider) &&
+        	    !"Meta".equalsIgnoreCase(provider)) {
+        	    
+        	    info.id = root.getString("responseId");
         } else {
-        	info.id = root.getString("id");
+        	    info.id = root.getString("id");
         }
 
         info.message = new JSONObject();
@@ -171,7 +184,7 @@ public class ResponseUtils {
         } else if (ProviderUtils.isCohere(configuration)) {
             info.message = root.getJSONObject("message");
             info.finishReason = root.getString("finish_reason");
-        } else if (ProviderUtils.isAnthropic(configuration)) {
+        } else if (ProviderUtils.isAnthropic(configuration) || "Anthropic".equalsIgnoreCase(provider)) {
             info.finishReason = root.getString("stop_reason");
 
             // Extract text from content array
@@ -188,7 +201,8 @@ public class ResponseUtils {
 
             info.message = new JSONObject();
             info.message.put("content", info.text);
-        } else if (ProviderUtils.isVertexAIExpress(configuration)) {
+        } else if ((ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) && !"Meta".equalsIgnoreCase(provider)) {
+        	//for google models
         	// Extract candidates array
             JSONArray candidatesArray = root.getJSONArray("candidates");
 
@@ -205,7 +219,7 @@ public class ResponseUtils {
                 info.message = partsArray.getJSONObject(0);
                 
             } else {
-                System.out.println("No candidates found in the response.");
+            	LOGGER.debug("No candidates found in the response from provider: {}", configuration.getInferenceType());
             }
         	
         	

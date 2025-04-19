@@ -32,6 +32,7 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICAT
  * Each public method represents an extension operation.
  */
 public class VisionModelOperations {
+	
     private static final Logger LOGGER = LoggerFactory.getLogger(VisionModelOperations.class);
     private static final String ERROR_MSG_FORMAT = "%s result error";
 
@@ -53,13 +54,14 @@ public class VisionModelOperations {
             @Content(primary = true) @DisplayName("Image") @Summary("An Image URL or a Base64 Image") String imageUrl) throws ModuleException {
         try {
 
-            JSONArray messagesArray = createRequestImageURL(connection.getInferenceType(), prompt, imageUrl);
+            JSONArray messagesArray = createRequestImageURL(connection, prompt, imageUrl);
 
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
-            LOGGER.debug("Chatting with {}", chatCompUrl);
+            LOGGER.debug("Read Image with {}", chatCompUrl);
 
             JSONObject payload = PayloadUtils.buildPayload(connection, messagesArray, null);
-
+            LOGGER.debug("payload sent to the LLM {}", payload.toString());
+            
             String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
             LOGGER.debug("Read Image result {}", response);

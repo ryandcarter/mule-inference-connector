@@ -221,6 +221,33 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
   public void setXinferenceUrl(String xnferenceUrl) { this.xnferenceUrl = xnferenceUrl; }
 
   @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional(defaultValue = "us-central1")
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[VertexAI] Location Id")
+  private String vertexAILocationId;
+
+  public void setVertexAILocationId(String vertexAILocationId) { this.vertexAILocationId = vertexAILocationId; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "Additional Properties")
+  @Optional  
+  @DisplayName("[VertexAI] Project Id")
+  private String vertexAIProjectId;
+
+  public void setVertexAIProjectId(String vertexAIProjectId) { this.vertexAIProjectId = vertexAIProjectId; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "Additional Properties")
+  @Optional  
+  @DisplayName("[VertexAI] Service Account Key")
+  private String vertexAIServiceAccountKey;
+
+  public void setVertexAIServiceAccountKey(String vertexAIServiceAccountKey) { this.vertexAIServiceAccountKey = vertexAIServiceAccountKey; }
+
+  @Parameter
   @Placement(order = 2, tab = "Advanced")
   @Optional
   private TlsContextFactory tlsContext;
@@ -254,7 +281,10 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
             ollamaUrl,
             openCompatibleURL,
             virtualKey,
-            xnferenceUrl
+            xnferenceUrl,
+            vertexAIProjectId,
+            vertexAILocationId,
+            vertexAIServiceAccountKey
     );
   }
 

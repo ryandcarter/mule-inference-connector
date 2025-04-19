@@ -1,5 +1,18 @@
 package com.mulesoft.connectors.internal.utils;
 
+import com.google.auth.oauth2.GoogleCredentials;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
 import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.connection.ModerationImageGenerationBase;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
@@ -20,10 +33,6 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -40,7 +49,7 @@ import static com.mulesoft.connectors.internal.utils.ResponseUtils.encodeImageTo
  * Utility class for HTTP connection operations using Mule's HttpClient.
  */
 public class ConnectionUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TextGenerationOperations.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionUtils.class);
     private static HttpClient httpClient;
 
 
@@ -62,7 +71,6 @@ public class ConnectionUtils {
             queryParams.put("key", connection.getApiKey());
             finalUri = url.toString() + "?" + getQueryParams(queryParams);
         }
-
 
         LOGGER.debug("Request path: {}", finalUri);
 
@@ -88,6 +96,7 @@ public class ConnectionUtils {
                 requestBuilder.addHeader("api-key", connection.getApiKey());
                 break;
             case "VERTEX_AI_EXPRESS":
+                //do nothing for Vertex AI Express
                 // Query param already added
                 break;
             case "AZURE_AI_FOUNDRY":
@@ -104,6 +113,9 @@ public class ConnectionUtils {
                 JSONObject jsonResponse = new JSONObject(response);
                 String accessToken = jsonResponse.getString("access_token");
                 requestBuilder.addHeader("Authorization", "Bearer " + accessToken);
+                break;
+            case "VERTEX_AI":
+            	requestBuilder.addHeader("Authorization", "Bearer " + getAccessTokenFromServiceAccountKey(connection));
                 break;
             default:
                 requestBuilder.addHeader("Authorization", "Bearer " + connection.getApiKey());
@@ -178,10 +190,43 @@ public class ConnectionUtils {
                         .replace("{deployment-id}", connection.getAzureOpenaiDeploymentId());
                 return new URL(urlStr);
             case "VERTEX_AI_EXPRESS":
-                String vertexAIUrlStr = InferenceConstants.VERTEX_AI_EXPRESS_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI;
-                vertexAIUrlStr = vertexAIUrlStr
-                        .replace("{MODEL_ID}", connection.getModelName());
-                return new URL(vertexAIUrlStr);
+                String vertexAIExpressUrlStr = InferenceConstants.VERTEX_AI_EXPRESS_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI_GEMINI;
+                vertexAIExpressUrlStr = vertexAIExpressUrlStr
+                    .replace("{MODEL_ID}", connection.getModelName());
+                return new URL(vertexAIExpressUrlStr);
+            case "VERTEX_AI":
+            	String provider = ProviderUtils.getProviderByModel(connection.getModelName());
+            	String vertexAIUrlStr = "";
+            	switch (provider) {
+	                case "Google":
+	                	vertexAIUrlStr = InferenceConstants.VERTEX_AI_GEMINI_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI_GEMINI;
+	                    vertexAIUrlStr = vertexAIUrlStr
+	                    	.replace("{LOCATION_ID}", connection.getVertexAILocationId())
+	                    	.replace("{PROJECT_ID}", connection.getVertexAIProjectId())
+	                        .replace("{MODEL_ID}", connection.getModelName());
+	                    return new URL(vertexAIUrlStr);
+	  
+	                case "Anthropic":
+	                	vertexAIUrlStr = InferenceConstants.VERTEX_AI_ANTHROPIC_URL + InferenceConstants.GENERATE_CONTENT_VERTEX_AI_ANTHROPIC;
+	                    vertexAIUrlStr = vertexAIUrlStr
+	                    	.replace("{LOCATION_ID}", connection.getVertexAILocationId())
+	                    	.replace("{PROJECT_ID}", connection.getVertexAIProjectId())
+	                        .replace("{MODEL_ID}", connection.getModelName());
+	                    return new URL(vertexAIUrlStr);
+	
+	                case "Meta":
+	                	vertexAIUrlStr = InferenceConstants.VERTEX_AI_META_URL;
+	                    vertexAIUrlStr = vertexAIUrlStr
+	                    	.replace("{LOCATION_ID}", connection.getVertexAILocationId())
+	                    	.replace("{PROJECT_ID}", connection.getVertexAIProjectId());
+	                    return new URL(vertexAIUrlStr);
+	
+	                default:
+	                	LOGGER.error("Unknown provider. Skipping... {}", provider);
+	                    // TO DO: Need to handle unknown case
+	                    break;
+            	}
+
             case "AZURE_AI_FOUNDRY":
                 String aifurlStr = InferenceConstants.AZURE_AI_FOUNDRY_URL + InferenceConstants.CHAT_COMPLETIONS_AZURE_AI_FOUNDRY;
                 aifurlStr = aifurlStr
@@ -520,6 +565,20 @@ public class ConnectionUtils {
         return query.toString();
     }
 
+    //get access token from google service acc key file	
+    public static String getAccessTokenFromServiceAccountKey(ChatCompletionBase connection) throws IOException {
+    	FileInputStream serviceAccountStream = new FileInputStream(connection.getVertexAIServiceAccountKey());
+        GoogleCredentials credentials = GoogleCredentials
+                .fromStream(serviceAccountStream)
+                .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
+
+        credentials.refreshIfExpired();
+        String token = credentials.getAccessToken().getTokenValue();
+        LOGGER.debug("gcp access token {}", token);
+        return token;
+    	        
+    }
+
     /**
      * Read response bytes from an input stream.
      * @param inputStream the input stream
@@ -538,6 +597,10 @@ public class ConnectionUtils {
             return buffer.toByteArray();
         }
     }
+    
+    
+  
+
 
     /**
      * Execute a token request using MuleHttpClient

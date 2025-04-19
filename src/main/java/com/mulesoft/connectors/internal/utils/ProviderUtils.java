@@ -3,13 +3,21 @@ package com.mulesoft.connectors.internal.utils;
 import com.mulesoft.connectors.internal.config.*;
 import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.connection.ModerationImageGenerationBase;
+import com.mulesoft.connectors.internal.operations.TextGenerationOperations;
+
 import org.jetbrains.annotations.NotNull;
 import org.mule.runtime.http.api.client.HttpClient;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Utility class for provider-specific operations.
  */
 public class ProviderUtils {
+	
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProviderUtils.class);
 
     /**
      * Check if the inference type is OLLAMA
@@ -63,6 +71,32 @@ public class ProviderUtils {
      */
     public static boolean isVertexAIExpress(ChatCompletionBase configuration) {
         return "VERTEX_AI_EXPRESS".equals(configuration.getInferenceType());
+    }
+
+    public static boolean isVertexAI(ChatCompletionBase configuration) {
+        return "VERTEX_AI".equals(configuration.getInferenceType());
+    }
+    
+    
+    //get the providers based on the models
+    public static String getProviderByModel(String modelName) {
+        LOGGER.debug("model name {}", modelName);
+
+        if (modelName == null || modelName.isEmpty()) {
+            return "Unknown";
+        }
+
+        String upperName = modelName.toUpperCase();
+        
+        if (upperName.startsWith("GEMINI")) {
+            return "Google";
+        } else if (upperName.startsWith("CLAUDE")) {
+            return "Anthropic";
+        } else if (upperName.startsWith("META")) {
+            return "Meta";
+        } else {
+            return "Unknown";
+        }
     }
 
 
@@ -122,6 +156,11 @@ public class ProviderUtils {
         private String openCompatibleURL;
         private String virtualKey;
         private String xnferenceUrl;
+        private String vertexAIProjectId;
+        private String vertexAILocationId;
+        private String vertexAIServiceAccountKey;
+
+
 
         @Override
         public HttpClient getHttpClient() { return httpClient; }
@@ -237,6 +276,20 @@ public class ProviderUtils {
             return xnferenceUrl;
         }
         public void setXinferenceUrl(String xnferenceUrl) { this.xnferenceUrl = xnferenceUrl; }
+        
+        @Override
+        public String getVertexAIProjectId() { return vertexAIProjectId; }
+        public void setVertexAIProjectId(String vertexAIProjectId) { this.vertexAIProjectId = vertexAIProjectId; }
+
+        @Override
+        public String getVertexAILocationId() { return vertexAILocationId; }        
+        public void setVertexAILocationId(String vertexAILocationId) { this.vertexAILocationId = vertexAILocationId; }
+        
+        @Override
+        public String getVertexAIServiceAccountKey() { return vertexAIServiceAccountKey; }
+        public void setVertexAIServiceAccountKey(String vertexAIServiceAccountKey) { this.vertexAIServiceAccountKey = vertexAIServiceAccountKey; }
+
+
 
     }
 

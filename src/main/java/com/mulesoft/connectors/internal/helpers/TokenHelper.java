@@ -9,9 +9,9 @@ public class TokenHelper {
     public static TokenUsage parseUsageFromResponse(String jsonResponse) throws Exception {
         JSONObject root = new JSONObject(jsonResponse);
 
-        int promptTokens;
-        int completionTokens;
-        int totalTokens;
+        int promptTokens = 0;
+        int completionTokens = 0;
+        int totalTokens = 0;
 
         if (root.has("usage")) {
             JSONObject usageNode = root.getJSONObject("usage");
@@ -36,9 +36,18 @@ public class TokenHelper {
         } else if (root.has("usageMetadata")) {
         	//for Vertex AI
             JSONObject usageMetadataNode = root.getJSONObject("usageMetadata");
-            promptTokens = usageMetadataNode.getInt("promptTokenCount");
-            completionTokens = usageMetadataNode.getInt("candidatesTokenCount");
-            totalTokens = usageMetadataNode.getInt("totalTokenCount");
+            
+            if (usageMetadataNode.has("promptTokenCount") && !usageMetadataNode.isNull("promptTokenCount")) {
+                promptTokens = usageMetadataNode.getInt("promptTokenCount");
+            }
+
+            if (usageMetadataNode.has("candidatesTokenCount") && !usageMetadataNode.isNull("candidatesTokenCount")) {
+                completionTokens = usageMetadataNode.getInt("candidatesTokenCount");
+            }
+
+            if (usageMetadataNode.has("totalTokenCount") && !usageMetadataNode.isNull("totalTokenCount")) {
+                totalTokens = usageMetadataNode.getInt("totalTokenCount");
+            }
         	
         } else {
             // Handle the case without a usage object
