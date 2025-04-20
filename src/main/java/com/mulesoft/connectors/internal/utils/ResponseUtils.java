@@ -165,7 +165,7 @@ public class ResponseUtils {
                 ? root.getString("model")   //if model is not AI21LABS or COHERE or VERTEX_AI_EXPRESS or VERTEX_AI AND provider is Anthropic
                 : configuration.getModelName();
 
-        if (ProviderUtils.isOllama(configuration)) {
+        if (ProviderUtils.isOllama(configuration) || ProviderUtils.isllamaAPI(configuration)) {
             info.id = null;
         } else if ((ProviderUtils.isVertexAIExpress(configuration) || ProviderUtils.isVertexAI(configuration)) &&
         	    !"Anthropic".equalsIgnoreCase(provider) &&
