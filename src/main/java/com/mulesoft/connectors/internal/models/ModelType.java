@@ -41,6 +41,7 @@ public enum ModelType {
       OPENAI_COMPATIBLE_ENDPOINT("OPENAI_COMPATIBLE_ENDPOINT", getOpenAIModelNameStream()),
       IBM_WATSON("IBM_WATSON", getIBMWatsonModelNameStream()),
       DATABRICKS("DATABRICKS", getDATABRICKSModelNameStream()),
+      LLAMA_API("LLAMA_API", getLLAMAAPIModelNameStream()),
   ;
 
 
@@ -78,6 +79,10 @@ public enum ModelType {
 
   private static Stream<String> getDATABRICKSModelNameStream() {
     return Arrays.stream(DatabricksModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getLLAMAAPIModelNameStream() {
+    return Arrays.stream(LlamaAPIModelName.values()).map(String::valueOf);
   }
 
   private static Stream<String> getOpenRouterModelNameStream() {
@@ -791,6 +796,22 @@ public enum ModelType {
     private final String value;
 
     DatabricksModelName(String value) {
+      this.value = value;
+    }
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  enum LlamaAPIModelName {
+    // only using chat model types.
+    llama3_1_70b("llama3.1-70b");
+
+
+    private final String value;
+
+    LlamaAPIModelName(String value) {
       this.value = value;
     }
     @Override

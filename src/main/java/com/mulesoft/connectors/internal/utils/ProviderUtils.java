@@ -20,6 +20,15 @@ public class ProviderUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProviderUtils.class);
 
     /**
+     * Check if the inference type is LLAMA_API
+     * @param configuration the connector configuration
+     * @return true if the inference type is LLAMA_API, false otherwise
+     */
+    public static boolean isllamaAPI(ChatCompletionBase configuration) {
+        return "LLAMA_API".equals(configuration.getInferenceType());
+    }
+
+    /**
      * Check if the inference type is OLLAMA
      * @param configuration the connector configuration
      * @return true if the inference type is OLLAMA, false otherwise

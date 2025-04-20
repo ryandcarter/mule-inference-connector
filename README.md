@@ -26,6 +26,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 - [Groq AI](https://console.groq.com/)
 - [Hugging Face](https://huggingface.co/)
 - [IBM Watson](https://www.ibm.com/products/watsonx-ai)
+- [Llama API](https://llmapi.com/)
 - [Mistral](https://www.mistral.ai/)
 - [NVIDIA](https://www.nvidia.com/en-sg/ai)
 - [Ollama](https://ollama.com/)
