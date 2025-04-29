@@ -52,7 +52,7 @@ public class VisionModelOperations {
             @Config VisionConfig configuration, @Connection ChatCompletionBase connection,
             @Content String prompt,
             @Content(primary = true) @DisplayName("Image") @Summary("An Image URL or a Base64 Image") String imageUrl) throws ModuleException {
-        try {
+        try { 
 
             JSONArray messagesArray = createRequestImageURL(connection, prompt, imageUrl);
 

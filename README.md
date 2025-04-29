@@ -46,6 +46,7 @@ The MuleSoft Inference Connector supports the following Inference Offerings:
 
 ## Supported Vision Model Providers
 - [Anthropic](https://www.anthropic.com/)
+- [Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/)
 - [GitHub Models](https://docs.github.com/en/github-models)
 - [Google Vertex AI](https://cloud.google.com/vertex-ai?hl=en)
 - [Groq AI](https://console.groq.com/)
