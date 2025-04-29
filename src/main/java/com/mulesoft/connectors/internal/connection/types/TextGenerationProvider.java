@@ -261,7 +261,7 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(tab = "MCP Servers")
-  @Optional
+  @Optional(defaultValue = "not used")
   @DisplayName("(2) MCP Server Url (SSE over HTTP)")
   private String mcpSseServerUrl_2;
 
@@ -271,7 +271,7 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(tab = "MCP Servers")
-  @Optional
+  @Optional(defaultValue = "not used")
   @DisplayName("(3) MCP Server Url (SSE over HTTP)")
   private String mcpSseServerUrl_3;
 
@@ -281,7 +281,7 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(tab = "MCP Servers")
-  @Optional
+  @Optional(defaultValue = "not used")
   @DisplayName("(4) MCP Server Url (SSE over HTTP)")
   private String mcpSseServerUrl_4;
 
@@ -291,7 +291,7 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(tab = "MCP Servers")
-  @Optional
+  @Optional(defaultValue = "not used")
   @DisplayName("(5) MCP Server Url (SSE over HTTP)")
   private String mcpSseServerUrl_5;
 
