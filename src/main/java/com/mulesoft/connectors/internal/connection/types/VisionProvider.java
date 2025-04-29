@@ -150,6 +150,24 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
   @DisplayName("[VertexAI] Service Account Key")
   private String vertexAIServiceAccountKey;
 
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Azure AI Foundry] API Version")
+  private String azureAIFoundryApiVersion;
+
+  public void setAzureAIFoundryApiVersion(String azureAIFoundryApiVersion) { this.azureAIFoundryApiVersion = azureAIFoundryApiVersion; }
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Optional
+  @Placement(tab = "Additional Properties")
+  @DisplayName("[Azure AI Foundry] Resource Name")
+  private String azureAIFoundryResourceName;
+
+  public void setAzureAIFoundryResourceName(String azureAIFoundryResourceName) { this.azureAIFoundryResourceName = azureAIFoundryResourceName; }
+
 
   @Parameter
   @Placement(order = 2, tab = "Advanced")
@@ -178,7 +196,9 @@ public class VisionProvider implements CachedConnectionProvider<Vision>, Startab
             virtualKey,
             vertexAIProjectId,
             vertexAILocationId,
-            vertexAIServiceAccountKey
+            vertexAIServiceAccountKey,
+            azureAIFoundryApiVersion,
+            azureAIFoundryResourceName
 
     );  }
 

@@ -281,6 +281,7 @@ public class PayloadUtils {
         JSONObject imageContent = new JSONObject();
         imageContent.put("type", "image_url");
         JSONObject imageMessage = new JSONObject();
+
         if (isBase64String(imageUrl)) {
             imageMessage.put("url", "data:" + getMimeType(imageUrl) + ";base64," + imageUrl);
         } else{
