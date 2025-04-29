@@ -401,7 +401,7 @@ public class ProviderUtils {
             mcpToolsArray.put(toolObj);
         }
 
-        client.closeGracefully();
+        client.close();
 
         return mcpToolsArray;
     }
@@ -450,7 +450,7 @@ public class ProviderUtils {
 
         }
 
-        client.closeGracefully();
+        client.close();
 
         return resultsArray;
     }
