@@ -6,6 +6,7 @@ import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
 import com.mulesoft.connectors.internal.utils.*;
 import org.codehaus.plexus.interpolation.PrefixAwareRecursionInterceptor;
+import java.io.ByteArrayInputStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -23,7 +24,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
+import static com.mulesoft.connectors.internal.utils.ProviderUtils.getMcpTools;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
@@ -171,6 +174,57 @@ public class TextGenerationOperations {
             String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
             LOGGER.debug("Tools use native template result {}", response);
+            return ResponseUtils.processToolsResponse(response, connection);
+        } catch (Exception e) {
+            LOGGER.error("Error in tools use native template: {}", e.getMessage(), e);
+            throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Tools use native template"),
+                    InferenceErrorType.CHAT_COMPLETION, e);
+        }
+    }
+
+
+    /**
+     * Define a tools template with instructions, data and tools
+     * @param configuration the connector configuration
+     * @param template the template string
+     * @param instructions instructions for the LLM
+     * @param data the primary data content
+     * @return result containing the LLM response
+     * @throws ModuleException if an error occurs during the operation
+     */
+    @MediaType(value = APPLICATION_JSON, strict = false)
+    @Alias("Mcp-tools-native-template")
+    @DisplayName("[MCP] Tooling")
+    @OutputJsonType(schema = "api/response/Response.json")
+    @Summary("Define a prompt template with instructions and data")
+    public Result<InputStream, LLMResponseAttributes> mcpToolsTemplate(
+            @Config TextGenerationConfig configuration, @Connection ChatCompletionBase connection,
+            @Content String template,
+            @Content String instructions,
+            @Content(primary = true) String data) throws ModuleException {
+
+        try {
+
+            String url = connection.getMcpSseServerUrl_1();
+            InputStream tools = new ByteArrayInputStream(getMcpTools(url).toString().getBytes(StandardCharsets.UTF_8));
+
+            JSONObject payload = PayloadUtils.buildToolsTemplatePayload(configuration, connection, template, instructions, data, tools);
+            LOGGER.debug("payload sent to the LLM {}", payload.toString());
+
+            URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
+
+            LOGGER.debug("Tools use native template result {}", response);
+            Result<InputStream, LLMResponseAttributes> apiResponse = ResponseUtils.processToolsResponse(response, connection);
+            String apiResponseString = new String(apiResponse.getOutput().readAllBytes(), StandardCharsets.UTF_8);
+
+
+            JSONArray toolExecutionResult = ProviderUtils.executeTools(url, apiResponseString);
+            String toolExecutionResultString = toolExecutionResult.toString();
+
+            System.out.println(toolExecutionResult);
+
+
             return ResponseUtils.processToolsResponse(response, connection);
         } catch (Exception e) {
             LOGGER.error("Error in tools use native template: {}", e.getMessage(), e);

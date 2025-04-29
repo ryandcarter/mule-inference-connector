@@ -1,16 +1,24 @@
 package com.mulesoft.connectors.internal.utils;
 
-import com.mulesoft.connectors.internal.config.*;
 import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.connection.ModerationImageGenerationBase;
-import com.mulesoft.connectors.internal.operations.TextGenerationOperations;
 
 import org.jetbrains.annotations.NotNull;
 import org.mule.runtime.http.api.client.HttpClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import org.json.JSONObject;
+import org.json.JSONArray;
 
+import io.modelcontextprotocol.client.McpClient;
+import io.modelcontextprotocol.client.McpSyncClient;
+import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
+import io.modelcontextprotocol.spec.McpSchema;
 
 /**
  * Utility class for provider-specific operations.
@@ -18,6 +26,7 @@ import org.slf4j.LoggerFactory;
 public class ProviderUtils {
 	
     private static final Logger LOGGER = LoggerFactory.getLogger(ProviderUtils.class);
+    static JSONArray mcpToolsArray = null;
 
     /**
      * Check if the inference type is LLAMA_API
@@ -168,7 +177,11 @@ public class ProviderUtils {
         private String vertexAIProjectId;
         private String vertexAILocationId;
         private String vertexAIServiceAccountKey;
-
+        private String mcpSseServerUrl_1;
+        private String mcpSseServerUrl_2;
+        private String mcpSseServerUrl_3;
+        private String mcpSseServerUrl_4;
+        private String mcpSseServerUrl_5;
 
 
         @Override
@@ -298,8 +311,150 @@ public class ProviderUtils {
         public String getVertexAIServiceAccountKey() { return vertexAIServiceAccountKey; }
         public void setVertexAIServiceAccountKey(String vertexAIServiceAccountKey) { this.vertexAIServiceAccountKey = vertexAIServiceAccountKey; }
 
+        @Override
+        public String getMcpSseServerUrl_1() { return mcpSseServerUrl_1; }
+        public void setMcpSseServerUrl_1(String mcpSseServerUrl_1) { this.mcpSseServerUrl_1 = mcpSseServerUrl_1; }
+
+        @Override
+        public String getMcpSseServerUrl_2() { return mcpSseServerUrl_2; }
+        public void setMcpSseServerUrl_2(String mcpSseServerUrl_2) { this.mcpSseServerUrl_2 = mcpSseServerUrl_2; }
+
+        @Override
+        public String getMcpSseServerUrl_3() { return mcpSseServerUrl_3; }
+        public void setMcpSseServerUrl_3(String mcpSseServerUrl_3) { this.mcpSseServerUrl_3 = mcpSseServerUrl_3; }
+
+        @Override
+        public String getMcpSseServerUrl_4() { return mcpSseServerUrl_4; }
+        public void setMcpSseServerUrl_4(String mcpSseServerUrl_4) { this.mcpSseServerUrl_4 = mcpSseServerUrl_4; }
+
+        @Override
+        public String getMcpSseServerUrl_5() { return mcpSseServerUrl_5; }
+        public void setMcpSseServerUrl_5(String mcpSseServerUrl_5) { this.mcpSseServerUrl_5 = mcpSseServerUrl_5; }
 
 
     }
 
+    private static McpSyncClient establishClientMCP(String mcpServerUrl){
+
+        HttpClientSseClientTransport transport = HttpClientSseClientTransport.builder(mcpServerUrl)
+                .build();
+
+        McpSyncClient client = McpClient.sync(transport)
+                .requestTimeout(Duration.ofSeconds(60))
+                .capabilities(McpSchema.ClientCapabilities.builder()
+                        .roots(true)
+                        .build())
+                .build();
+
+        client.initialize();
+        return client;
+    }
+
+    public static JSONArray getMcpTools(String mcpServerUrl) {
+
+        McpSyncClient client = establishClientMCP(mcpServerUrl);
+
+        McpSchema.ListToolsResult tools = client.listTools();
+        mcpToolsArray = new JSONArray();
+
+        for (McpSchema.Tool tool : tools.tools()) {
+            JSONObject functionObj = new JSONObject();
+            functionObj.put("name", tool.name());
+            functionObj.put("description", tool.description());
+
+            JSONObject parametersObj = new JSONObject();
+            parametersObj.put("type", "object");
+
+            JSONObject propertiesObj = new JSONObject();
+            if (tool.inputSchema().properties() != null) {
+                for (Map.Entry<String, Object> prop : tool.inputSchema().properties().entrySet()) {
+                    if (prop.getValue() instanceof Map) {
+                        Map<String, Object> propDetails = (Map<String, Object>) prop.getValue();
+                        JSONObject propObj = new JSONObject();
+                        for (Map.Entry<String, Object> detail : propDetails.entrySet()) {
+                            propObj.put(detail.getKey(), detail.getValue());
+                        }
+                        propertiesObj.put(prop.getKey(), propObj);
+                    }
+                }
+            }
+
+            parametersObj.put("properties", propertiesObj);
+
+            JSONArray requiredArray = new JSONArray();
+            for (String key : tool.inputSchema().properties().keySet()) {
+                requiredArray.put(key);
+            }
+            parametersObj.put("required", requiredArray);
+
+            parametersObj.put("additionalProperties",
+                    tool.inputSchema().additionalProperties() != null ?
+                            tool.inputSchema().additionalProperties() : false);
+
+            functionObj.put("parameters", parametersObj);
+            functionObj.put("strict", true);
+
+            JSONObject toolObj = new JSONObject();
+            toolObj.put("type", "function");
+            toolObj.put("function", functionObj);
+
+            mcpToolsArray.put(toolObj);
+        }
+
+        client.closeGracefully();
+
+        return mcpToolsArray;
+    }
+
+    public static JSONArray executeTools(String mcpServerUrl, String apiResponseJson) throws Exception {
+
+        McpSyncClient client = establishClientMCP(mcpServerUrl);
+
+        JSONArray resultsArray = new JSONArray();
+
+
+        JSONObject rootObject = new JSONObject(apiResponseJson);
+        JSONArray toolsArray = rootObject.getJSONArray("tools");
+
+        if (toolsArray.length() == 0) {
+            System.out.println("No tools to execute.");
+            return resultsArray;
+        }
+
+        for (int i = 0; i < toolsArray.length(); i++) {
+            JSONObject toolObject = toolsArray.getJSONObject(i);
+            JSONObject functionObject = toolObject.getJSONObject("function");
+            String functionName = functionObject.getString("name");
+            JSONObject argumentsObject = functionObject.getJSONObject("arguments");
+
+            Map<String, Object> arguments = new HashMap<>();
+            for (String key : argumentsObject.keySet()) {
+                arguments.put(key, argumentsObject.getString(key));
+            }
+
+            McpSchema.CallToolRequest request = new McpSchema.CallToolRequest(functionName, arguments);
+            McpSchema.CallToolResult result = client.callTool(request);
+
+            JSONObject contentObj = new JSONObject();
+            for (McpSchema.Content content : result.content()) {
+                if (content instanceof McpSchema.TextContent textContent) {
+                    System.out.println(textContent.text());
+                    contentObj.put("result", new JSONObject(textContent.text()));
+                }
+            }
+
+            JSONObject resultObject = new JSONObject();
+            resultObject.put("tool", functionName);
+            resultObject.put("result", contentObj.getJSONObject("result"));
+            resultObject.put("timestamp", Instant.now());
+
+            resultsArray.put(resultObject);
+
+        }
+
+        client.closeGracefully();
+
+        System.out.println(resultsArray);
+        return resultsArray;
+    }
 }

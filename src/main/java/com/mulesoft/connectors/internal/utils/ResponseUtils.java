@@ -133,6 +133,11 @@ public class ResponseUtils {
         return processResponse(response, configuration, true);
     }
 
+    public static Result<InputStream, LLMResponseAttributes> processToolsResponse(
+            String response, ChatCompletionBase configuration, JSONArray toolExecutionResult) throws Exception {
+        return processResponse(response, configuration, true, toolExecutionResult);
+    }
+
     /**
      * Container class for response information
      */

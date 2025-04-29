@@ -156,6 +156,31 @@ public class Vision implements ChatCompletionBase {
   
   public String getVertexAIServiceAccountKey() { return vertexAIServiceAccountKey; }
 
+  @Override
+  public String getMcpSseServerUrl_1() {
+    return "";
+  }
+
+  @Override
+  public String getMcpSseServerUrl_2() {
+    return "";
+  }
+
+  @Override
+  public String getMcpSseServerUrl_3() {
+    return "";
+  }
+
+  @Override
+  public String getMcpSseServerUrl_4() {
+    return "";
+  }
+
+  @Override
+  public String getMcpSseServerUrl_5() {
+    return "";
+  }
+
   public String getAzureAIFoundryApiVersion() { return azureAIFoundryApiVersion; }
 
   public String getAzureAIFoundryResourceName() { return azureAIFoundryResourceName; }

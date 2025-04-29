@@ -29,5 +29,9 @@ public interface ChatCompletionBase {
     String getVertexAIProjectId();
     String getVertexAILocationId();
     String getVertexAIServiceAccountKey();
-
+    String getMcpSseServerUrl_1();
+    String getMcpSseServerUrl_2();
+    String getMcpSseServerUrl_3();
+    String getMcpSseServerUrl_4();
+    String getMcpSseServerUrl_5();
 }

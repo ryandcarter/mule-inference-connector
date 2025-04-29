@@ -247,6 +247,58 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
 
   public void setVertexAIServiceAccountKey(String vertexAIServiceAccountKey) { this.vertexAIServiceAccountKey = vertexAIServiceAccountKey; }
 
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "MCP Servers")
+  @Optional
+  @DisplayName("(1) MCP Server Url (SSE over HTTP)")
+  private String mcpSseServerUrl_1;
+
+  public void setMcpSseServerUrl_1(String mcpSseServerUrl_1) { this.mcpSseServerUrl_1 = mcpSseServerUrl_1; }
+
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "MCP Servers")
+  @Optional
+  @DisplayName("(2) MCP Server Url (SSE over HTTP)")
+  private String mcpSseServerUrl_2;
+
+  public void setMcpSseServerUrl_2(String mcpSseServerUrl_2) { this.mcpSseServerUrl_2 = mcpSseServerUrl_2; }
+
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "MCP Servers")
+  @Optional
+  @DisplayName("(3) MCP Server Url (SSE over HTTP)")
+  private String mcpSseServerUrl_3;
+
+  public void setMcpSseServerUrl_3(String mcpSseServerUrl_3) { this.mcpSseServerUrl_3 = mcpSseServerUrl_3; }
+
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "MCP Servers")
+  @Optional
+  @DisplayName("(4) MCP Server Url (SSE over HTTP)")
+  private String mcpSseServerUrl_4;
+
+  public void setMcpSseServerUrl_4(String mcpSseServerUrl_4) { this.mcpSseServerUrl_4 = mcpSseServerUrl_4; }
+
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = "MCP Servers")
+  @Optional
+  @DisplayName("(5) MCP Server Url (SSE over HTTP)")
+  private String mcpSseServerUrl_5;
+
+  public void setMcpSseServerUrl_5(String mcpSseServerUrl_5) { this.mcpSseServerUrl_5 = mcpSseServerUrl_5; }
+
+
+
   @Parameter
   @Placement(order = 2, tab = "Advanced")
   @Optional
@@ -284,7 +336,12 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
             xnferenceUrl,
             vertexAIProjectId,
             vertexAILocationId,
-            vertexAIServiceAccountKey
+            vertexAIServiceAccountKey,
+            mcpSseServerUrl_1,
+            mcpSseServerUrl_2,
+            mcpSseServerUrl_3,
+            mcpSseServerUrl_4,
+            mcpSseServerUrl_5
     );
   }
 

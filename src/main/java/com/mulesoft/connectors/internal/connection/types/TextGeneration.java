@@ -35,6 +35,11 @@ public class TextGeneration implements ChatCompletionBase {
   private String vertexAIProjectId;
   private String vertexAILocationId;
   private String vertexAIServiceAccountKey;
+  private String mcpSseServerUrl_1;
+  private String mcpSseServerUrl_2;
+  private String mcpSseServerUrl_3;
+  private String mcpSseServerUrl_4;
+  private String mcpSseServerUrl_5;
 
   public TextGeneration(
           HttpClient httpClient,
@@ -61,7 +66,13 @@ public class TextGeneration implements ChatCompletionBase {
           String xnferenceUrl,
           String vertexAIProjectId,
           String vertexAILocationId,
-          String vertexAIServiceAccountKey
+          String vertexAIServiceAccountKey,
+          String mcpSseServerUrl_1,
+          String mcpSseServerUrl_2,
+          String mcpSseServerUrl_3,
+          String mcpSseServerUrl_4,
+          String mcpSseServerUrl_5
+
   ) {
 
     this.httpClient = httpClient;
@@ -89,8 +100,13 @@ public class TextGeneration implements ChatCompletionBase {
     this.vertexAIProjectId = vertexAIProjectId;
     this.vertexAILocationId = vertexAILocationId;
     this.vertexAIServiceAccountKey = vertexAIServiceAccountKey;
+    this.mcpSseServerUrl_1 = mcpSseServerUrl_1;
+    this.mcpSseServerUrl_2 = mcpSseServerUrl_2;
+    this.mcpSseServerUrl_3 = mcpSseServerUrl_3;
+    this.mcpSseServerUrl_4 = mcpSseServerUrl_4;
+    this.mcpSseServerUrl_5 = mcpSseServerUrl_5;
 
-    
+
   }
 
   public HttpClient getHttpClient() {
@@ -161,6 +177,18 @@ public class TextGeneration implements ChatCompletionBase {
   public String getVertexAILocationId() { return vertexAILocationId; }
   
   public String getVertexAIServiceAccountKey() { return vertexAIServiceAccountKey; }
+
+  public String getMcpSseServerUrl_1() { return mcpSseServerUrl_1; }
+
+  public String getMcpSseServerUrl_2() { return mcpSseServerUrl_2; }
+
+  public String getMcpSseServerUrl_3() { return mcpSseServerUrl_3; }
+
+  public String getMcpSseServerUrl_4() { return mcpSseServerUrl_4; }
+
+  public String getMcpSseServerUrl_5() { return mcpSseServerUrl_5; }
+
+
 
   public boolean validate() throws ConnectionException {
     return true;
