@@ -218,14 +218,9 @@ public class TextGenerationOperations {
             Result<InputStream, LLMResponseAttributes> apiResponse = ResponseUtils.processToolsResponse(response, connection);
             String apiResponseString = new String(apiResponse.getOutput().readAllBytes(), StandardCharsets.UTF_8);
 
-
             JSONArray toolExecutionResult = ProviderUtils.executeTools(url, apiResponseString);
-            String toolExecutionResultString = toolExecutionResult.toString();
 
-            System.out.println(toolExecutionResult);
-
-
-            return ResponseUtils.processToolsResponse(response, connection);
+            return ResponseUtils.processToolsResponse(response, connection, toolExecutionResult);
         } catch (Exception e) {
             LOGGER.error("Error in tools use native template: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Tools use native template"),

@@ -109,6 +109,88 @@ public class ResponseUtils {
         return ResponseHelper.createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
     }
 
+    public static Result<InputStream, LLMResponseAttributes> processResponse(
+            String response, ChatCompletionBase configuration, boolean isToolsResponse, JSONArray toolExecutionResult) throws Exception {
+
+        String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
+
+        JSONObject root = new JSONObject(response);
+        ResponseInfo responseInfo = extractResponseInfo(root, configuration);
+        String content = null;
+
+        // Process tool calls if needed
+        JSONArray toolCalls = new JSONArray();
+        if (isToolsResponse && responseInfo.message.has("tool_calls")) {
+            toolCalls = processToolCalls(responseInfo.message.getJSONArray("tool_calls"));
+        }
+
+        if (isToolsResponse && root.has("tool_calls")) {
+            toolCalls = processToolCalls(root.getJSONArray("tool_calls"));
+        }
+
+        // Handle Anthropic tool_use for tools responses
+        if (isToolsResponse && ProviderUtils.isAnthropic(configuration)) {
+            JSONArray toolsCallAnthropic = extractAnthropicToolCalls(root.getJSONArray("content"));
+            if (!toolsCallAnthropic.isEmpty()) {
+                responseInfo.message.put("tool_calls", toolsCallAnthropic);
+            }
+        }
+
+        // Handle Vertex AI tools responses (functionCall)
+        if (isToolsResponse && ("Google".equalsIgnoreCase(provider))) {
+            // for Google/Gemini
+            JSONArray functionCalls = extractVertexAIFunctionCalls(root);
+            if (!functionCalls.isEmpty()) {
+                responseInfo.message.put("tool_calls", functionCalls);
+            }
+        }
+
+        if (ProviderUtils.isCohere(configuration)) {
+            JSONArray contentArray = responseInfo.message.has("content") && !responseInfo.message.isNull("content")
+                    ? responseInfo.message.getJSONArray("content")
+                    : null;
+
+            if (contentArray != null && contentArray.length() > 0) {
+                JSONObject firstContent = contentArray.getJSONObject(0); // Get the first item in the array
+                if (firstContent.has("text") && !firstContent.isNull("text")) {
+                    content = firstContent.getString("text"); // Extract the "text" field
+                }
+            }
+        } else if (("Google".equalsIgnoreCase(provider))) {
+            // for google/gemini
+            content = responseInfo.message.has("text") && !responseInfo.message.isNull("text")
+                    ? responseInfo.message.getString("text") : null;
+        } else {
+            content = responseInfo.message.has("content") && !responseInfo.message.isNull("content")
+                    ? responseInfo.message.getString("content") : null;
+        }
+
+        TokenUsage tokenUsage = TokenHelper.parseUsageFromResponse(response);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(InferenceConstants.RESPONSE, content);
+
+        if (isToolsResponse) {
+            JSONArray finalToolCalls = toolCalls;
+            // Check if we have tool calls in the message from Anthropic
+            if (responseInfo.message.has("tool_calls") && !responseInfo.message.getJSONArray("tool_calls").isEmpty()) {
+                finalToolCalls = responseInfo.message.getJSONArray("tool_calls");
+            }
+            jsonObject.put(InferenceConstants.TOOLS, finalToolCalls);
+
+            // Add toolsExecutionReport if toolExecutionResult is provided
+            if (toolExecutionResult != null && !toolExecutionResult.isEmpty()) {
+                jsonObject.put("toolsExecutionReport", toolExecutionResult);
+            }
+        }
+
+        Map<String, String> responseAttributes = new HashMap<>();
+        responseAttributes.put(InferenceConstants.FINISH_REASON, responseInfo.finishReason);
+        responseAttributes.put(InferenceConstants.MODEL, responseInfo.model);
+        responseAttributes.put(InferenceConstants.ID_STRING, responseInfo.id);
+
+        return ResponseHelper.createLLMResponse(jsonObject.toString(), tokenUsage, responseAttributes);
+    }
+
     /**
      * Process the response from the LLM API for standard chat operations
      * @param response the response string from the API

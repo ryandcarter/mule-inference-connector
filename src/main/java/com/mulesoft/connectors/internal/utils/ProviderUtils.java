@@ -417,7 +417,6 @@ public class ProviderUtils {
         JSONArray toolsArray = rootObject.getJSONArray("tools");
 
         if (toolsArray.length() == 0) {
-            System.out.println("No tools to execute.");
             return resultsArray;
         }
 
@@ -438,7 +437,6 @@ public class ProviderUtils {
             JSONObject contentObj = new JSONObject();
             for (McpSchema.Content content : result.content()) {
                 if (content instanceof McpSchema.TextContent textContent) {
-                    System.out.println(textContent.text());
                     contentObj.put("result", new JSONObject(textContent.text()));
                 }
             }
@@ -454,7 +452,6 @@ public class ProviderUtils {
 
         client.closeGracefully();
 
-        System.out.println(resultsArray);
         return resultsArray;
     }
 }
