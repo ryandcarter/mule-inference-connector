@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Utility class for processing API responses.
@@ -42,11 +43,11 @@ public class ResponseUtils {
 
         // Process tool calls if needed
         JSONArray toolCalls = new JSONArray();
-        if (isToolsResponse && responseInfo.message.has("tool_calls")) {
+        if (isToolsResponse && responseInfo.message.has("tool_calls") && !responseInfo.message.isNull("tool_calls")) {
             toolCalls = processToolCalls(responseInfo.message.getJSONArray("tool_calls"));
         }
 
-      if (isToolsResponse && root.has("tool_calls")) {
+      if (isToolsResponse && root.has("tool_calls") && !root.isNull("tool_calls")) {
           toolCalls = processToolCalls(root.getJSONArray("tool_calls"));
       }
 
@@ -94,9 +95,11 @@ public class ResponseUtils {
 
         if (isToolsResponse) {
             JSONArray finalToolCalls = toolCalls;
-            // Check if we have tool calls in the message from Anthropic
-            if (responseInfo.message.has("tool_calls") && !responseInfo.message.getJSONArray("tool_calls").isEmpty()) {
-                finalToolCalls = responseInfo.message.getJSONArray("tool_calls");
+            if (responseInfo.message.has("tool_calls")
+                    && !responseInfo.message.isNull("tool_calls")) {
+                if (!responseInfo.message.getJSONArray("tool_calls").isEmpty()) {
+                    finalToolCalls = responseInfo.message.getJSONArray("tool_calls");
+                }
             }
             jsonObject.put(InferenceConstants.TOOLS, finalToolCalls);
         }
@@ -120,11 +123,11 @@ public class ResponseUtils {
 
         // Process tool calls if needed
         JSONArray toolCalls = new JSONArray();
-        if (isToolsResponse && responseInfo.message.has("tool_calls")) {
+        if (isToolsResponse && responseInfo.message.has("tool_calls") && !responseInfo.message.isNull("tool_calls")) {
             toolCalls = processToolCalls(responseInfo.message.getJSONArray("tool_calls"));
         }
 
-        if (isToolsResponse && root.has("tool_calls")) {
+        if (isToolsResponse && root.has("tool_calls") && !root.isNull("tool_calls")) {
             toolCalls = processToolCalls(root.getJSONArray("tool_calls"));
         }
 
@@ -172,8 +175,10 @@ public class ResponseUtils {
         if (isToolsResponse) {
             JSONArray finalToolCalls = toolCalls;
             // Check if we have tool calls in the message from Anthropic
-            if (responseInfo.message.has("tool_calls") && !responseInfo.message.getJSONArray("tool_calls").isEmpty()) {
-                finalToolCalls = responseInfo.message.getJSONArray("tool_calls");
+            if (responseInfo.message.has("tool_calls") && !responseInfo.message.isNull("tool_calls")) {
+                if (!responseInfo.message.getJSONArray("tool_calls").isEmpty()){
+                    finalToolCalls = responseInfo.message.getJSONArray("tool_calls");
+                }
             }
             jsonObject.put(InferenceConstants.TOOLS, finalToolCalls);
 

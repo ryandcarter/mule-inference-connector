@@ -439,7 +439,7 @@ public class ProviderUtils {
                             tool.inputSchema().additionalProperties() : false);
 
             functionObj.put("parameters", parametersObj);
-            functionObj.put("strict", true);
+            //functionObj.put("strict", true);
 
             JSONObject toolObj = new JSONObject();
             toolObj.put("type", "function");

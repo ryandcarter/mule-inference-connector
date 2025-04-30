@@ -207,7 +207,6 @@ public class TextGenerationOperations {
 
         try {
 
-            String url = connection.getMcpSseServerUrl_1();
             InputStream tools = new ByteArrayInputStream(getMcpToolsFromMultiple(connection).toString().getBytes(StandardCharsets.UTF_8));
 
             JSONObject payload = PayloadUtils.buildToolsTemplatePayload(configuration, connection, template, instructions, data, tools);
