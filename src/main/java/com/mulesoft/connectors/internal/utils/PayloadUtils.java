@@ -619,6 +619,9 @@ public class PayloadUtils {
 
             JSONArray messagesArray = PayloadUtils.createMessagesArrayWithSystemPrompt(
                     configuration, template + " - " + instructions, data);
+            if ("ANTHROPIC".equalsIgnoreCase(configuration.getInferenceType())) {
+                toolsArray = convertAnthropicTools(toolsArray);
+            }
             payload = PayloadUtils.buildPayload(configuration, messagesArray, toolsArray);
         }
 
@@ -635,6 +638,27 @@ public class PayloadUtils {
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    public static JSONArray convertAnthropicTools(JSONArray inputArray) {
+        JSONArray resultArray = new JSONArray();
+
+        for (int i = 0; i < inputArray.length(); i++) {
+            JSONObject inputObj = inputArray.getJSONObject(i);
+            JSONObject functionObj = inputObj.getJSONObject("function");
+
+            JSONObject outputObj = new JSONObject();
+            outputObj.put("name", functionObj.getString("name"));
+            outputObj.put("description", functionObj.getString("description"));
+
+            // Get parameters and rename to input_schema
+            JSONObject parameters = functionObj.getJSONObject("parameters");
+            outputObj.put("input_schema", parameters);
+
+            resultArray.put(outputObj);
+        }
+
+        return resultArray;
     }
 
     public static String getMimeType(String base64String) throws IOException {
