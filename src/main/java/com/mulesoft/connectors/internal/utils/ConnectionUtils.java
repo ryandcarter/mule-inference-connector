@@ -285,6 +285,8 @@ public class ConnectionUtils {
         if (resourceUrl == null) {
             throw new IllegalArgumentException("Resource URL cannot be null");
         }
+        LOGGER.debug("Sending request to URL: {}", resourceUrl);
+        LOGGER.trace("Payload: {} ", payload);
         HttpRequest initialRequest = buildHttpRequest(resourceUrl, connection);
         MultiMap<String, String> headersMultiMap = initialRequest.getHeaders();
         Map<String, String> headersMap = new HashMap<>();

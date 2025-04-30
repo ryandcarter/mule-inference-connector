@@ -429,7 +429,7 @@ public class ProviderUtils {
 
     public static JSONArray executeTools(String apiResponseJson) throws Exception {
 
-
+        LOGGER.debug("executeTools - Response from the tools server: {}", apiResponseJson);
         JSONArray resultsArray = new JSONArray();
 
 
@@ -461,13 +461,23 @@ public class ProviderUtils {
             JSONObject contentObj = new JSONObject();
             for (McpSchema.Content content : result.content()) {
                 if (content instanceof McpSchema.TextContent textContent) {
-                    contentObj.put("result", new JSONObject(textContent.text()));
+                    LOGGER.info("Debugging the exception. TextContent is {} ", textContent.text());
+                    if (PayloadUtils.isValidJson(textContent.text())) {
+                        contentObj.put("result", new JSONObject(textContent.text()));
+                    } else {
+                        contentObj.put("result", textContent.text());
+                    }
                 }
             }
 
             JSONObject resultObject = new JSONObject();
             resultObject.put("tool", functionName);
-            resultObject.put("result", contentObj.getJSONObject("result"));
+            try {
+                resultObject.put("result", contentObj.getJSONObject("result"));
+            } catch(Exception e) {
+                resultObject.put("result", contentObj.getString("result"));
+            }
+            
             resultObject.put("serverUrl", serverUrl);
             resultObject.put("serverName", serverName);
             resultObject.put("timestamp", Instant.now());
