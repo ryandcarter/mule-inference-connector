@@ -497,6 +497,7 @@ public class ProviderUtils {
             JSONObject resultObject = new JSONObject();
             resultObject.put("tool", functionName);
             resultObject.put("result", contentObj.getJSONObject("result"));
+            resultObject.put("serverUrl", serverUrl);
             resultObject.put("timestamp", Instant.now());
 
             resultsArray.put(resultObject);
