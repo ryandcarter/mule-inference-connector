@@ -27,6 +27,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import static com.mulesoft.connectors.internal.utils.ProviderUtils.getMcpTools;
+import static com.mulesoft.connectors.internal.utils.ProviderUtils.getMcpToolsFromMultiple;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
@@ -206,7 +207,7 @@ public class TextGenerationOperations {
         try {
 
             String url = connection.getMcpSseServerUrl_1();
-            InputStream tools = new ByteArrayInputStream(getMcpTools(url).toString().getBytes(StandardCharsets.UTF_8));
+            InputStream tools = new ByteArrayInputStream(getMcpToolsFromMultiple(connection).toString().getBytes(StandardCharsets.UTF_8));
 
             JSONObject payload = PayloadUtils.buildToolsTemplatePayload(configuration, connection, template, instructions, data, tools);
             LOGGER.debug("payload sent to the LLM {}", payload.toString());
@@ -218,7 +219,7 @@ public class TextGenerationOperations {
             Result<InputStream, LLMResponseAttributes> apiResponse = ResponseUtils.processToolsResponse(response, connection);
             String apiResponseString = new String(apiResponse.getOutput().readAllBytes(), StandardCharsets.UTF_8);
 
-            JSONArray toolExecutionResult = ProviderUtils.executeTools(url, apiResponseString);
+            JSONArray toolExecutionResult = ProviderUtils.executeTools(apiResponseString);
 
             return ResponseUtils.processToolsResponse(response, connection, toolExecutionResult);
         } catch (Exception e) {

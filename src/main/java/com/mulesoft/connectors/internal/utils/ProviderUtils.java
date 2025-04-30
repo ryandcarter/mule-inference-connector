@@ -27,6 +27,7 @@ public class ProviderUtils {
 	
     private static final Logger LOGGER = LoggerFactory.getLogger(ProviderUtils.class);
     static JSONArray mcpToolsArray = null;
+    static JSONArray mcpToolsArrayByServer = null;
 
     /**
      * Check if the inference type is LLAMA_API
@@ -350,6 +351,53 @@ public class ProviderUtils {
         return client;
     }
 
+    public static JSONArray getMcpToolsFromMultiple(ChatCompletionBase connection) {
+        mcpToolsArrayByServer = new JSONArray();
+        JSONArray mcpTools = new JSONArray();
+
+        String[] urls = {
+                connection.getMcpSseServerUrl_1(),
+                connection.getMcpSseServerUrl_2(),
+                connection.getMcpSseServerUrl_3(),
+                connection.getMcpSseServerUrl_4(),
+                connection.getMcpSseServerUrl_5()
+        };
+
+        String httpPattern = "^https?://.*";
+
+        for (String url : urls) {
+            if (url != null && url.matches(httpPattern)) {
+                System.out.println("Processing URL: " + url);
+
+                JSONArray tools = getMcpTools(url);
+                if (tools != null) {
+                    for (int i = 0; i < tools.length(); i++) {
+                        mcpTools.put(tools.get(i));
+                    }
+
+                    JSONObject mcpServerInfo = new JSONObject();
+                    mcpServerInfo.put("serverUrl", url);
+                    mcpServerInfo.put("serverTools", tools);
+
+                    boolean exists = false;
+                    for (int i = 0; i < mcpToolsArrayByServer.length(); i++) {
+                        JSONObject existing = mcpToolsArrayByServer.getJSONObject(i);
+                        if (existing.getString("serverUrl").equals(url)) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        mcpToolsArrayByServer.put(mcpServerInfo);
+                    }
+                }
+            }
+        }
+
+
+        return mcpTools;
+    }
+
     public static JSONArray getMcpTools(String mcpServerUrl) {
 
         McpSyncClient client = establishClientMCP(mcpServerUrl);
@@ -406,14 +454,16 @@ public class ProviderUtils {
         return mcpToolsArray;
     }
 
-    public static JSONArray executeTools(String mcpServerUrl, String apiResponseJson) throws Exception {
 
-        McpSyncClient client = establishClientMCP(mcpServerUrl);
+
+    public static JSONArray executeTools(String apiResponseJson) throws Exception {
+
 
         JSONArray resultsArray = new JSONArray();
 
 
         JSONObject rootObject = new JSONObject(apiResponseJson);
+
         JSONArray toolsArray = rootObject.getJSONArray("tools");
 
         if (toolsArray.length() == 0) {
@@ -425,6 +475,9 @@ public class ProviderUtils {
             JSONObject functionObject = toolObject.getJSONObject("function");
             String functionName = functionObject.getString("name");
             JSONObject argumentsObject = functionObject.getJSONObject("arguments");
+            String serverUrl = findServerUrlForTool(mcpToolsArrayByServer, functionName);
+
+            McpSyncClient client = establishClientMCP(serverUrl);
 
             Map<String, Object> arguments = new HashMap<>();
             for (String key : argumentsObject.keySet()) {
@@ -444,14 +497,33 @@ public class ProviderUtils {
             JSONObject resultObject = new JSONObject();
             resultObject.put("tool", functionName);
             resultObject.put("result", contentObj.getJSONObject("result"));
+            resultObject.put("serverUrl", serverUrl);
             resultObject.put("timestamp", Instant.now());
 
             resultsArray.put(resultObject);
+            client.close();
 
         }
 
-        client.close();
 
         return resultsArray;
+    }
+
+
+    private static String findServerUrlForTool(JSONArray servers, String toolName) {
+        for (int i = 0; i < servers.length(); i++) {
+            JSONObject server = servers.getJSONObject(i);
+            JSONArray serverTools = server.getJSONArray("serverTools");
+
+            for (int j = 0; j < serverTools.length(); j++) {
+                JSONObject serverTool = serverTools.getJSONObject(j);
+                String serverToolName = serverTool.getJSONObject("function").getString("name");
+
+                if (toolName.equals(serverToolName)) {
+                    return server.getString("serverUrl");
+                }
+            }
+        }
+        return null; // Tool not found
     }
 }
