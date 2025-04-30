@@ -367,7 +367,6 @@ public class ProviderUtils {
 
         for (String url : urls) {
             if (url != null && url.matches(httpPattern)) {
-                System.out.println("Processing URL: " + url);
 
                 JSONArray tools = getMcpTools(url);
                 if (tools != null) {

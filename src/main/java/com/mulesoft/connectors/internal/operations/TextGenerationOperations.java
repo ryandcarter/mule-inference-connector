@@ -168,6 +168,7 @@ public class TextGenerationOperations {
             @Content @Summary("JSON Array defining the tools set to be used in the template so that the LLM can use them if required") InputStream tools) throws ModuleException {
         
     	try {
+
         	JSONObject payload = PayloadUtils.buildToolsTemplatePayload(configuration, connection, template, instructions, data, tools);
             LOGGER.debug("payload sent to the LLM {}", payload.toString());
 
@@ -215,7 +216,7 @@ public class TextGenerationOperations {
             URL chatCompUrl = ConnectionUtils.getConnectionURLChatCompletion(connection);
             String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
-            LOGGER.debug("Tools use native template result {}", response);
+            LOGGER.debug("MCP Tooling result {}", response);
             Result<InputStream, LLMResponseAttributes> apiResponse = ResponseUtils.processToolsResponse(response, connection);
             String apiResponseString = new String(apiResponse.getOutput().readAllBytes(), StandardCharsets.UTF_8);
 
@@ -223,8 +224,8 @@ public class TextGenerationOperations {
 
             return ResponseUtils.processToolsResponse(response, connection, toolExecutionResult);
         } catch (Exception e) {
-            LOGGER.error("Error in tools use native template: {}", e.getMessage(), e);
-            throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Tools use native template"),
+            LOGGER.error("Error in MCP Tooling: {}", e.getMessage(), e);
+            throw new ModuleException(String.format(ERROR_MSG_FORMAT, "MCP Tooling"),
                     InferenceErrorType.CHAT_COMPLETION, e);
         }
     }
