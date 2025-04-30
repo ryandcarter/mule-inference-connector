@@ -742,6 +742,19 @@ public class PayloadUtils {
         return requestPayload;
     }
 
+    public static boolean isValidJson(String json) {
+        try {
+            new JSONObject(json);
+            return true;
+        } catch (Exception ex1) {
+            try {
+                new JSONArray(json);
+                return true;
+            } catch (Exception ex2) {
+                return false;
+            }
+        }
+    }
 
 
 }
