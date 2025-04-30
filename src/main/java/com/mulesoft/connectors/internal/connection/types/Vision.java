@@ -6,6 +6,8 @@ import org.mule.runtime.http.api.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class Vision implements ChatCompletionBase {
 
   private static Logger LOGGER = LoggerFactory.getLogger(Vision.class);
@@ -157,28 +159,8 @@ public class Vision implements ChatCompletionBase {
   public String getVertexAIServiceAccountKey() { return vertexAIServiceAccountKey; }
 
   @Override
-  public String getMcpSseServerUrl_1() {
-    return "";
-  }
-
-  @Override
-  public String getMcpSseServerUrl_2() {
-    return "";
-  }
-
-  @Override
-  public String getMcpSseServerUrl_3() {
-    return "";
-  }
-
-  @Override
-  public String getMcpSseServerUrl_4() {
-    return "";
-  }
-
-  @Override
-  public String getMcpSseServerUrl_5() {
-    return "";
+  public Map<String, String> getMcpSseServers() {
+    return Map.of();
   }
 
   public String getAzureAIFoundryApiVersion() { return azureAIFoundryApiVersion; }

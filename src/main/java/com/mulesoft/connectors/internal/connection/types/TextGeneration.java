@@ -6,6 +6,8 @@ import org.mule.runtime.http.api.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class TextGeneration implements ChatCompletionBase {
 
   private static Logger LOGGER = LoggerFactory.getLogger(TextGeneration.class);
@@ -35,11 +37,7 @@ public class TextGeneration implements ChatCompletionBase {
   private String vertexAIProjectId;
   private String vertexAILocationId;
   private String vertexAIServiceAccountKey;
-  private String mcpSseServerUrl_1;
-  private String mcpSseServerUrl_2;
-  private String mcpSseServerUrl_3;
-  private String mcpSseServerUrl_4;
-  private String mcpSseServerUrl_5;
+  private Map<String, String> mcpSseServers;
 
   public TextGeneration(
           HttpClient httpClient,
@@ -67,11 +65,7 @@ public class TextGeneration implements ChatCompletionBase {
           String vertexAIProjectId,
           String vertexAILocationId,
           String vertexAIServiceAccountKey,
-          String mcpSseServerUrl_1,
-          String mcpSseServerUrl_2,
-          String mcpSseServerUrl_3,
-          String mcpSseServerUrl_4,
-          String mcpSseServerUrl_5
+          Map<String, String> mcpSseServers
 
   ) {
 
@@ -100,11 +94,7 @@ public class TextGeneration implements ChatCompletionBase {
     this.vertexAIProjectId = vertexAIProjectId;
     this.vertexAILocationId = vertexAILocationId;
     this.vertexAIServiceAccountKey = vertexAIServiceAccountKey;
-    this.mcpSseServerUrl_1 = mcpSseServerUrl_1;
-    this.mcpSseServerUrl_2 = mcpSseServerUrl_2;
-    this.mcpSseServerUrl_3 = mcpSseServerUrl_3;
-    this.mcpSseServerUrl_4 = mcpSseServerUrl_4;
-    this.mcpSseServerUrl_5 = mcpSseServerUrl_5;
+    this.mcpSseServers = mcpSseServers;
 
 
   }
@@ -178,16 +168,9 @@ public class TextGeneration implements ChatCompletionBase {
   
   public String getVertexAIServiceAccountKey() { return vertexAIServiceAccountKey; }
 
-  public String getMcpSseServerUrl_1() { return mcpSseServerUrl_1; }
-
-  public String getMcpSseServerUrl_2() { return mcpSseServerUrl_2; }
-
-  public String getMcpSseServerUrl_3() { return mcpSseServerUrl_3; }
-
-  public String getMcpSseServerUrl_4() { return mcpSseServerUrl_4; }
-
-  public String getMcpSseServerUrl_5() { return mcpSseServerUrl_5; }
-
+  public Map<String, String> getMcpSseServers() {
+    return mcpSseServers;
+  }
 
 
   public boolean validate() throws ConnectionException {

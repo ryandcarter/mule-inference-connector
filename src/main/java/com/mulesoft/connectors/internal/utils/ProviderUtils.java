@@ -178,12 +178,7 @@ public class ProviderUtils {
         private String vertexAIProjectId;
         private String vertexAILocationId;
         private String vertexAIServiceAccountKey;
-        private String mcpSseServerUrl_1;
-        private String mcpSseServerUrl_2;
-        private String mcpSseServerUrl_3;
-        private String mcpSseServerUrl_4;
-        private String mcpSseServerUrl_5;
-
+        private Map<String, String> mcpSseServers;
 
         @Override
         public HttpClient getHttpClient() { return httpClient; }
@@ -313,25 +308,8 @@ public class ProviderUtils {
         public void setVertexAIServiceAccountKey(String vertexAIServiceAccountKey) { this.vertexAIServiceAccountKey = vertexAIServiceAccountKey; }
 
         @Override
-        public String getMcpSseServerUrl_1() { return mcpSseServerUrl_1; }
-        public void setMcpSseServerUrl_1(String mcpSseServerUrl_1) { this.mcpSseServerUrl_1 = mcpSseServerUrl_1; }
-
-        @Override
-        public String getMcpSseServerUrl_2() { return mcpSseServerUrl_2; }
-        public void setMcpSseServerUrl_2(String mcpSseServerUrl_2) { this.mcpSseServerUrl_2 = mcpSseServerUrl_2; }
-
-        @Override
-        public String getMcpSseServerUrl_3() { return mcpSseServerUrl_3; }
-        public void setMcpSseServerUrl_3(String mcpSseServerUrl_3) { this.mcpSseServerUrl_3 = mcpSseServerUrl_3; }
-
-        @Override
-        public String getMcpSseServerUrl_4() { return mcpSseServerUrl_4; }
-        public void setMcpSseServerUrl_4(String mcpSseServerUrl_4) { this.mcpSseServerUrl_4 = mcpSseServerUrl_4; }
-
-        @Override
-        public String getMcpSseServerUrl_5() { return mcpSseServerUrl_5; }
-        public void setMcpSseServerUrl_5(String mcpSseServerUrl_5) { this.mcpSseServerUrl_5 = mcpSseServerUrl_5; }
-
+        public Map<String, String> getMcpSseServers() { return mcpSseServers; }
+        public void setMcpSseServers(Map<String, String> mcpSseServerUrl_5) { this.mcpSseServers = mcpSseServers; }
 
     }
 
@@ -355,19 +333,13 @@ public class ProviderUtils {
         mcpToolsArrayByServer = new JSONArray();
         JSONArray mcpTools = new JSONArray();
 
-        String[] urls = {
-                connection.getMcpSseServerUrl_1(),
-                connection.getMcpSseServerUrl_2(),
-                connection.getMcpSseServerUrl_3(),
-                connection.getMcpSseServerUrl_4(),
-                connection.getMcpSseServerUrl_5()
-        };
-
+        Map<String, String> mcpServers = connection.getMcpSseServers();
         String httpPattern = "^https?://.*";
 
-        for (String url : urls) {
+        for (Map.Entry<String, String> entry : mcpServers.entrySet()) {
+            String url = entry.getValue();
+            String key = entry.getKey();
             if (url != null && url.matches(httpPattern)) {
-
                 JSONArray tools = getMcpTools(url);
                 if (tools != null) {
                     for (int i = 0; i < tools.length(); i++) {
@@ -376,6 +348,7 @@ public class ProviderUtils {
 
                     JSONObject mcpServerInfo = new JSONObject();
                     mcpServerInfo.put("serverUrl", url);
+                    mcpServerInfo.put("serverName", key);
                     mcpServerInfo.put("serverTools", tools);
 
                     boolean exists = false;
@@ -392,7 +365,6 @@ public class ProviderUtils {
                 }
             }
         }
-
 
         return mcpTools;
     }
@@ -475,7 +447,7 @@ public class ProviderUtils {
             String functionName = functionObject.getString("name");
             JSONObject argumentsObject = functionObject.getJSONObject("arguments");
             String serverUrl = findServerUrlForTool(mcpToolsArrayByServer, functionName);
-
+            String serverName = findServerNameForTool(mcpToolsArrayByServer, functionName);
             McpSyncClient client = establishClientMCP(serverUrl);
 
             Map<String, Object> arguments = new HashMap<>();
@@ -497,6 +469,7 @@ public class ProviderUtils {
             resultObject.put("tool", functionName);
             resultObject.put("result", contentObj.getJSONObject("result"));
             resultObject.put("serverUrl", serverUrl);
+            resultObject.put("serverName", serverName);
             resultObject.put("timestamp", Instant.now());
 
             resultsArray.put(resultObject);
@@ -520,6 +493,23 @@ public class ProviderUtils {
 
                 if (toolName.equals(serverToolName)) {
                     return server.getString("serverUrl");
+                }
+            }
+        }
+        return null; // Tool not found
+    }
+
+    private static String findServerNameForTool(JSONArray servers, String toolName) {
+        for (int i = 0; i < servers.length(); i++) {
+            JSONObject server = servers.getJSONObject(i);
+            JSONArray serverTools = server.getJSONArray("serverTools");
+
+            for (int j = 0; j < serverTools.length(); j++) {
+                JSONObject serverTool = serverTools.getJSONObject(j);
+                String serverToolName = serverTool.getJSONObject("function").getString("name");
+
+                if (toolName.equals(serverToolName)) {
+                    return server.getString("serverName");
                 }
             }
         }
