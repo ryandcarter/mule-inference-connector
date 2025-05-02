@@ -6,6 +6,8 @@ import org.mule.runtime.http.api.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class TextGeneration implements ChatCompletionBase {
 
   private static Logger LOGGER = LoggerFactory.getLogger(TextGeneration.class);
@@ -35,6 +37,7 @@ public class TextGeneration implements ChatCompletionBase {
   private String vertexAIProjectId;
   private String vertexAILocationId;
   private String vertexAIServiceAccountKey;
+  private Map<String, String> mcpSseServers;
 
   public TextGeneration(
           HttpClient httpClient,
@@ -61,7 +64,9 @@ public class TextGeneration implements ChatCompletionBase {
           String xnferenceUrl,
           String vertexAIProjectId,
           String vertexAILocationId,
-          String vertexAIServiceAccountKey
+          String vertexAIServiceAccountKey,
+          Map<String, String> mcpSseServers
+
   ) {
 
     this.httpClient = httpClient;
@@ -89,8 +94,9 @@ public class TextGeneration implements ChatCompletionBase {
     this.vertexAIProjectId = vertexAIProjectId;
     this.vertexAILocationId = vertexAILocationId;
     this.vertexAIServiceAccountKey = vertexAIServiceAccountKey;
+    this.mcpSseServers = mcpSseServers;
 
-    
+
   }
 
   public HttpClient getHttpClient() {
@@ -161,6 +167,11 @@ public class TextGeneration implements ChatCompletionBase {
   public String getVertexAILocationId() { return vertexAILocationId; }
   
   public String getVertexAIServiceAccountKey() { return vertexAIServiceAccountKey; }
+
+  public Map<String, String> getMcpSseServers() {
+    return mcpSseServers;
+  }
+
 
   public boolean validate() throws ConnectionException {
     return true;

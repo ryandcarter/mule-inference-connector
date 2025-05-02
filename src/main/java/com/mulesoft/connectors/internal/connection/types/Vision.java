@@ -6,6 +6,8 @@ import org.mule.runtime.http.api.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class Vision implements ChatCompletionBase {
 
   private static Logger LOGGER = LoggerFactory.getLogger(Vision.class);
@@ -24,6 +26,8 @@ public class Vision implements ChatCompletionBase {
   private String vertexAIProjectId;
   private String vertexAILocationId;          
   private String vertexAIServiceAccountKey;
+  private String azureAIFoundryApiVersion;
+  private String azureAIFoundryResourceName;
 
 
   public Vision(
@@ -40,7 +44,9 @@ public class Vision implements ChatCompletionBase {
           String virtualKey,
           String vertexAIProjectId,
           String vertexAILocationId,
-          String vertexAIServiceAccountKey
+          String vertexAIServiceAccountKey,
+          String azureAIFoundryApiVersion,
+          String azureAIFoundryResourceName
   ) {
 
     this.httpClient = httpClient;
@@ -57,6 +63,8 @@ public class Vision implements ChatCompletionBase {
     this.vertexAIProjectId = vertexAIProjectId;
     this.vertexAILocationId = vertexAILocationId;
     this.vertexAIServiceAccountKey = vertexAIServiceAccountKey;
+    this.azureAIFoundryApiVersion = azureAIFoundryApiVersion;
+    this.azureAIFoundryResourceName = azureAIFoundryResourceName;
 
   }
 
@@ -93,16 +101,6 @@ public class Vision implements ChatCompletionBase {
 
   public Number getTopP() {
     return topP;
-  }
-
-  @Override
-  public String getAzureAIFoundryApiVersion() {
-    return "";
-  }
-
-  @Override
-  public String getAzureAIFoundryResourceName() {
-    return "";
   }
 
   @Override
@@ -160,6 +158,14 @@ public class Vision implements ChatCompletionBase {
   
   public String getVertexAIServiceAccountKey() { return vertexAIServiceAccountKey; }
 
+  @Override
+  public Map<String, String> getMcpSseServers() {
+    return Map.of();
+  }
+
+  public String getAzureAIFoundryApiVersion() { return azureAIFoundryApiVersion; }
+
+  public String getAzureAIFoundryResourceName() { return azureAIFoundryResourceName; }
 
   public boolean validate() throws ConnectionException {
     return true;

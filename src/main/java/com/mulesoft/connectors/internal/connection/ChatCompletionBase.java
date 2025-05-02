@@ -3,6 +3,8 @@ package com.mulesoft.connectors.internal.connection;
 
 import org.mule.runtime.http.api.client.HttpClient;
 
+import java.util.Map;
+
 public interface ChatCompletionBase {
     HttpClient getHttpClient();
     String getInferenceType();
@@ -29,5 +31,5 @@ public interface ChatCompletionBase {
     String getVertexAIProjectId();
     String getVertexAILocationId();
     String getVertexAIServiceAccountKey();
-
+    Map<String, String> getMcpSseServers();
 }

@@ -21,6 +21,7 @@ public enum ModelType {
       COHERE("COHERE", getCohereModelNameStream()),
       OLLAMA("OLLAMA", getOllamaModelNameStream()),
       AZURE_OPENAI("AZURE_OPENAI", getAzureOpenAIModelNameStream()),*/
+      AZURE_AI_FOUNDRY("AZURE_AI_FOUNDRY", getAzureAIFoundryModelNameStream()),
       MISTRAL("MISTRAL", getMistralModelNameStream()),
       OPENAI("OPENAI", getOpenAIModelNameStream()),
       ANTHROPIC("ANTHROPIC", getAnthropicModelNameStream()),
@@ -139,6 +140,10 @@ public enum ModelType {
   
   private static Stream<String> getVertexAIModelNameStream() {
 	    return Arrays.stream(VertexAIModelName.values()).map(String::valueOf);
+  }
+
+  private static Stream<String> getAzureAIFoundryModelNameStream() {
+    return Arrays.stream(AzureAIFoundryModelName.values()).map(String::valueOf);
   }
 
 
@@ -535,6 +540,23 @@ public enum ModelType {
 	      return this.value;
 	    }
 	}
+
+  enum AzureAIFoundryModelName {
+
+    Phi_3_5_vision_instruct("Phi-3.5-vision-instruct"),
+    Phi_4_multimodal_instruct("Phi-4-multimodal-instruct");
+    
+    private final String value;
+
+    AzureAIFoundryModelName(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
 
 
 }

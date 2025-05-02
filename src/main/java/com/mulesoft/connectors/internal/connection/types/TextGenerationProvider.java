@@ -25,6 +25,7 @@ import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpClientConfiguration;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 @Alias("llm")
 @DisplayName("Text Generation LLM")
@@ -248,6 +249,17 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
   public void setVertexAIServiceAccountKey(String vertexAIServiceAccountKey) { this.vertexAIServiceAccountKey = vertexAIServiceAccountKey; }
 
   @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  //@Placement(tab = "MCP Servers")
+  @Optional
+  @DisplayName("MCP Server Urls (SSE over HTTP)")
+  private Map<String, String> mcpSseServers;
+
+  public void setMcpSseServers(Map<String, String> mcpSseServers) {
+    this.mcpSseServers = mcpSseServers;
+  }
+
+  @Parameter
   @Placement(order = 2, tab = "Advanced")
   @Optional
   private TlsContextFactory tlsContext;
@@ -284,7 +296,8 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
             xnferenceUrl,
             vertexAIProjectId,
             vertexAILocationId,
-            vertexAIServiceAccountKey
+            vertexAIServiceAccountKey,
+            mcpSseServers
     );
   }
 

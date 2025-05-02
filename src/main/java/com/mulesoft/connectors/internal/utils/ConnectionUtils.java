@@ -3,7 +3,6 @@ package com.mulesoft.connectors.internal.utils;
 import com.google.auth.oauth2.GoogleCredentials;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -11,12 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import com.mulesoft.connectors.internal.connection.ChatCompletionBase;
 import com.mulesoft.connectors.internal.connection.ModerationImageGenerationBase;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
-import com.mulesoft.connectors.internal.operations.TextGenerationOperations;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.runtime.api.util.MultiMap;
@@ -26,21 +23,14 @@ import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.entity.HttpEntity;
 import org.mule.runtime.http.api.domain.entity.multipart.HttpPart;
 import org.mule.runtime.http.api.domain.entity.multipart.MultipartHttpEntity;
-import org.mule.runtime.http.api.domain.entity.multipart.Part;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.request.HttpRequestBuilder;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.net.URL;
 import java.util.concurrent.TimeoutException;
 
 import static com.mulesoft.connectors.internal.utils.ResponseUtils.encodeImageToBase64;
@@ -255,6 +245,8 @@ public class ConnectionUtils {
                 dBricksUrlStr = dBricksUrlStr
                         .replace("{model_name}", connection.getModelName());
                 return new URL(dBricksUrlStr);
+            case "LLM_API":
+                return new URL(InferenceConstants.LLM_API_URL + InferenceConstants.CHAT_COMPLETIONS);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + connection.getInferenceType());
         }
@@ -293,6 +285,8 @@ public class ConnectionUtils {
         if (resourceUrl == null) {
             throw new IllegalArgumentException("Resource URL cannot be null");
         }
+        LOGGER.debug("Sending request to URL: {}", resourceUrl);
+        LOGGER.trace("Payload: {} ", payload);
         HttpRequest initialRequest = buildHttpRequest(resourceUrl, connection);
         MultiMap<String, String> headersMultiMap = initialRequest.getHeaders();
         Map<String, String> headersMap = new HashMap<>();
