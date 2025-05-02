@@ -30,12 +30,12 @@ public class ProviderUtils {
     static JSONArray mcpToolsArrayByServer = null;
 
     /**
-     * Check if the inference type is LLAMA_API
+     * Check if the inference type is LLM_API
      * @param configuration the connector configuration
-     * @return true if the inference type is LLAMA_API, false otherwise
+     * @return true if the inference type is LLM_API, false otherwise
      */
     public static boolean isllamaAPI(ChatCompletionBase configuration) {
-        return "LLAMA_API".equals(configuration.getInferenceType());
+        return "LLM_API".equals(configuration.getInferenceType());
     }
 
     /**

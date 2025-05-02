@@ -41,7 +41,8 @@ public enum ModelType {
       OPENAI_COMPATIBLE_ENDPOINT("OPENAI_COMPATIBLE_ENDPOINT", getOpenAIModelNameStream()),
       IBM_WATSON("IBM_WATSON", getIBMWatsonModelNameStream()),
       DATABRICKS("DATABRICKS", getDATABRICKSModelNameStream()),
-      LLAMA_API("LLAMA_API", getLLAMAAPIModelNameStream()),
+      LLM_API("LLM_API", getLLAMAAPIModelNameStream()),
+
   ;
 
 

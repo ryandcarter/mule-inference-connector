@@ -245,8 +245,8 @@ public class ConnectionUtils {
                 dBricksUrlStr = dBricksUrlStr
                         .replace("{model_name}", connection.getModelName());
                 return new URL(dBricksUrlStr);
-            case "LLAMA_API":
-                return new URL(InferenceConstants.LLAMA_API_URL + InferenceConstants.CHAT_COMPLETIONS);
+            case "LLM_API":
+                return new URL(InferenceConstants.LLM_API_URL + InferenceConstants.CHAT_COMPLETIONS);
             default:
                 throw new MalformedURLException("Unsupported inference type: " + connection.getInferenceType());
         }
