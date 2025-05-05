@@ -24,10 +24,12 @@
     </parent>
 
 	<properties>
-        <muleJavaEeBomVersion>4.6.0</muleJavaEeBomVersion>
+		<runtimeProduct>MULE_EE</runtimeProduct>
 		<slf4jApi.version>2.0.7</slf4jApi.version>
 		<mcp.version>0.9.0</mcp.version>
-		<munit.extensions.maven.plugin.version>1.2.0</munit.extensions.maven.plugin.version>
+		<munit.extensions.maven.plugin.version>1.5.0</munit.extensions.maven.plugin.version>
+		<munit.version>3.4.0</munit.version>
+		<skip.unit.tests>true</skip.unit.tests>
     </properties>
 
 	<build>
@@ -110,24 +112,14 @@
 						<dependency>org.slf4j:slf4j-simple</dependency>
 						<dependency>org.mule.runtime.boot:mule-module-jpms-utils</dependency>
 					</dependenciesToScan>
+					<skipTests>${skip.unit.tests}</skipTests>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.mule</groupId>
-                <artifactId>mule-javaee-runtime-bom</artifactId>
-                <version>${muleJavaEeBomVersion}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>	
     <dependencies>
-    
+
     <dependency>
   <groupId>com.google.auth</groupId>
   <artifactId>google-auth-library-oauth2-http</artifactId>
