@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:mac-inference="http://www.mulesoft.org/schema/mule/mac-inference"
+      xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/mac-inference http://www.mulesoft.org/schema/mule/mac-inference/current/mule-mac-inference.xsd
+        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+
+    <configuration-properties file="automation-credentials.properties"/>
+    <mac-inference:text-generation-config name="OpenAIConfig" doc:name="MuleSoft Inference Text generation config" doc:id="8314fbd7-1eb7-4d2e-867f-39373c3d9755" >
+        <mac-inference:llm-connection inferenceType="${openai.inferenceType}" apiKey="${openai.apiKey}"
+                                      modelName="${openai.llmModel}" timeout="60000"
+                                      openCompatibleURL="https://api.openai.com/v1" ibmWatsonApiVersion="2024-05-31"
+                                      ibmWatsonProjectID="864e682d-63ab-4d73-8f65-e9d01b97c428"
+                                      xnferenceUrl="https://inference.top/api/v1">
+            <mac-inference:mcp-sse-servers >
+                <mac-inference:mcp-sse-server key="ERP Server" value="http://mcp-server-demo-b2jb0y.1d6nel.usa-e1.cloudhub.io" />
+                <mac-inference:mcp-sse-server key="CRM Server" value="http://mcp-server-demo-crm-b2jb0y.1d6nel.usa-e1.cloudhub.io" />
+            </mac-inference:mcp-sse-servers>
+        </mac-inference:llm-connection>
+    </mac-inference:text-generation-config>
+
+    <mac-inference:text-generation-config name="MistralAIConfig" doc:name="MuleSoft Inference Text generation config" doc:id="8314fbd7-1eb7-4d2e-867f-39373c3d9755" >
+        <mac-inference:llm-connection inferenceType="${mistral.inferenceType}" apiKey="${mistral.apiKey}"
+                                      modelName="${mistral.llmModel}" timeout="60000"
+                                      openCompatibleURL="https://api.openai.com/v1" ibmWatsonApiVersion="2024-05-31"
+                                      ibmWatsonProjectID="864e682d-63ab-4d73-8f65-e9d01b97c428"
+                                      xnferenceUrl="https://inference.top/api/v1">
+            <mac-inference:mcp-sse-servers >
+                <mac-inference:mcp-sse-server key="ERP Server" value="http://mcp-server-demo-b2jb0y.1d6nel.usa-e1.cloudhub.io" />
+                <mac-inference:mcp-sse-server key="CRM Server" value="http://mcp-server-demo-crm-b2jb0y.1d6nel.usa-e1.cloudhub.io" />
+            </mac-inference:mcp-sse-servers>
+        </mac-inference:llm-connection>
+    </mac-inference:text-generation-config>
+
+    <mac-inference:text-generation-config name="OpenrouterConfig" doc:name="MuleSoft Inference Text generation config" doc:id="8314fbd7-1eb7-4d2e-867f-39373c3d9755" >
+        <mac-inference:llm-connection inferenceType="${openrouter.inferenceType}" apiKey="${openrouter.apiKey}"
+                                      modelName="${openrouter.llmModel}" timeout="60000"
+                                      openCompatibleURL="https://api.openai.com/v1" ibmWatsonApiVersion="2024-05-31"
+                                      ibmWatsonProjectID="864e682d-63ab-4d73-8f65-e9d01b97c428"
+                                      xnferenceUrl="https://inference.top/api/v1">
+            <mac-inference:mcp-sse-servers >
+                <mac-inference:mcp-sse-server key="ERP Server" value="http://mcp-server-demo-b2jb0y.1d6nel.usa-e1.cloudhub.io" />
+                <mac-inference:mcp-sse-server key="CRM Server" value="http://mcp-server-demo-crm-b2jb0y.1d6nel.usa-e1.cloudhub.io" />
+            </mac-inference:mcp-sse-servers>
+        </mac-inference:llm-connection>
+    </mac-inference:text-generation-config>
+</mule>
