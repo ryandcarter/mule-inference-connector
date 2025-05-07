@@ -39,14 +39,12 @@ public class PayloadUtils {
         
         String inferenceType = configuration.getInferenceType();
     	
-    	String provider = "";
-        if ("VERTEX_AI".equalsIgnoreCase(inferenceType)) {
-            provider = ProviderUtils.getProviderByModel(configuration.getModelName());
-        }
-    	
+    	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
+            	
     	LOGGER.debug("provider {} inferenceType {}", provider, inferenceType);
-
-
+    	
+    	
+        
     	if ("Google".equalsIgnoreCase(provider)) {
 			//add contents to the payload
         
@@ -57,20 +55,17 @@ public class PayloadUtils {
 	        payload.put(InferenceConstants.GENERATION_CONFIG, generationConfig);
 
 		} else {
-			
-			if ("Anthropic".equalsIgnoreCase(provider)) {
-                if ("VERTEX_AI".equalsIgnoreCase(inferenceType)) {
+			if ("Anthropic".equalsIgnoreCase(provider) && inferenceType.toUpperCase().contains("VERTEX_AI")) {
                     payload.put(InferenceConstants.VERTEX_AI_ANTHROPIC_VERSION, InferenceConstants.VERTEX_AI_ANTHROPIC_VERSION_VALUE);
-                }
 			}
 			
 			if (!"AZURE_OPENAI".equalsIgnoreCase(inferenceType) &&
 				    !"IBM_WATSON".equalsIgnoreCase(inferenceType) &&
-				    !"Anthropic".equalsIgnoreCase(provider)) {
+				    !inferenceType.toUpperCase().contains("VERTEX_AI")) {
 				    //set the model only if:
 					//The inference type is not "AZURE_OPENAI" and
 					//The inference type is not "IBM_WATSON" and
-					//The provider is not "Anthropic"
+					//The inference type is not VERTEX_AI
 				    payload.put(InferenceConstants.MODEL, configuration.getModelName());
 			}
 
@@ -240,16 +235,13 @@ public class PayloadUtils {
 
     public static JSONArray createRequestImageURL(ChatCompletionBase connection, String prompt, String imageUrl) throws IOException {
     	
-    	String inferenceType = connection.getInferenceType();
-
-        String provider = "";
-        if ("VERTEX_AI".equalsIgnoreCase(inferenceType)) {
-            provider = ProviderUtils.getProviderByModel(connection.getModelName());
-        }
+    	String inferenceTyupe = connection.getInferenceType();
+    	
+       	String provider = ProviderUtils.getProviderByModel(connection.getModelName());
         
-        if (inferenceType.equalsIgnoreCase("ANTHROPIC") || ("Anthropic".equalsIgnoreCase(provider))) {
+        if (inferenceTyupe.equalsIgnoreCase("ANTHROPIC") || ("Anthropic".equalsIgnoreCase(provider))) {
             return createAnthropicImageURLRequest(prompt, imageUrl);
-        } else if (inferenceType.equalsIgnoreCase("OLLAMA")) {
+        } else if (inferenceTyupe.equalsIgnoreCase("OLLAMA")) {
             return createOllamaImageURLRequest(prompt, imageUrl);
         } else if (("Google".equalsIgnoreCase(provider))) {
         		//for Google/Gemini
@@ -258,7 +250,7 @@ public class PayloadUtils {
         
         //default
         return createImageURLRequest(prompt, imageUrl);
-        
+        	    	
     }
 
     /**
@@ -431,11 +423,8 @@ public class PayloadUtils {
      */
     public static JSONObject buildChatAnswerPromptPayload(ChatCompletionBase configuration, String prompt) {
     	JSONObject payload;
-
-        String provider = "";
-        if ("VERTEX_AI".equalsIgnoreCase(configuration.getInferenceType())) {
-            provider = ProviderUtils.getProviderByModel(configuration.getModelName());
-        }
+    	
+    	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
 
     	if ("Google".equalsIgnoreCase(provider)) {
    	    	JSONArray safetySettings = new JSONArray(); // Empty array
@@ -443,7 +432,7 @@ public class PayloadUtils {
 	    	JSONArray tools = new JSONArray(); // Empty array
 			payload = PayloadUtils.buildVertexAIPayload(configuration, prompt, safetySettings, systemInstruction, tools);
 		} else if ("Anthropic".equalsIgnoreCase(provider)) {
-			//for Anthropic
+			//for ANthropic
 			
 			JSONObject textObject = new JSONObject()
 		            .put("type", "text")
@@ -470,6 +459,8 @@ public class PayloadUtils {
 		}
 	
 		return payload;
+    	
+
     }
     
     /**
@@ -482,11 +473,10 @@ public class PayloadUtils {
      */
     public static JSONObject buildPromptTemplatePayload(ChatCompletionBase configuration, String template, String instructions, String data) {
     	JSONObject payload;
+    	
+    	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
 
-        String provider = "";
-        if ("VERTEX_AI".equalsIgnoreCase(configuration.getInferenceType())) {
-            provider = ProviderUtils.getProviderByModel(configuration.getModelName());
-        }
+
        	if ("Google".equalsIgnoreCase(provider)) {
     		//for google/gemini
     		//Create systemInstruction object
@@ -554,11 +544,9 @@ public class PayloadUtils {
                                                        String instructions, String data, InputStream tools) throws IOException {
 
         JSONObject payload;
+        
+       	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
 
-        String provider = "";
-        if ("VERTEX_AI".equalsIgnoreCase(configuration.getInferenceType())) {
-            provider = ProviderUtils.getProviderByModel(configuration.getModelName());
-        }
         JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools);
 
         LOGGER.debug("provider: {} toolsArray: {}", provider, toolsArray.toString());
