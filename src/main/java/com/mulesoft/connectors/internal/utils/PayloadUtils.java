@@ -61,13 +61,16 @@ public class PayloadUtils {
 			
 			if (!"AZURE_OPENAI".equalsIgnoreCase(inferenceType) &&
 				    !"IBM_WATSON".equalsIgnoreCase(inferenceType) &&
-				    !inferenceType.toUpperCase().contains("VERTEX_AI")) {
-				    //set the model only if:
-					//The inference type is not "AZURE_OPENAI" and
-					//The inference type is not "IBM_WATSON" and
-					//The inference type is not VERTEX_AI
+				    (!inferenceType.toUpperCase().contains("VERTEX_AI") || "META".equalsIgnoreCase(provider))) {
+
+				    // Set the model only if:
+				    // - The inference type is not "AZURE_OPENAI"
+				    // - The inference type is not "IBM_WATSON"
+				    // - The inference type is not "VERTEX_AI" (unless the provider is "META")
+				    
 				    payload.put(InferenceConstants.MODEL, configuration.getModelName());
-			}
+				}
+
 
 			if ("IBM_WATSON".equals(configuration.getInferenceType())) {
                 payload.put("model_id", configuration.getModelName());
