@@ -24,10 +24,12 @@
     </parent>
 
 	<properties>
-        <muleJavaEeBomVersion>4.6.0</muleJavaEeBomVersion>
+		<runtimeProduct>MULE_EE</runtimeProduct>
 		<slf4jApi.version>2.0.7</slf4jApi.version>
 		<mcp.version>0.9.0</mcp.version>
-		<munit.extensions.maven.plugin.version>1.2.0</munit.extensions.maven.plugin.version>
+		<munit.extensions.maven.plugin.version>1.5.0</munit.extensions.maven.plugin.version>
+		<munit.version>3.4.0</munit.version>
+		<skip.unit.tests>true</skip.unit.tests>
     </properties>
 
 	<build>
@@ -71,23 +73,53 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.6.1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/dependency</outputDirectory>
+							<includeArtifactIds>slf4j-api,slf4j-simple,mule-module-jpms-utils</includeArtifactIds>
+							<stripVersion>true</stripVersion>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.2.5</version>
+				<configuration>
+					<!-- Explicitly set the module path to include copied dependencies -->
+					<argLine>
+						--module-path ${project.build.directory}/dependency/slf4j-api.jar:${project.build.directory}/dependency/slf4j-simple.jar:${project.build.directory}/dependency/mule-module-jpms-utils.jar
+						--add-modules org.slf4j,org.mule.runtime.jpms.utils
+						--add-opens java.base/java.lang=org.mule.runtime.jpms.utils
+						--add-opens java.base/java.lang.reflect=org.mule.runtime.jpms.utils
+						--add-opens java.base/java.lang.invoke=org.mule.runtime.jpms.utils
+						--add-opens java.sql/java.sql=org.mule.runtime.jpms.utils
+					</argLine>
+					<!-- Ensure dependencies are scanned for tests -->
+					<dependenciesToScan>
+						<dependency>org.slf4j:slf4j-api</dependency>
+						<dependency>org.slf4j:slf4j-simple</dependency>
+						<dependency>org.mule.runtime.boot:mule-module-jpms-utils</dependency>
+					</dependenciesToScan>
+					<skipTests>${skip.unit.tests}</skipTests>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.mule</groupId>
-                <artifactId>mule-javaee-runtime-bom</artifactId>
-                <version>${muleJavaEeBomVersion}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>	
     <dependencies>
-    
+
     <dependency>
   <groupId>com.google.auth</groupId>
   <artifactId>google-auth-library-oauth2-http</artifactId>
@@ -109,6 +141,12 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4jApi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4jApi.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>

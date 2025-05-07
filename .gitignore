@@ -19,6 +19,9 @@ dependency-reduced-pom.xml
 mule-artifact.json
 exchange-docs/
 
+# MUnit Tests
+automation-credentials.properties
+
 # Logs
 *.log
 
@@ -46,3 +49,5 @@ generated-test-sources/
 
 
 /bin/
+/.cursor/
+/.java-version

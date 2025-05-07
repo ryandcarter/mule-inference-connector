@@ -28,6 +28,8 @@ public class ProviderUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProviderUtils.class);
     static JSONArray mcpToolsArray = null;
     static JSONArray mcpToolsArrayByServer = null;
+    static JSONArray mcpTools= null;
+    static Boolean mcpToolsLoaded = false;
 
     /**
      * Check if the inference type is LLM_API
@@ -330,42 +332,45 @@ public class ProviderUtils {
     }
 
     public static JSONArray getMcpToolsFromMultiple(ChatCompletionBase connection) {
-        mcpToolsArrayByServer = new JSONArray();
-        JSONArray mcpTools = new JSONArray();
+        if (!mcpToolsLoaded) {
+            mcpToolsArrayByServer = new JSONArray();
+            mcpTools = new JSONArray();
 
-        Map<String, String> mcpServers = connection.getMcpSseServers();
-        String httpPattern = "^https?://.*";
+            Map<String, String> mcpServers = connection.getMcpSseServers();
+            String httpPattern = "^https?://.*";
 
-        for (Map.Entry<String, String> entry : mcpServers.entrySet()) {
-            String url = entry.getValue();
-            String key = entry.getKey();
-            if (url != null && url.matches(httpPattern)) {
-                JSONArray tools = getMcpTools(url);
-                if (tools != null) {
-                    for (int i = 0; i < tools.length(); i++) {
-                        mcpTools.put(tools.get(i));
-                    }
-
-                    JSONObject mcpServerInfo = new JSONObject();
-                    mcpServerInfo.put("serverUrl", url);
-                    mcpServerInfo.put("serverName", key);
-                    mcpServerInfo.put("serverTools", tools);
-
-                    boolean exists = false;
-                    for (int i = 0; i < mcpToolsArrayByServer.length(); i++) {
-                        JSONObject existing = mcpToolsArrayByServer.getJSONObject(i);
-                        if (existing.getString("serverUrl").equals(url)) {
-                            exists = true;
-                            break;
+            for (Map.Entry<String, String> entry : mcpServers.entrySet()) {
+                String url = entry.getValue();
+                String key = entry.getKey();
+                if (url != null && url.matches(httpPattern)) {
+                    JSONArray tools = getMcpTools(url);
+                    if (tools != null) {
+                        for (int i = 0; i < tools.length(); i++) {
+                            mcpTools.put(tools.get(i));
                         }
-                    }
-                    if (!exists) {
-                        mcpToolsArrayByServer.put(mcpServerInfo);
+
+                        JSONObject mcpServerInfo = new JSONObject();
+                        mcpServerInfo.put("serverUrl", url);
+                        mcpServerInfo.put("serverName", key);
+                        mcpServerInfo.put("serverTools", tools);
+
+                        boolean exists = false;
+                        for (int i = 0; i < mcpToolsArrayByServer.length(); i++) {
+                            JSONObject existing = mcpToolsArrayByServer.getJSONObject(i);
+                            if (existing.getString("serverUrl").equals(url)) {
+                                exists = true;
+                                break;
+                            }
+                        }
+                        if (!exists) {
+                            mcpToolsArrayByServer.put(mcpServerInfo);
+                        }
                     }
                 }
             }
-        }
 
+            mcpToolsLoaded = true;
+        }
         return mcpTools;
     }
 
