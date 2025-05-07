@@ -99,6 +99,10 @@ public class PayloadUtils {
 	        if ("OLLAMA".equals(configuration.getInferenceType()) || "AZURE_OPENAI".equals(configuration.getInferenceType()) || "Meta".equalsIgnoreCase(provider)) {
 	            payload.put("stream", false);
 	        }
+
+            if ("COHERE".equals(configuration.getInferenceType())) {
+                payload.remove(InferenceConstants.TOP_P);
+            }
 		}
     	
 		
@@ -544,8 +548,11 @@ public class PayloadUtils {
                                                        String instructions, String data, InputStream tools) throws IOException {
 
         JSONObject payload;
-        
-       	String provider = ProviderUtils.getProviderByModel(configuration.getModelName());
+
+        String provider = "";
+        if (configuration.getInferenceType().contains("VERTEX")) {
+            provider = ProviderUtils.getProviderByModel(configuration.getModelName());
+        }
 
         JSONArray toolsArray = PayloadUtils.parseInputStreamToJsonArray(tools);
 
