@@ -1,13 +1,12 @@
-package com.mulesoft.connectors.internal.models.ai21labs;
+package com.mulesoft.connectors.internal.models.deepinfra;
 
-public enum AI21LABSModelName {
-    JAMBA_LARGE("jamba-large", true),
-    JAMBA_MINI("jamba-mini", true);
+public enum DeepInfraModelName {
+    LLAMA_3_8B_INSTRUCT("meta-llama/Meta-Llama-3-8B-Instruct", true);
 
     private final String value;
     private final boolean textGenerationSupport;
 
-    AI21LABSModelName(String value, boolean textGenerationSupport) {
+    DeepInfraModelName(String value, boolean textGenerationSupport) {
         this.value = value;
         this.textGenerationSupport = textGenerationSupport;
     }
