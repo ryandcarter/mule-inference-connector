@@ -14,12 +14,12 @@ public class XInferenceTextGenerationConnection extends TextGenerationConnection
 
   private final URL connectionURL;
 
-  public XInferenceTextGenerationConnection(HttpClient httpClient, String modelName, String apiKey,
-                                         Number temperature, Number topP,
-                                         Number maxTokens, Map<String, String> mcpSseServers, int timeout)
+  public XInferenceTextGenerationConnection(HttpClient httpClient, String modelName, String xInferenceUrl,
+                                            String apiKey, Number temperature, Number topP,
+                                            Number maxTokens, Map<String, String> mcpSseServers, int timeout)
           throws MalformedURLException {
-    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(), "XINFERENCE");
-    this.connectionURL = new URL(XINFERENCE_URL + URI_CHAT_COMPLETIONS);
+    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(xInferenceUrl), "XINFERENCE");
+    this.connectionURL = new URL(fetchApiURL(xInferenceUrl));
   }
 
   @Override
@@ -37,7 +37,7 @@ public class XInferenceTextGenerationConnection extends TextGenerationConnection
     return Map.of("Authorization", "Bearer " + this.getApiKey());
   }
 
-  private static String fetchApiURL() {
-    return XINFERENCE_URL + URI_CHAT_COMPLETIONS;
+  private static String fetchApiURL(String xInferenceUrl) {
+    return xInferenceUrl + URI_CHAT_COMPLETIONS;
   }
 } 

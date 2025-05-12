@@ -10,7 +10,7 @@ import java.util.Map;
 public class NvidiaTextGenerationConnection extends TextGenerationConnection {
 
   private static final String URI_CHAT_COMPLETIONS = "/chat/completions";
-  public static final String NVIDIA_URL = "https://api.nvcf.nvidia.com/v2";
+  public static final String NVIDIA_URL = "https://integrate.api.nvidia.com/v1";
 
   private final URL connectionURL;
 

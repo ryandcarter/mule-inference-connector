@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class CohereTextGenerationConnection extends TextGenerationConnection {
 
-  private static final String URI_CHAT_COMPLETIONS = "/chat/completions";
-  public static final String COHERE_URL = "https://api.cohere.ai/v1";
+  private static final String URI_CHAT_COMPLETIONS = "/chat";
+  public static final String COHERE_URL = "https://api.cohere.com/v2";
 
   private final URL connectionURL;
 

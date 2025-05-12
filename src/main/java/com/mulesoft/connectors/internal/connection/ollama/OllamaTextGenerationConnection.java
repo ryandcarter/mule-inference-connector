@@ -9,17 +9,17 @@ import java.util.Map;
 
 public class OllamaTextGenerationConnection extends TextGenerationConnection {
 
-  private static final String URI_CHAT_COMPLETIONS = "/chat/completions";
+  private static final String URI_CHAT_COMPLETIONS = "/chat";
   public static final String OLLAMA_URL = "http://localhost:11434/v1";
 
   private final URL connectionURL;
 
-  public OllamaTextGenerationConnection(HttpClient httpClient, String modelName, String apiKey,
-                                         Number temperature, Number topP,
-                                         Number maxTokens, Map<String, String> mcpSseServers, int timeout)
+  public OllamaTextGenerationConnection(HttpClient httpClient, String modelName,String ollamaUrl,
+                                        String apiKey, Number temperature, Number topP,
+                                        Number maxTokens, Map<String, String> mcpSseServers, int timeout)
           throws MalformedURLException {
-    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(), "OLLAMA");
-    this.connectionURL = new URL(OLLAMA_URL + URI_CHAT_COMPLETIONS);
+    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(ollamaUrl), "OLLAMA");
+    this.connectionURL = new URL(fetchApiURL(ollamaUrl));
   }
 
   @Override
@@ -37,7 +37,7 @@ public class OllamaTextGenerationConnection extends TextGenerationConnection {
     return Map.of("Authorization", "Bearer " + this.getApiKey());
   }
 
-  private static String fetchApiURL() {
-    return OLLAMA_URL + URI_CHAT_COMPLETIONS;
+  private static String fetchApiURL(String ollamaUrl) {
+    return ollamaUrl + URI_CHAT_COMPLETIONS;
   }
 } 

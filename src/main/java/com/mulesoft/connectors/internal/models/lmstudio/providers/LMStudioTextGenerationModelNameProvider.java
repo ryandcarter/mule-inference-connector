@@ -1,6 +1,6 @@
 package com.mulesoft.connectors.internal.models.lmstudio.providers;
 
-import com.mulesoft.connectors.internal.models.lmstudio.LMSTUDIOModelName;
+import com.mulesoft.connectors.internal.models.lmstudio.LMStudioModelName;
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.extension.api.values.ValueBuilder;
 import org.mule.runtime.extension.api.values.ValueProvider;
@@ -8,11 +8,11 @@ import org.mule.runtime.extension.api.values.ValueProvider;
 import java.util.Arrays;
 import java.util.Set;
 
-public class LMSTUDIOTextGenerationModelNameProvider implements ValueProvider {
+public class LMStudioTextGenerationModelNameProvider implements ValueProvider {
 
   @Override
   public Set<Value> resolve() {
-    return ValueBuilder.getValuesFor(Arrays.stream(LMSTUDIOModelName.values())
-            .filter(LMSTUDIOModelName::isTextGenerationSupport).map(String::valueOf));
+    return ValueBuilder.getValuesFor(Arrays.stream(LMStudioModelName.values())
+            .filter(LMStudioModelName::isTextGenerationSupport).map(String::valueOf));
   }
 } 

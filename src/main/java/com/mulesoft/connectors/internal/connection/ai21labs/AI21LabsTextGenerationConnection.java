@@ -10,7 +10,7 @@ import java.util.Map;
 public class AI21LabsTextGenerationConnection extends TextGenerationConnection {
 
   private static final String URI_CHAT_COMPLETIONS = "/chat/completions";
-  public static final String AI21LABS_URL = "https://api.ai21.com/v1";
+  public static final String AI21LABS_URL = "https://api.ai21.com/studio/v1";
 
   private final URL connectionURL;
 

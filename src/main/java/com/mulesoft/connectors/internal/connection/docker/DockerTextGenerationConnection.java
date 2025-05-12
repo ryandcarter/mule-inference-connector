@@ -9,17 +9,17 @@ import java.util.Map;
 
 public class DockerTextGenerationConnection extends TextGenerationConnection {
 
-  private static final String URI_CHAT_COMPLETIONS = "/chat/completions";
-  public static final String DOCKER_URL = "http://localhost:8080/v1";
+  private static final String URI_CHAT_COMPLETIONS = "/engines/llama.cpp/v1/chat/completions";
 
   private final URL connectionURL;
 
-  public DockerTextGenerationConnection(HttpClient httpClient, String modelName, String apiKey,
-                                         Number temperature, Number topP,
-                                         Number maxTokens, Map<String, String> mcpSseServers, int timeout)
+  public DockerTextGenerationConnection(HttpClient httpClient, String dockerModelName, String dockerModelUrl, String apiKey,
+                                        Number temperature, Number topP,
+                                        Number maxTokens, Map<String, String> mcpSseServers, int timeout)
           throws MalformedURLException {
-    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(), "DOCKER");
-    this.connectionURL = new URL(DOCKER_URL + URI_CHAT_COMPLETIONS);
+    super(httpClient, apiKey, dockerModelName, maxTokens, temperature, topP, timeout, mcpSseServers,
+            fetchApiURL(dockerModelUrl), "DOCKER");
+    this.connectionURL = new URL(fetchApiURL(dockerModelUrl));
   }
 
   @Override
@@ -37,7 +37,7 @@ public class DockerTextGenerationConnection extends TextGenerationConnection {
     return Map.of("Authorization", "Bearer " + this.getApiKey());
   }
 
-  private static String fetchApiURL() {
-    return DOCKER_URL + URI_CHAT_COMPLETIONS;
+  private static String fetchApiURL(String dockerModelUrl) {
+    return dockerModelUrl + URI_CHAT_COMPLETIONS;
   }
 } 

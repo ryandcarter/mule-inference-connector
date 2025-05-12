@@ -10,7 +10,7 @@ import java.util.Map;
 public class PerplexityTextGenerationConnection extends TextGenerationConnection {
 
   private static final String URI_CHAT_COMPLETIONS = "/chat/completions";
-  public static final String PERPLEXITY_URL = "https://api.perplexity.ai/v1";
+  public static final String PERPLEXITY_URL = "https://api.perplexity.ai";
 
   private final URL connectionURL;
 

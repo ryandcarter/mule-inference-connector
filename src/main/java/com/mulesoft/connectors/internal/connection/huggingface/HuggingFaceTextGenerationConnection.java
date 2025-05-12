@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class HuggingFaceTextGenerationConnection extends TextGenerationConnection {
 
-  private static final String URI_CHAT_COMPLETIONS = "/chat/completions";
-  public static final String HUGGINGFACE_URL = "https://api.huggingface.co/v1";
+  private static final String URI_CHAT_COMPLETIONS = "/models/{model-name}/v1/chat/completions";
+  public static final String HUGGINGFACE_URL = "https://router.huggingface.co/hf-inference";
 
   private final URL connectionURL;
 
@@ -18,8 +18,8 @@ public class HuggingFaceTextGenerationConnection extends TextGenerationConnectio
                                          Number temperature, Number topP,
                                          Number maxTokens, Map<String, String> mcpSseServers, int timeout)
           throws MalformedURLException {
-    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(), "HUGGINGFACE");
-    this.connectionURL = new URL(HUGGINGFACE_URL + URI_CHAT_COMPLETIONS);
+    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(modelName), "HUGGINGFACE");
+    this.connectionURL = new URL(fetchApiURL(modelName));
   }
 
   @Override
@@ -37,7 +37,10 @@ public class HuggingFaceTextGenerationConnection extends TextGenerationConnectio
     return Map.of("Authorization", "Bearer " + this.getApiKey());
   }
 
-  private static String fetchApiURL() {
-    return HUGGINGFACE_URL + URI_CHAT_COMPLETIONS;
+  private static String fetchApiURL(String modelName) {
+    String urlStr = HUGGINGFACE_URL + URI_CHAT_COMPLETIONS;
+    urlStr = urlStr
+            .replace("{model-name}", modelName);
+    return urlStr;
   }
 } 

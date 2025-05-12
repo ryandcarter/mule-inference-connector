@@ -9,17 +9,18 @@ import java.util.Map;
 
 public class IBMWatsonTextGenerationConnection extends TextGenerationConnection {
 
-  private static final String URI_CHAT_COMPLETIONS = "/chat/completions";
-  public static final String IBMWATSON_URL = "https://api.ibm.com/watson/v1";
+  private static final String URI_CHAT_COMPLETIONS = "/chat?version={api-version}";
+  public static final String IBM_WATSON_URL = "https://us-south.ml.cloud.ibm.com/ml/v1/text";
+  public static final String IBM_WATSON_Token_URL = "https://iam.cloud.ibm.com/identity/token";
 
   private final URL connectionURL;
 
-  public IBMWatsonTextGenerationConnection(HttpClient httpClient, String modelName, String apiKey,
-                                         Number temperature, Number topP,
-                                         Number maxTokens, Map<String, String> mcpSseServers, int timeout)
+  public IBMWatsonTextGenerationConnection(HttpClient httpClient, String modelName, String ibmWatsonApiVersion,
+                                           String apiKey, Number temperature, Number topP,
+                                           Number maxTokens, Map<String, String> mcpSseServers, int timeout)
           throws MalformedURLException {
-    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(), "IBMWATSON");
-    this.connectionURL = new URL(IBMWATSON_URL + URI_CHAT_COMPLETIONS);
+    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(ibmWatsonApiVersion), "IBMWATSON");
+    this.connectionURL = new URL(fetchApiURL(ibmWatsonApiVersion));
   }
 
   @Override
@@ -37,7 +38,10 @@ public class IBMWatsonTextGenerationConnection extends TextGenerationConnection 
     return Map.of("Authorization", "Bearer " + this.getApiKey());
   }
 
-  private static String fetchApiURL() {
-    return IBMWATSON_URL + URI_CHAT_COMPLETIONS;
+  private static String fetchApiURL(String ibmWatsonApiVersion) {
+    String ibmwurlStr = IBM_WATSON_URL + URI_CHAT_COMPLETIONS;
+    ibmwurlStr = ibmwurlStr
+            .replace("{api-version}", ibmWatsonApiVersion);
+    return ibmwurlStr;
   }
 } 

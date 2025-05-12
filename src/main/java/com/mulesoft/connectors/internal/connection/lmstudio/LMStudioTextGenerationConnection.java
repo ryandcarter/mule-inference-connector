@@ -14,12 +14,12 @@ public class LMStudioTextGenerationConnection extends TextGenerationConnection {
 
   private final URL connectionURL;
 
-  public LMStudioTextGenerationConnection(HttpClient httpClient, String modelName, String apiKey,
-                                         Number temperature, Number topP,
-                                         Number maxTokens, Map<String, String> mcpSseServers, int timeout)
+  public LMStudioTextGenerationConnection(HttpClient httpClient, String modelName, String lmStudioBaseURL,
+                                          String apiKey, Number temperature, Number topP,
+                                          Number maxTokens, Map<String, String> mcpSseServers, int timeout)
           throws MalformedURLException {
-    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(), "LMSTUDIO");
-    this.connectionURL = new URL(LMSTUDIO_URL + URI_CHAT_COMPLETIONS);
+    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(lmStudioBaseURL), "LMSTUDIO");
+    this.connectionURL = new URL(fetchApiURL(lmStudioBaseURL));
   }
 
   @Override
@@ -37,7 +37,7 @@ public class LMStudioTextGenerationConnection extends TextGenerationConnection {
     return Map.of("Authorization", "Bearer " + this.getApiKey());
   }
 
-  private static String fetchApiURL() {
-    return LMSTUDIO_URL + URI_CHAT_COMPLETIONS;
+  private static String fetchApiURL(String lmStudioBaseURL) {
+    return lmStudioBaseURL + URI_CHAT_COMPLETIONS;
   }
 } 

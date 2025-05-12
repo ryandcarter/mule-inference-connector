@@ -10,7 +10,7 @@ import java.util.Map;
 public class GroqTextGenerationConnection extends TextGenerationConnection {
 
   private static final String URI_CHAT_COMPLETIONS = "/chat/completions";
-  public static final String GROQ_URL = "https://api.groq.com/v1";
+  public static final String GROQ_URL = "https://api.groq.com/openai/v1";
 
   private final URL connectionURL;
 
