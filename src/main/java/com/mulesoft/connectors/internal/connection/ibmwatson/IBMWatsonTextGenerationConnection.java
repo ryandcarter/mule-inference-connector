@@ -1,4 +1,4 @@
-package com.mulesoft.connectors.internal.connection.openai;
+package com.mulesoft.connectors.internal.connection.ibmwatson;
 
 import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import org.mule.runtime.http.api.client.HttpClient;
@@ -7,19 +7,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-public class OpenAITextGenerationConnection extends TextGenerationConnection {
+public class IBMWatsonTextGenerationConnection extends TextGenerationConnection {
 
   private static final String URI_CHAT_COMPLETIONS = "/chat/completions";
-  public static final String OPENAI_URL = "https://api.openai.com/v1";
+  public static final String IBMWATSON_URL = "https://api.ibm.com/watson/v1";
 
   private final URL connectionURL;
 
-  public OpenAITextGenerationConnection(HttpClient httpClient, String modelName, String apiKey,
+  public IBMWatsonTextGenerationConnection(HttpClient httpClient, String modelName, String apiKey,
                                          Number temperature, Number topP,
-                                        Number maxTokens, Map<String, String> mcpSseServers, int timeout)
+                                         Number maxTokens, Map<String, String> mcpSseServers, int timeout)
           throws MalformedURLException {
-    super( httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers,fetchApiURL(),"OPENAI");
-    this.connectionURL = new URL(OPENAI_URL + URI_CHAT_COMPLETIONS);
+    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(), "IBMWATSON");
+    this.connectionURL = new URL(IBMWATSON_URL + URI_CHAT_COMPLETIONS);
   }
 
   @Override
@@ -38,6 +38,6 @@ public class OpenAITextGenerationConnection extends TextGenerationConnection {
   }
 
   private static String fetchApiURL() {
-    return OPENAI_URL + URI_CHAT_COMPLETIONS;
+    return IBMWATSON_URL + URI_CHAT_COMPLETIONS;
   }
-}
+} 
