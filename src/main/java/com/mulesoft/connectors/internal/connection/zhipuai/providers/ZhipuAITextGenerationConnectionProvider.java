@@ -1,9 +1,9 @@
-package com.mulesoft.connectors.internal.connection.chatglm.providers;
+package com.mulesoft.connectors.internal.connection.zhipuai.providers;
 
 import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
-import com.mulesoft.connectors.internal.connection.chatglm.ZhipuAITextGenerationConnection;
+import com.mulesoft.connectors.internal.connection.zhipuai.ZhipuAITextGenerationConnection;
 import com.mulesoft.connectors.internal.models.zhipuai.providers.ZhipuAITextGenerationModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
@@ -20,10 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 
-@Alias("chatglm")
-@DisplayName("CHATGLM")
-
-//TODO check existense of this
+@Alias("zhipu-ai")
+@DisplayName("ZHIPU_AI")
 public class ZhipuAITextGenerationConnectionProvider extends TextGenerationConnectionProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(ZhipuAITextGenerationConnectionProvider.class);
@@ -32,7 +30,7 @@ public class ZhipuAITextGenerationConnectionProvider extends TextGenerationConne
     @Placement(order = 1)
     @Expression(ExpressionSupport.SUPPORTED)
     @OfValues(ZhipuAITextGenerationModelNameProvider.class)
-    private String chatglmModelName;
+    private String zhipuAIModelName;
 
     @ParameterGroup(name = Placement.CONNECTION_TAB)
     private TextGenerationConnectionParameters textGenerationConnectionParameters;
@@ -41,7 +39,7 @@ public class ZhipuAITextGenerationConnectionProvider extends TextGenerationConne
     public ZhipuAITextGenerationConnection connect() throws ConnectionException {
         logger.debug("CHATGLMTextGenerationConnection connect ...");
         try {
-            return new ZhipuAITextGenerationConnection(httpClient, chatglmModelName,
+            return new ZhipuAITextGenerationConnection(httpClient, zhipuAIModelName,
                     textGenerationConnectionParameters.getApiKey(),
                     textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
                     textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),

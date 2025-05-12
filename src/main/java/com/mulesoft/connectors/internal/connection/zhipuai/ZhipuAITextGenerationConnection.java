@@ -1,4 +1,4 @@
-package com.mulesoft.connectors.internal.connection.chatglm;
+package com.mulesoft.connectors.internal.connection.zhipuai;
 
 import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import org.mule.runtime.http.api.client.HttpClient;
