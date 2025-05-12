@@ -11,6 +11,7 @@ import org.mule.runtime.extension.api.values.ValueResolvingException;
 import java.util.Arrays;
 import java.util.Set;
 
+@Deprecated
 public class ModelTypeProvider implements ValueProvider {
 
   @Override
