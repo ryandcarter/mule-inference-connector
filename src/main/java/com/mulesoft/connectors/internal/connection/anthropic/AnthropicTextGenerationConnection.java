@@ -1,25 +1,26 @@
-package com.mulesoft.connectors.internal.connection.openrouter;
+package com.mulesoft.connectors.internal.connection.anthropic;
 
 import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
+import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import org.mule.runtime.http.api.client.HttpClient;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-public class OpenRouterTextGenerationConnection extends TextGenerationConnection {
+public class AnthropicTextGenerationConnection extends TextGenerationConnection {
 
-  private static final String URI_CHAT_COMPLETIONS = "/chat/completions";
-  public static final String OPENROUTER_URL = "https://openrouter.ai/api/v1";
+  private static final String URI_CHAT_COMPLETIONS = "/messages";
+  public static final String ANTHROPIC_URL = "https://api.anthropic.com/v1";
 
   private final URL connectionURL;
 
-  public OpenRouterTextGenerationConnection(HttpClient httpClient, String modelName, String apiKey,
+  public AnthropicTextGenerationConnection(HttpClient httpClient, String modelName, String apiKey,
                                          Number temperature, Number topP,
                                          Number maxTokens, Map<String, String> mcpSseServers, int timeout)
           throws MalformedURLException {
-    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(), "OPENROUTER");
-    this.connectionURL = new URL(OPENROUTER_URL + URI_CHAT_COMPLETIONS);
+    super(httpClient, apiKey, modelName, maxTokens, temperature, topP, timeout, mcpSseServers, fetchApiURL(), "ANTHROPIC");
+    this.connectionURL = new URL(ANTHROPIC_URL + URI_CHAT_COMPLETIONS);
   }
 
   @Override
@@ -38,6 +39,6 @@ public class OpenRouterTextGenerationConnection extends TextGenerationConnection
   }
 
   private static String fetchApiURL() {
-    return OPENROUTER_URL + URI_CHAT_COMPLETIONS;
+    return InferenceConstants.ANTHROPIC_URL +  URI_CHAT_COMPLETIONS;
   }
-}
+} 

@@ -2,8 +2,6 @@ package com.mulesoft.connectors.internal.connection.types;
 
 import com.mulesoft.connectors.internal.api.proxy.HttpProxyConfig;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
-import com.mulesoft.connectors.internal.models.provider.ModelNameProvider;
-import com.mulesoft.connectors.internal.models.provider.ModelTypeProvider;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
@@ -45,7 +43,6 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
   @Placement(order = 1)
   @Expression(ExpressionSupport.SUPPORTED)
   @DisplayName("Inference Type")
-  @OfValues(ModelTypeProvider.class)
   private String inferenceType;
 
   public void setInferenceType(String inferenceType) { this.inferenceType = inferenceType; }
@@ -59,7 +56,6 @@ public class TextGenerationProvider implements CachedConnectionProvider<TextGene
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @OfValues(ModelNameProvider.class)
   @Optional(defaultValue = "gpt-3.5-turbo")
   private String modelName;
 
