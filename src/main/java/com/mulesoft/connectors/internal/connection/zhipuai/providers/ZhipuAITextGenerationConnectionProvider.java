@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.zhipuai.ZhipuAITextGenerationConnection;
-import com.mulesoft.connectors.internal.models.zhipuai.providers.ZhipuAITextGenerationModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.zhipuai.providers.ZhipuAITextGenerationModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -17,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("zhipu-ai")
 @DisplayName("ZHIPU_AI")
@@ -37,21 +35,17 @@ public class ZhipuAITextGenerationConnectionProvider extends TextGenerationConne
 
     @Override
     public ZhipuAITextGenerationConnection connect() throws ConnectionException {
-        logger.debug("CHATGLMTextGenerationConnection connect ...");
-        try {
-            return new ZhipuAITextGenerationConnection(httpClient, zhipuAIModelName,
-                    textGenerationConnectionParameters.getApiKey(),
-                    textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
-                    textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
-                    textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid CHATGLM URL", e);
-        }
+        logger.debug("ZhipuAITextGenerationConnection connect ...");
+        return new ZhipuAITextGenerationConnection(httpClient, zhipuAIModelName,
+                textGenerationConnectionParameters.getApiKey(),
+                textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
+                textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
+                textGenerationConnectionParameters.getTimeout());
     }
 
     @Override
     public void disconnect(TextGenerationConnection baseConnection) {
-        logger.debug("CHATGLMTextGenerationConnection disconnected ...");
+        logger.debug("ZhipuAITextGenerationConnection disconnected ...");
     }
 
     @Override

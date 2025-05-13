@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.portkey.PortkeyVisionConnection;
-import com.mulesoft.connectors.internal.models.portkey.providers.PortkeyVisionModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.portkey.providers.PortkeyVisionModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -17,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("portkey-vision")
 @DisplayName("Portkey")
@@ -38,15 +36,11 @@ public class PortkeyVisionConnectionProvider extends TextGenerationConnectionPro
     @Override
     public PortkeyVisionConnection connect() throws ConnectionException {
         logger.debug("PortkeyVisionConnection connect ...");
-        try {
-            return new PortkeyVisionConnection(httpClient, portkeyModelName,
-                    textGenerationConnectionParameters.getApiKey(),
-                    textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
-                    textGenerationConnectionParameters.getMaxTokens(),
-                    textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid Portkey URL", e);
-        }
+        return new PortkeyVisionConnection(httpClient, portkeyModelName,
+                textGenerationConnectionParameters.getApiKey(),
+                textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
+                textGenerationConnectionParameters.getMaxTokens(),
+                textGenerationConnectionParameters.getTimeout());
     }
 
     @Override

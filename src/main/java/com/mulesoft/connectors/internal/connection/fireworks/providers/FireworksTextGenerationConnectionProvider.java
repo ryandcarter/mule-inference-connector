@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.fireworks.FireworksTextGenerationConnection;
-import com.mulesoft.connectors.internal.models.fireworks.providers.FireworksTextGenerationModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.fireworks.providers.FireworksTextGenerationModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -17,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("fireworks")
 @DisplayName("Fireworks")
@@ -38,15 +36,11 @@ public class FireworksTextGenerationConnectionProvider extends TextGenerationCon
     @Override
     public FireworksTextGenerationConnection connect() throws ConnectionException {
         logger.debug("FireworksTextGenerationConnection connect ...");
-        try {
-            return new FireworksTextGenerationConnection(httpClient, fireworksModelName,
-                    textGenerationConnectionParameters.getApiKey(),
-                    textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
-                    textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
-                    textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid Fireworks URL", e);
-        }
+        return new FireworksTextGenerationConnection(httpClient, fireworksModelName,
+                textGenerationConnectionParameters.getApiKey(),
+                textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
+                textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
+                textGenerationConnectionParameters.getTimeout());
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.github.GithubVisionConnection;
-import com.mulesoft.connectors.internal.models.github.providers.GithubVisionModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.github.providers.GithubVisionModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -17,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("github-vision")
 @DisplayName("GitHub")
@@ -38,15 +36,12 @@ public class GithubVisionConnectionProvider extends TextGenerationConnectionProv
     @Override
     public GithubVisionConnection connect() throws ConnectionException {
         logger.debug("GithubVisionConnection connect ...");
-        try {
-            return new GithubVisionConnection(httpClient, gitHubModelName,
-                    textGenerationConnectionParameters.getApiKey(),
-                    textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
-                    textGenerationConnectionParameters.getMaxTokens(),
-                    textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid GitHub URL", e);
-        }
+        return new GithubVisionConnection(httpClient, gitHubModelName,
+                textGenerationConnectionParameters.getApiKey(),
+                textGenerationConnectionParameters.getTemperature(),
+                textGenerationConnectionParameters.getTopP(),
+                textGenerationConnectionParameters.getMaxTokens(),
+                textGenerationConnectionParameters.getTimeout());
     }
 
     @Override

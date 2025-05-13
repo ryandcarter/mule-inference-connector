@@ -3,9 +3,8 @@ package com.mulesoft.connectors.internal.connection.openrouter.providers;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.VisionConnectionParameters;
-import com.mulesoft.connectors.internal.connection.openai.OpenAIVisionConnection;
 import com.mulesoft.connectors.internal.connection.openrouter.OpenRouterVisionConnection;
-import com.mulesoft.connectors.internal.models.openrouter.providers.OpenRouterVisionModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.openrouter.providers.OpenRouterVisionModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -18,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("openrouter-vision")
 @DisplayName("OpenRouter")
@@ -38,22 +35,18 @@ public class OpenRouterVisionConnectionProvider extends TextGenerationConnection
 
     @Override
     public OpenRouterVisionConnection connect() throws ConnectionException {
-        logger.debug("OpenAITextGenerationConnection connect ...");
-        try {
+        logger.debug("OpenRouterVisionConnection connect ...");
             return new OpenRouterVisionConnection(httpClient, openRouterModelName,
                     visionConnectionParameters.getApiKey(),
                     visionConnectionParameters.getTemperature(),
                     visionConnectionParameters.getTopP(),
                     visionConnectionParameters.getMaxTokens(),
                     visionConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid Open Compatible URL",e);
-        }
     }
 
     @Override
     public void disconnect(TextGenerationConnection baseConnection) {
-        logger.debug(" OpenAITextGenerationConnection disconnected ...");
+        logger.debug(" OpenRouterVisionConnection disconnected ...");
     }
 
     @Override

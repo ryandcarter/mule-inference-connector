@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.VisionConnectionParameters;
 import com.mulesoft.connectors.internal.connection.mistralai.MistralAIVisionConnection;
-import com.mulesoft.connectors.internal.models.mistral.providers.MistralAIVisionModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.mistral.providers.MistralAIVisionModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -17,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("mistralai-vision")
 @DisplayName("Mistral AI")
@@ -38,16 +36,12 @@ public class MistralAIVisionConnectionProvider extends TextGenerationConnectionP
     @Override
     public MistralAIVisionConnection connect() throws ConnectionException {
         logger.debug("MistralAIVisionConnection connect ...");
-        try {
-            return new MistralAIVisionConnection(httpClient, mistralAIModelName,
-                    visionConnectionParameters.getApiKey(),
-                    visionConnectionParameters.getTemperature(),
-                    visionConnectionParameters.getTopP(),
-                    visionConnectionParameters.getMaxTokens(),
-                    visionConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid Open Compatible URL",e);
-        }
+        return new MistralAIVisionConnection(httpClient, mistralAIModelName,
+                visionConnectionParameters.getApiKey(),
+                visionConnectionParameters.getTemperature(),
+                visionConnectionParameters.getTopP(),
+                visionConnectionParameters.getMaxTokens(),
+                visionConnectionParameters.getTimeout());
     }
 
     @Override

@@ -1,31 +1,19 @@
 package com.mulesoft.connectors.internal.connection.databricks;
 
 import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
-import com.mulesoft.connectors.internal.constants.InferenceConstants;
 import org.mule.runtime.http.api.client.HttpClient;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 
 public class DatabricksTextGenerationConnection extends TextGenerationConnection {
 
   private static final String URI_CHAT_COMPLETIONS = "/serving-endpoints/{model_name}/invocations";
 
-  private final URL connectionURL;
-
   public DatabricksTextGenerationConnection(HttpClient httpClient, String databricksModelName, String databricksModelURL, String apiKey,
                                             Number temperature, Number topP,
-                                            Number maxTokens, Map<String, String> mcpSseServers, int timeout)
-          throws MalformedURLException {
+                                            Number maxTokens, Map<String, String> mcpSseServers, int timeout) {
     super(httpClient, apiKey, databricksModelName, maxTokens, temperature, topP, timeout, mcpSseServers,
             fetchApiURL(databricksModelURL,databricksModelName), "DATABRICKS");
-    this.connectionURL = new URL(fetchApiURL(databricksModelURL,databricksModelName));
-  }
-
-  @Override
-  public URL getConnectionURL() {
-    return connectionURL;
   }
 
   @Override
@@ -39,7 +27,7 @@ public class DatabricksTextGenerationConnection extends TextGenerationConnection
   }
 
   private static String fetchApiURL(String databricksModelURL, String databricksModelName) {
-      String dBricksUrlStr = databricksModelURL + InferenceConstants.CHAT_COMPLETIONS_DATABRICKS;
+      String dBricksUrlStr = databricksModelURL + URI_CHAT_COMPLETIONS;
       dBricksUrlStr = dBricksUrlStr
               .replace("{model_name}", databricksModelName);
     return dBricksUrlStr;

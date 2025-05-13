@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.perplexity.PerplexityTextGenerationConnection;
-import com.mulesoft.connectors.internal.models.perplexity.providers.PerplexityTextGenerationModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.perplexity.providers.PerplexityTextGenerationModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -17,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("perplexity")
 @DisplayName("Perplexity")
@@ -38,15 +36,11 @@ public class PerplexityTextGenerationConnectionProvider extends TextGenerationCo
     @Override
     public PerplexityTextGenerationConnection connect() throws ConnectionException {
         logger.debug("PerplexityTextGenerationConnection connect ...");
-        try {
-            return new PerplexityTextGenerationConnection(httpClient, perplexityModelName,
-                    textGenerationConnectionParameters.getApiKey(),
-                    textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
-                    textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
-                    textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid Perplexity URL", e);
-        }
+        return new PerplexityTextGenerationConnection(httpClient, perplexityModelName,
+                textGenerationConnectionParameters.getApiKey(),
+                textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
+                textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
+                textGenerationConnectionParameters.getTimeout());
     }
 
     @Override

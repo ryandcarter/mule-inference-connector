@@ -3,10 +3,8 @@ package com.mulesoft.connectors.internal.connection.xai.providers;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
-import com.mulesoft.connectors.internal.connection.xai.XAITextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.xai.XAIVisionConnection;
-import com.mulesoft.connectors.internal.models.xai.providers.XAITextGenerationModelNameProvider;
-import com.mulesoft.connectors.internal.models.xai.providers.XAIVisionModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.xai.providers.XAIVisionModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -19,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("xai-vision")
 @DisplayName("xAI")
@@ -40,15 +36,11 @@ public class XAIVisionConnectionProvider extends TextGenerationConnectionProvide
     @Override
     public XAIVisionConnection connect() throws ConnectionException {
         logger.debug("XAIVisionConnection connect ...");
-        try {
-            return new XAIVisionConnection(httpClient, xaiModelName,
-                    textGenerationConnectionParameters.getApiKey(),
-                    textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
-                    textGenerationConnectionParameters.getMaxTokens(),
-                    textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid XAI URL", e);
-        }
+        return new XAIVisionConnection(httpClient, xaiModelName,
+                textGenerationConnectionParameters.getApiKey(),
+                textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
+                textGenerationConnectionParameters.getMaxTokens(),
+                textGenerationConnectionParameters.getTimeout());
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.azure.AzureOpenAITextGenerationConnection;
-import com.mulesoft.connectors.internal.models.azure.providers.AzureOpenAITextGenerationModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.azure.providers.AzureOpenAITextGenerationModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -18,8 +18,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("azure-openai")
 @DisplayName("Azure OpenAI")
@@ -51,16 +49,12 @@ public class AzureOpenAITextGenerationConnectionProvider extends TextGenerationC
     @Override
     public AzureOpenAITextGenerationConnection connect() throws ConnectionException {
         logger.debug("AzureTextGenerationConnection connect ...");
-        try {
             return new AzureOpenAITextGenerationConnection(httpClient, azureModelName,
                     azureOpenaiResourceName, azureOpenaiDeploymentId,
                     textGenerationConnectionParameters.getApiKey(),
                     textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
                     textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
                     textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid Azure URL", e);
-        }
     }
 
     @Override

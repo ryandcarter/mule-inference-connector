@@ -5,7 +5,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParam
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.docker.DockerTextGenerationConnection;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
-import com.mulesoft.connectors.internal.models.docker.providers.DockerTextGenerationModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.docker.providers.DockerTextGenerationModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -19,8 +19,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("docker")
 @DisplayName("Docker")
@@ -46,15 +44,11 @@ public class DockerTextGenerationConnectionProvider extends TextGenerationConnec
     @Override
     public DockerTextGenerationConnection connect() throws ConnectionException {
         logger.debug("DockerTextGenerationConnection connect ...");
-        try {
-            return new DockerTextGenerationConnection(httpClient, dockerModelName,dockerModelUrl,
-                    textGenerationConnectionParameters.getApiKey(),
-                    textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
-                    textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
-                    textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid Docker URL", e);
-        }
+        return new DockerTextGenerationConnection(httpClient, dockerModelName, dockerModelUrl,
+                textGenerationConnectionParameters.getApiKey(),
+                textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
+                textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
+                textGenerationConnectionParameters.getTimeout());
     }
 
     @Override

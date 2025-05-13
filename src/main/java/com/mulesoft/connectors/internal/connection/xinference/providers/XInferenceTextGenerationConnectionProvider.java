@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.xinference.XInferenceTextGenerationConnection;
-import com.mulesoft.connectors.internal.models.xinference.providers.XInferenceTextGenerationModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.xinference.providers.XInferenceTextGenerationModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -18,8 +18,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("xinference")
 @DisplayName("XInference")
@@ -46,15 +44,11 @@ public class XInferenceTextGenerationConnectionProvider extends TextGenerationCo
     @Override
     public XInferenceTextGenerationConnection connect() throws ConnectionException {
         logger.debug("XInferenceTextGenerationConnection connect ...");
-        try {
             return new XInferenceTextGenerationConnection(httpClient, xInferenceModelName,xInferenceUrl,
                     textGenerationConnectionParameters.getApiKey(),
                     textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
                     textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
                     textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid XInference URL", e);
-        }
     }
 
     @Override

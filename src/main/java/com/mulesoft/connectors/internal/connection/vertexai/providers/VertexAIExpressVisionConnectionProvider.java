@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.vertexai.VertexAIExpressVisionConnection;
-import com.mulesoft.connectors.internal.models.vertexai.providers.VertexAIExpressVisionModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.vertexai.providers.VertexAIExpressVisionModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -17,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("vertexai-express-vision")
 @DisplayName("Vertex AI Express")
@@ -38,15 +36,12 @@ public class VertexAIExpressVisionConnectionProvider extends TextGenerationConne
     @Override
     public VertexAIExpressVisionConnection connect() throws ConnectionException {
         logger.debug("VertexAIExpressVisionConnection connect ...");
-        try {
-            return new VertexAIExpressVisionConnection(httpClient, vertexAIExpressModelName,
-                    textGenerationConnectionParameters.getApiKey(),
-                    textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
-                    textGenerationConnectionParameters.getMaxTokens(),
-                    textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid Vertex AI URL", e);
-        }
+        return new VertexAIExpressVisionConnection(httpClient, vertexAIExpressModelName,
+                textGenerationConnectionParameters.getApiKey(),
+                textGenerationConnectionParameters.getTemperature(),
+                textGenerationConnectionParameters.getTopP(),
+                textGenerationConnectionParameters.getMaxTokens(),
+                textGenerationConnectionParameters.getTimeout());
     }
 
     @Override

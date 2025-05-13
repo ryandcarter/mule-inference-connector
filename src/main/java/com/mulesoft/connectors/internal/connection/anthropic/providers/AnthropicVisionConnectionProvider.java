@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.VisionConnectionParameters;
 import com.mulesoft.connectors.internal.connection.anthropic.AnthropicVisionConnection;
-import com.mulesoft.connectors.internal.models.anthropic.providers.AnthropicVisionModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.anthropic.providers.AnthropicVisionModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -17,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("anthropic-vision")
 @DisplayName("Anthropic")
@@ -38,16 +36,12 @@ public class AnthropicVisionConnectionProvider extends TextGenerationConnectionP
     @Override
     public AnthropicVisionConnection connect() throws ConnectionException {
         logger.debug("AnthropicVisionConnection connect ...");
-        try {
-            return new AnthropicVisionConnection(httpClient, anthropicModelName,
-                    visionConnectionParameters.getApiKey(),
-                    visionConnectionParameters.getTemperature(),
-                    visionConnectionParameters.getTopP(),
-                    visionConnectionParameters.getMaxTokens(),
-                    visionConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid Open Compatible URL",e);
-        }
+        return new AnthropicVisionConnection(httpClient, anthropicModelName,
+                visionConnectionParameters.getApiKey(),
+                visionConnectionParameters.getTemperature(),
+                visionConnectionParameters.getTopP(),
+                visionConnectionParameters.getMaxTokens(),
+                visionConnectionParameters.getTimeout());
     }
 
     @Override

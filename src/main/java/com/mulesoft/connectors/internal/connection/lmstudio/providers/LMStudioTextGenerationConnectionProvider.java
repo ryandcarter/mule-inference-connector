@@ -5,7 +5,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParam
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.lmstudio.LMStudioTextGenerationConnection;
 import com.mulesoft.connectors.internal.constants.InferenceConstants;
-import com.mulesoft.connectors.internal.models.lmstudio.providers.LMStudioTextGenerationModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.lmstudio.providers.LMStudioTextGenerationModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -19,8 +19,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("lmstudio")
 @DisplayName("LM Studio")
@@ -47,15 +45,11 @@ public class LMStudioTextGenerationConnectionProvider extends TextGenerationConn
     @Override
     public LMStudioTextGenerationConnection connect() throws ConnectionException {
         logger.debug("LMStudioTextGenerationConnection connect ...");
-        try {
-            return new LMStudioTextGenerationConnection(httpClient, lmStudioModelName, lmStudioBaseURL,
-                    textGenerationConnectionParameters.getApiKey(),
-                    textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
-                    textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
-                    textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid LM Studio URL", e);
-        }
+        return new LMStudioTextGenerationConnection(httpClient, lmStudioModelName, lmStudioBaseURL,
+                textGenerationConnectionParameters.getApiKey(),
+                textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
+                textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
+                textGenerationConnectionParameters.getTimeout());
     }
 
     @Override

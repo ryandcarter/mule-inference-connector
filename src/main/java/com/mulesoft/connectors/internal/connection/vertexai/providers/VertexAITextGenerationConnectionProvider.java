@@ -3,9 +3,8 @@ package com.mulesoft.connectors.internal.connection.vertexai.providers;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
-import com.mulesoft.connectors.internal.connection.vertexai.VertexAIExpressTextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.vertexai.VertexAITextGenerationConnection;
-import com.mulesoft.connectors.internal.models.vertexai.providers.VertexAITextGenerationModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.vertexai.providers.VertexAITextGenerationModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -18,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("vertexai")
 @DisplayName("Vertex AI")
@@ -39,15 +36,11 @@ public class VertexAITextGenerationConnectionProvider extends TextGenerationConn
     @Override
     public VertexAITextGenerationConnection connect() throws ConnectionException {
         logger.debug("VertexAITextGenerationConnection connect ...");
-        try {
-            return new VertexAITextGenerationConnection(httpClient, vertexAIModelName,
-                    textGenerationConnectionParameters.getApiKey(),
-                    textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
-                    textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
-                    textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid Vertex AI URL", e);
-        }
+        return new VertexAITextGenerationConnection(httpClient, vertexAIModelName,
+                textGenerationConnectionParameters.getApiKey(),
+                textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
+                textGenerationConnectionParameters.getMaxTokens(), textGenerationConnectionParameters.getMcpSseServers(),
+                textGenerationConnectionParameters.getTimeout());
     }
 
     @Override

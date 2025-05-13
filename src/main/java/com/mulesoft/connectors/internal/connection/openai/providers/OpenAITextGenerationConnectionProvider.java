@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.openai.OpenAITextGenerationConnection;
-import com.mulesoft.connectors.internal.models.openai.providers.OpenAITextGenerationModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.openai.providers.OpenAITextGenerationModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -18,8 +18,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("openai")
 @DisplayName("OpenAI")
@@ -40,15 +38,11 @@ public class OpenAITextGenerationConnectionProvider extends TextGenerationConnec
     @Override
     public OpenAITextGenerationConnection connect() throws ConnectionException {
         logger.debug("OpenAITextGenerationConnection connect ...");
-        try {
-            return new OpenAITextGenerationConnection(httpClient, openAIModelName,
-                    openAITextGenerationConnectionParameters.getApiKey(),
-                    openAITextGenerationConnectionParameters.getTemperature(), openAITextGenerationConnectionParameters.getTopP(),
-                    openAITextGenerationConnectionParameters.getMaxTokens(), openAITextGenerationConnectionParameters.getMcpSseServers(),
-                    openAITextGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid Open Compatible URL",e);
-        }
+        return new OpenAITextGenerationConnection(httpClient, openAIModelName,
+                openAITextGenerationConnectionParameters.getApiKey(),
+                openAITextGenerationConnectionParameters.getTemperature(), openAITextGenerationConnectionParameters.getTopP(),
+                openAITextGenerationConnectionParameters.getMaxTokens(), openAITextGenerationConnectionParameters.getMcpSseServers(),
+                openAITextGenerationConnectionParameters.getTimeout());
     }
 
     @Override

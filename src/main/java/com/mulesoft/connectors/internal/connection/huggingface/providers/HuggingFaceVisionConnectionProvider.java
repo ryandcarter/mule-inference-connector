@@ -4,7 +4,7 @@ import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionParameters;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.huggingface.HuggingFaceVisionConnection;
-import com.mulesoft.connectors.internal.models.huggingface.providers.HuggingFaceVisionModelNameProvider;
+import com.mulesoft.connectors.internal.llmmodels.huggingface.providers.HuggingFaceVisionModelNameProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -17,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
 
 @Alias("hugging-face-vision")
 @DisplayName("Hugging Face")
@@ -38,15 +36,12 @@ public class HuggingFaceVisionConnectionProvider extends TextGenerationConnectio
     @Override
     public HuggingFaceVisionConnection connect() throws ConnectionException {
         logger.debug("HuggingFaceVisionConnection connect ...");
-        try {
-            return new HuggingFaceVisionConnection(httpClient, huggingFaceModelName,
-                    textGenerationConnectionParameters.getApiKey(),
-                    textGenerationConnectionParameters.getTemperature(), textGenerationConnectionParameters.getTopP(),
-                    textGenerationConnectionParameters.getMaxTokens(),
-                    textGenerationConnectionParameters.getTimeout());
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("Invalid HuggingFace URL", e);
-        }
+        return new HuggingFaceVisionConnection(httpClient, huggingFaceModelName,
+                textGenerationConnectionParameters.getApiKey(),
+                textGenerationConnectionParameters.getTemperature(),
+                textGenerationConnectionParameters.getTopP(),
+                textGenerationConnectionParameters.getMaxTokens(),
+                textGenerationConnectionParameters.getTimeout());
     }
 
     @Override
