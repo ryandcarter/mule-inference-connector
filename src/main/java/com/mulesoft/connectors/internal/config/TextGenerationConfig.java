@@ -16,12 +16,13 @@ import com.mulesoft.connectors.internal.connection.gpt4all.providers.GPT4AllText
 import com.mulesoft.connectors.internal.connection.groq.providers.GroqTextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.huggingface.providers.HuggingFaceTextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.ibmwatson.providers.IBMWatsonTextGenerationConnectionProvider;
-import com.mulesoft.connectors.internal.connection.llamaapi.providers.LlamaAPITextGenerationConnectionProvider;
+import com.mulesoft.connectors.internal.connection.llmapi.providers.LlmAPITextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.lmstudio.providers.LMStudioTextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.mistralai.providers.MistralAITextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.nvidia.providers.NvidiaTextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.ollama.providers.OllamaTextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.openai.providers.OpenAITextGenerationConnectionProvider;
+import com.mulesoft.connectors.internal.connection.openaicompatible.providers.OpenAICompatibleTextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.openrouter.providers.OpenRouterTextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.perplexity.providers.PerplexityTextGenerationConnectionProvider;
 import com.mulesoft.connectors.internal.connection.portkey.providers.PortkeyTextGenerationConnectionProvider;
@@ -53,12 +54,13 @@ import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProvider
         GroqTextGenerationConnectionProvider.class,
         HuggingFaceTextGenerationConnectionProvider.class,
         IBMWatsonTextGenerationConnectionProvider.class,
-        LlamaAPITextGenerationConnectionProvider.class,
+        LlmAPITextGenerationConnectionProvider.class,
         LMStudioTextGenerationConnectionProvider.class,
         MistralAITextGenerationConnectionProvider.class,
         NvidiaTextGenerationConnectionProvider.class,
         OllamaTextGenerationConnectionProvider.class,
         OpenAITextGenerationConnectionProvider.class,
+        OpenAICompatibleTextGenerationConnectionProvider.class,
         OpenRouterTextGenerationConnectionProvider.class,
         PerplexityTextGenerationConnectionProvider.class,
         PortkeyTextGenerationConnectionProvider.class,
