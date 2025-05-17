@@ -11,6 +11,7 @@ public class AnthropicTextGenerationConnection extends TextGenerationConnection 
 
   private static final String URI_CHAT_COMPLETIONS = "/messages";
   public static final String ANTHROPIC_URL = "https://api.anthropic.com/v1";
+
   private AnthropicRequestPayloadHelper requestPayloadHelper;
 
   public AnthropicTextGenerationConnection(HttpClient httpClient, ObjectMapper objectMapper, String modelName, String apiKey,

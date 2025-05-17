@@ -1,12 +1,10 @@
 package com.mulesoft.connectors.internal.operations;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.connectors.internal.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.internal.dto.ChatPayloadDTO;
 import com.mulesoft.connectors.internal.dto.RequestPayloadDTO;
 import com.mulesoft.connectors.internal.exception.InferenceErrorType;
-import com.mulesoft.connectors.internal.helpers.ObjectMapperProvider;
 import com.mulesoft.connectors.internal.helpers.RequestPayloadHelper;
 import com.mulesoft.connectors.internal.utils.ConnectionUtils;
 import com.mulesoft.connectors.internal.utils.PayloadUtils;
@@ -40,7 +38,7 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICAT
  * Each public method represents an extension operation.
  */
 public class TextGenerationOperations {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TextGenerationOperations.class);
+    private static final Logger logger = LoggerFactory.getLogger(TextGenerationOperations.class);
     private static final String ERROR_MSG_FORMAT = "%s result error";
 
     /**
@@ -58,23 +56,21 @@ public class TextGenerationOperations {
             @Connection TextGenerationConnection connection, @Content InputStream messages)
             throws ModuleException {
         try {
-            ObjectMapper objectMapper = ObjectMapperProvider.create();
-
             RequestPayloadHelper payloadHelper = connection.getRequestPayloadHelper();
 
-            List<ChatPayloadDTO> messagesArray = payloadHelper.parseInputStreamToJsonArray(messages);
+            List<ChatPayloadDTO> messagesArray = payloadHelper.parseInputStreamToChatList(messages);
 
             URL chatCompUrl = new URL(connection.getApiURL());
-            LOGGER.debug("Chatting with {}", chatCompUrl);
+            logger.debug("Chatting with {}", chatCompUrl);
 
-            RequestPayloadDTO requestPayloadDTO = payloadHelper.buildPayload(connection, messagesArray);
+            RequestPayloadDTO requestPayloadDTO = payloadHelper.buildPayload(connection, messagesArray,null);
 
-            String response = ConnectionUtils.executeREST(chatCompUrl, connection, objectMapper.writeValueAsString(requestPayloadDTO));
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection, connection.getObjectMapper().writeValueAsString(requestPayloadDTO));
 
-            LOGGER.debug("Chat completions result {}", response);
+            logger.debug("Chat completions result {}", response);
             return ResponseUtils.processLLMResponse(response, connection);
         } catch (Exception e) {
-            LOGGER.error("Error in chat completions: {}", e.getMessage(), e);
+            logger.error("Error in chat completions: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Chat completions"),
                     InferenceErrorType.CHAT_COMPLETION, e);
         }
@@ -94,15 +90,14 @@ public class TextGenerationOperations {
     public Result<InputStream, LLMResponseAttributes> chatAnswerPrompt(
             @Connection TextGenerationConnection connection, @Content String prompt) throws ModuleException {
         try {
-            ObjectMapper objectMapper = ObjectMapperProvider.create();
             RequestPayloadHelper payloadHelper = connection.getRequestPayloadHelper();
             RequestPayloadDTO requestPayloadDTO = payloadHelper.buildChatAnswerPromptPayload(connection,prompt);
 
             URL chatCompUrl = new URL(connection.getApiURL());
-            LOGGER.debug("Chat answer prompt Url: {}", chatCompUrl);
-            String response = ConnectionUtils.executeREST(chatCompUrl, connection, objectMapper.writeValueAsString(requestPayloadDTO));
+            logger.debug("Chat answer prompt Url: {}", chatCompUrl);
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection, connection.getObjectMapper().writeValueAsString(requestPayloadDTO));
 
-            LOGGER.debug("Chat answer prompt result {}", response);
+            logger.debug("Chat answer prompt result {}", response);
 
             return ResponseUtils.processLLMResponse(response, connection);
         } catch (Exception e) {
@@ -131,18 +126,21 @@ public class TextGenerationOperations {
             @Content String instructions,
             @Content(primary = true) String data) throws ModuleException {
         try {
-        	        	
-        	JSONObject payload = PayloadUtils.buildPromptTemplatePayload(connection, template, instructions, data);
-            LOGGER.debug("payload sent to the LLM {}", payload.toString());
+
+            RequestPayloadDTO requestPayloadDTO = connection
+                    .getRequestPayloadHelper()
+                    .buildPromptTemplatePayload(connection,template,instructions,data);
+            logger.debug("payload sent to the LLM {}", requestPayloadDTO.toString());
 
 
             URL chatCompUrl = new URL(connection.getApiURL());
-            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection,
+                    connection.getObjectMapper().writeValueAsString(requestPayloadDTO));
 
-            LOGGER.debug("Agent define prompt template result {}", response);
+            logger.debug("Agent define prompt template result {}", response);
             return ResponseUtils.processLLMResponse(response, connection);
         } catch (Exception e) {
-            LOGGER.error("Error in agent define prompt template: {}", e.getMessage(), e);
+            logger.error("Error in agent define prompt template: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Agent define prompt template"),
                     InferenceErrorType.CHAT_COMPLETION, e);
         }
@@ -168,19 +166,18 @@ public class TextGenerationOperations {
             @Content String instructions,
             @Content(primary = true) String data,
             @Content @Summary("JSON Array defining the tools set to be used in the template so that the LLM can use them if required") InputStream tools) throws ModuleException {
-        
     	try {
-
-        	JSONObject payload = PayloadUtils.buildToolsTemplatePayload(connection, template, instructions, data, tools);
-            LOGGER.debug("payload sent to the LLM {}", payload);
+        	String payloadString = connection.getRequestPayloadHelper()
+                    .buildToolsTemplatePayload(connection, template, instructions, data, tools);
+            logger.debug("Payload sent to the LLM {}", payloadString);
 
             URL chatCompUrl = new URL(connection.getApiURL());
-            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payloadString);
 
-            LOGGER.debug("Tools use native template result {}", response);
+            logger.debug("Tools use native template result {}", response);
             return ResponseUtils.processToolsResponse(response, connection);
         } catch (Exception e) {
-            LOGGER.error("Error in tools use native template: {}", e.getMessage(), e);
+            logger.error("Error in tools use native template: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Tools use native template"),
                     InferenceErrorType.CHAT_COMPLETION, e);
         }
@@ -207,16 +204,15 @@ public class TextGenerationOperations {
             @Content(primary = true) String data) throws ModuleException {
 
         try {
-
             InputStream tools = new ByteArrayInputStream(getMcpToolsFromMultiple(connection).toString().getBytes(StandardCharsets.UTF_8));
 
             JSONObject payload = PayloadUtils.buildToolsTemplatePayload(connection, template, instructions, data, tools);
-            LOGGER.debug("payload sent to the LLM {}", payload);
+            logger.debug("payload sent to the LLM {}", payload);
 
             URL chatCompUrl = new URL(connection.getApiURL());
             String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
 
-            LOGGER.debug("MCP Tooling result {}", response);
+            logger.debug("MCP Tooling result {}", response);
             Result<InputStream, LLMResponseAttributes> apiResponse = ResponseUtils.processToolsResponse(response, connection);
             String apiResponseString = new String(apiResponse.getOutput().readAllBytes(), StandardCharsets.UTF_8);
 
@@ -224,7 +220,7 @@ public class TextGenerationOperations {
 
             return ResponseUtils.processToolsResponse(response, connection, toolExecutionResult);
         } catch (Exception e) {
-            LOGGER.error("Error in MCP Tooling: {}", e.getMessage(), e);
+            logger.error("Error in MCP Tooling: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "MCP Tooling"),
                     InferenceErrorType.CHAT_COMPLETION, e);
         }

@@ -1,42 +1,37 @@
 package com.mulesoft.connectors.internal.helpers.textgeneration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.connectors.internal.connection.TextGenerationConnection;
-import com.mulesoft.connectors.internal.dto.AnthropicChatPayloadDTO;
 import com.mulesoft.connectors.internal.dto.ChatPayloadDTO;
-import com.mulesoft.connectors.internal.dto.DefaultRequestPayloadDTO;
-import com.mulesoft.connectors.internal.dto.RequestPayloadDTO;
+import com.mulesoft.connectors.internal.dto.FunctionDefinitionRecord;
 import com.mulesoft.connectors.internal.helpers.RequestPayloadHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class AnthropicRequestPayloadHelper extends RequestPayloadHelper {
+
+    private static final Logger logger = LoggerFactory.getLogger(AnthropicRequestPayloadHelper.class);
 
     public AnthropicRequestPayloadHelper(ObjectMapper objectMapper) {
         super(objectMapper);
     }
 
     @Override
-    public RequestPayloadDTO buildChatAnswerPromptPayload(TextGenerationConnection connection, String prompt) {
+    public String buildToolsTemplatePayload(TextGenerationConnection connection, String template,
+                                                       String instructions, String data, InputStream tools) throws IOException {
 
-        AnthropicChatPayloadDTO anthropicChatPayloadDTO = new AnthropicChatPayloadDTO("text",prompt);
+        List<FunctionDefinitionRecord> toolsRecord = parseInputStreamToTools(tools);
 
-        ChatPayloadDTO payloadDTO;
-        try {
-            payloadDTO = new ChatPayloadDTO("user",objectMapper.writeValueAsString(List.of(anthropicChatPayloadDTO)));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        return buildPayload(connection, List.of(payloadDTO));
+        logger.debug("toolsArray: {}", toolsRecord);
+
+        List<ChatPayloadDTO> messagesArray = createMessagesArrayWithSystemPrompt(
+                connection, template + " - " + instructions, data);
+
+        return connection.getObjectMapper()
+                .writeValueAsString(buildPayload(connection, messagesArray, toolsRecord));
     }
-
-    @Override
-    public DefaultRequestPayloadDTO buildPayload(TextGenerationConnection connection, List<ChatPayloadDTO> messagesArray) {
-
-        return new DefaultRequestPayloadDTO(connection.getModelName(),
-                messagesArray,
-                connection.getMaxTokens());
-    }
-
 }
