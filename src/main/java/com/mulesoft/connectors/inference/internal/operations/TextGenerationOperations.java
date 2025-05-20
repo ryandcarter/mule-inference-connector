@@ -5,13 +5,11 @@ import com.mulesoft.connectors.inference.internal.connection.TextGenerationConne
 import com.mulesoft.connectors.inference.api.request.ChatPayloadRecord;
 import com.mulesoft.connectors.inference.internal.dto.textgeneration.TextGenerationRequestPayloadDTO;
 import com.mulesoft.connectors.inference.internal.exception.InferenceErrorType;
-import com.mulesoft.connectors.inference.internal.helpers.request.RequestPayloadHelper;
+import com.mulesoft.connectors.inference.internal.helpers.payload.RequestPayloadHelper;
 import com.mulesoft.connectors.inference.internal.utils.ConnectionUtils;
-import com.mulesoft.connectors.inference.internal.utils.PayloadUtils;
 import com.mulesoft.connectors.inference.internal.utils.ProviderUtils;
 import com.mulesoft.connectors.inference.internal.utils.ResponseUtils;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
 import org.mule.runtime.extension.api.annotation.param.Connection;
@@ -24,13 +22,11 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static com.mulesoft.connectors.inference.internal.utils.ProviderUtils.getMcpToolsFromMultiple;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
@@ -72,7 +68,7 @@ public class TextGenerationOperations {
         } catch (Exception e) {
             logger.error("Error in chat completions: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Chat completions"),
-                    InferenceErrorType.CHAT_COMPLETION, e);
+                    InferenceErrorType.CHAT_COMPLETION_FAILURE, e);
         }
     }
 
@@ -102,7 +98,7 @@ public class TextGenerationOperations {
             return ResponseUtils.processLLMResponse(response, connection);
         } catch (Exception e) {
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Chat answer prompt"),
-                    InferenceErrorType.CHAT_COMPLETION, e);
+                    InferenceErrorType.CHAT_COMPLETION_FAILURE, e);
         }
     }
 
@@ -142,7 +138,7 @@ public class TextGenerationOperations {
         } catch (Exception e) {
             logger.error("Error in agent define prompt template: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Agent define prompt template"),
-                    InferenceErrorType.CHAT_COMPLETION, e);
+                    InferenceErrorType.CHAT_COMPLETION_FAILURE, e);
         }
     }
     /**
@@ -179,7 +175,7 @@ public class TextGenerationOperations {
         } catch (Exception e) {
             logger.error("Error in tools use native template: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "Tools use native template"),
-                    InferenceErrorType.CHAT_COMPLETION, e);
+                    InferenceErrorType.CHAT_COMPLETION_FAILURE, e);
         }
     }
 
@@ -204,25 +200,29 @@ public class TextGenerationOperations {
             @Content(primary = true) String data) throws ModuleException {
 
         try {
-            InputStream tools = new ByteArrayInputStream(getMcpToolsFromMultiple(connection).toString().getBytes(StandardCharsets.UTF_8));
+            var tools = connection.getMcpHelper()
+                    .getMcpToolsFromMultiple(connection);
 
-            JSONObject payload = PayloadUtils.buildToolsTemplatePayload(connection, template, instructions, data, tools);
-            logger.debug("payload sent to the LLM {}", payload);
+            String payloadString = connection.getRequestPayloadHelper()
+                    .buildToolsTemplatePayload(connection, template, instructions, data, tools);
+
+            logger.debug("payload sent to the LLM {}", payloadString);
 
             URL chatCompUrl = new URL(connection.getApiURL());
-            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payload.toString());
+            String response = ConnectionUtils.executeREST(chatCompUrl, connection, payloadString);
 
             logger.debug("MCP Tooling result {}", response);
             Result<InputStream, LLMResponseAttributes> apiResponse = ResponseUtils.processToolsResponse(response, connection);
             String apiResponseString = new String(apiResponse.getOutput().readAllBytes(), StandardCharsets.UTF_8);
 
-            JSONArray toolExecutionResult = ProviderUtils.executeTools(apiResponseString);
+            JSONArray toolExecutionResult = ProviderUtils.executeTools(connection.getMcpHelper().getMcpToolsArrayByServer(),
+                    apiResponseString);
 
             return ResponseUtils.processToolsResponse(response, connection, toolExecutionResult);
         } catch (Exception e) {
             logger.error("Error in MCP Tooling: {}", e.getMessage(), e);
             throw new ModuleException(String.format(ERROR_MSG_FORMAT, "MCP Tooling"),
-                    InferenceErrorType.CHAT_COMPLETION, e);
+                    InferenceErrorType.CHAT_COMPLETION_FAILURE, e);
         }
     }
 }
