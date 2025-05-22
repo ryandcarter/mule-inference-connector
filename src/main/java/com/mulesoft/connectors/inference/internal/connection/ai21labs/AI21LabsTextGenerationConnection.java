@@ -18,16 +18,6 @@ public class AI21LabsTextGenerationConnection extends TextGenerationConnection {
             "AI21LABS");
   }
 
-  @Override
-  public Map<String, String> getQueryParams() {
-    return Map.of();
-  }
-
-  @Override
-  public Map<String, String> getAdditionalHeaders() {
-    return Map.of("Authorization", "Bearer " + this.getApiKey());
-  }
-
   private static String fetchApiURL() {
     return AI21LABS_URL + URI_CHAT_COMPLETIONS;
   }

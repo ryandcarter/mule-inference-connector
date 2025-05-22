@@ -31,13 +31,8 @@ public class AzureOpenAITextGenerationConnection extends TextGenerationConnectio
   }
 
   @Override
-  public Map<String, String> getQueryParams() {
-    return Map.of();
-  }
-
-  @Override
   public Map<String, String> getAdditionalHeaders() {
-    return Map.of("Authorization", "Bearer " + this.getApiKey());
+    return Map.of("api-key", this.getApiKey());
   }
 
   private static String fetchApiURL(String openaiResourceName, String openaiDeploymentId) {

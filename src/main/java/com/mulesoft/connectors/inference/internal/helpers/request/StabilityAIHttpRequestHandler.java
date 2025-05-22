@@ -6,6 +6,7 @@ import com.mulesoft.connectors.inference.internal.connection.ImageGenerationConn
 import com.mulesoft.connectors.inference.internal.dto.imagegeneration.DefaultImageRequestPayloadRecord;
 import com.mulesoft.connectors.inference.internal.dto.imagegeneration.ImageGenerationRequestPayloadDTO;
 import org.mule.runtime.api.util.MultiMap;
+import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.HttpEntity;
 import org.mule.runtime.http.api.domain.entity.multipart.HttpPart;
@@ -26,8 +27,8 @@ public class StabilityAIHttpRequestHandler extends HttpRequestHandler{
 
     private static final Logger logger = LoggerFactory.getLogger(StabilityAIHttpRequestHandler.class);
 
-    public StabilityAIHttpRequestHandler(ObjectMapper objectMapper) {
-        super(objectMapper);
+    public StabilityAIHttpRequestHandler(HttpClient httpClient, ObjectMapper objectMapper) {
+        super(httpClient,objectMapper);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class StabilityAIHttpRequestHandler extends HttpRequestHandler{
         return executeRestRequest(connection,resourceUrl,payloadRecord.prompt());
     }
 
-    public HttpResponse executeRestRequest(BaseConnection connection, String resourceUrl,
+    private HttpResponse executeRestRequest(BaseConnection connection, String resourceUrl,
                                                   String payload) throws IOException, TimeoutException {
 
         byte[] promptBytes = payload.getBytes(StandardCharsets.UTF_8);
@@ -57,8 +58,7 @@ public class StabilityAIHttpRequestHandler extends HttpRequestHandler{
         logger.trace("Request queryParams: {}", requestBuilder.getQueryParams());
 
         HttpRequestOptions options = getRequestOptions(connection.getTimeout());
-        return connection.getHttpClient()
-                .send(requestBuilder.build(), options);
+        return httpClient.send(requestBuilder.build(), options);
     }
 
     private HttpRequestBuilder createDefaultRequestBuilder(String url) {

@@ -28,9 +28,6 @@ public abstract class TextGenerationConnection extends BaseConnection{
     this.setBaseService(getTextGenerationService());
   }
 
-  public abstract Map<String,String> getQueryParams();
-  public abstract Map<String,String> getAdditionalHeaders();
-
   public Number getMaxTokens() {
     return maxTokens;
   }
