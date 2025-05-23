@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.connectors.inference.internal.connection.TextGenerationConnection;
 import com.mulesoft.connectors.inference.internal.exception.InferenceErrorType;
 import com.mulesoft.connectors.inference.internal.helpers.payload.VertexAIRequestPayloadHelper;
-import com.mulesoft.connectors.inference.internal.utils.ProviderUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 
 import java.util.Map;
+
+import static com.mulesoft.connectors.inference.internal.helpers.payload.VertexAIRequestPayloadHelper.getAccessTokenFromServiceAccountKey;
+import static com.mulesoft.connectors.inference.internal.helpers.payload.VertexAIRequestPayloadHelper.getProviderByModel;
 
 public class VertexAITextGenerationConnection extends TextGenerationConnection {
 
@@ -45,11 +47,11 @@ public class VertexAITextGenerationConnection extends TextGenerationConnection {
 
   @Override
   public Map<String, String> getAdditionalHeaders() {
-    return Map.of("Authorization", "Bearer " + this.getApiKey());
+    return Map.of("Authorization", "Bearer " + getAccessTokenFromServiceAccountKey(this));
   }
 
   private static String fetchApiURL(String modelName, String vertexAILocationId, String vertexAIProjectId) {
-    String provider = ProviderUtils.getProviderByModel(modelName);
+    String provider = getProviderByModel(modelName);
     return switch (provider) {
       case "Google"-> getFormattedString(VERTEX_AI_GEMINI_URL + GEMINI_URI_CHAT_COMPLETIONS,
               modelName, vertexAILocationId, vertexAIProjectId);

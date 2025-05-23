@@ -4,14 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.connectors.inference.api.request.ChatPayloadRecord;
 import com.mulesoft.connectors.inference.api.request.FunctionDefinitionRecord;
 import com.mulesoft.connectors.inference.internal.connection.TextGenerationConnection;
+import com.mulesoft.connectors.inference.internal.connection.VisionModelConnection;
 import com.mulesoft.connectors.inference.internal.dto.imagegeneration.DefaultImageRequestPayloadRecord;
 import com.mulesoft.connectors.inference.internal.dto.imagegeneration.ImageGenerationRequestPayloadDTO;
-import com.mulesoft.connectors.inference.internal.dto.moderation.RequestPayload;
+import com.mulesoft.connectors.inference.internal.dto.moderation.ModerationRequestPayloadRecord;
 import com.mulesoft.connectors.inference.internal.dto.textgeneration.DefaultRequestPayloadRecord;
 import com.mulesoft.connectors.inference.internal.dto.textgeneration.TextGenerationRequestPayloadDTO;
-import com.mulesoft.connectors.inference.internal.dto.vision.*;
-import com.mulesoft.connectors.inference.internal.exception.InferenceErrorType;
-import org.mule.runtime.extension.api.exception.ModuleException;
+import com.mulesoft.connectors.inference.internal.dto.vision.Content;
+import com.mulesoft.connectors.inference.internal.dto.vision.DefaultVisionRequestPayloadRecord;
+import com.mulesoft.connectors.inference.internal.dto.vision.ImageUrl;
+import com.mulesoft.connectors.inference.internal.dto.vision.ImageUrlContent;
+import com.mulesoft.connectors.inference.internal.dto.vision.Message;
+import com.mulesoft.connectors.inference.internal.dto.vision.TextContent;
+import com.mulesoft.connectors.inference.internal.dto.vision.VisionRequestPayloadDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +95,7 @@ public class RequestPayloadHelper {
         return new DefaultImageRequestPayloadRecord(prompt,"b64_json");
     }
 
-    public VisionRequestPayloadDTO createRequestImageURL(TextGenerationConnection connection, String prompt, String imageUrl) throws IOException {
+    public VisionRequestPayloadDTO createRequestImageURL(VisionModelConnection connection, String prompt, String imageUrl) throws IOException {
 
         List<Content> contentArray = new ArrayList<>();
 
@@ -106,14 +111,9 @@ public class RequestPayloadHelper {
                 connection.getTopP());
     }
 
-    public String getModerationRequestPayload(String modelName, InputStream text) {
-        try {
+    public ModerationRequestPayloadRecord getModerationRequestPayload(String modelName, InputStream text) throws IOException {
             Object input = objectMapper.readValue(text, Object.class);
-            RequestPayload payload = new RequestPayload(input, modelName);
-            return objectMapper.writeValueAsString(payload);
-        } catch (IOException e) {
-            throw new ModuleException("Failed to process moderation request payload", InferenceErrorType.TEXT_MODERATION_FAILURE, e);
-        }
+            return new ModerationRequestPayloadRecord(input, modelName);
     }
 
     protected List<ChatPayloadRecord> createMessagesArrayWithSystemPrompt(
