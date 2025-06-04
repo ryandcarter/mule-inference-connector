@@ -6,7 +6,7 @@ import com.mulesoft.connectors.inference.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.inference.api.request.ChatPayloadRecord;
 import com.mulesoft.connectors.inference.api.response.TextGenerationResponse;
 import com.mulesoft.connectors.inference.api.response.ToolResult;
-import com.mulesoft.connectors.inference.internal.connection.TextGenerationConnection;
+import com.mulesoft.connectors.inference.internal.connection.types.TextGenerationConnection;
 import com.mulesoft.connectors.inference.internal.dto.textgeneration.TextGenerationRequestPayloadDTO;
 import com.mulesoft.connectors.inference.internal.dto.textgeneration.response.ChatCompletionResponse;
 import com.mulesoft.connectors.inference.internal.error.InferenceErrorType;
@@ -89,7 +89,7 @@ public class TextGenerationService implements BaseService{
         var chatRespFirstChoice = chatResponse.choices().get(0);
 
         List<ToolResult> toolExecutionResult = mcpHelper.executeTools(mcpHelper.getMcpToolsArrayByServer(),
-                chatRespFirstChoice.message().toolCalls());
+                chatRespFirstChoice.message().toolCalls(),connection.getTimeout());
 
         return ResponseHelper.createLLMResponse(
                 objectMapper.writeValueAsString(new TextGenerationResponse(null,chatRespFirstChoice.message().toolCalls(),toolExecutionResult)),

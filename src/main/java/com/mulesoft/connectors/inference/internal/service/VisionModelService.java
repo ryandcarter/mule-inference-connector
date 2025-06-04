@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.connectors.inference.api.metadata.AdditionalAttributes;
 import com.mulesoft.connectors.inference.api.metadata.LLMResponseAttributes;
 import com.mulesoft.connectors.inference.api.response.TextGenerationResponse;
-import com.mulesoft.connectors.inference.internal.connection.VisionModelConnection;
+import com.mulesoft.connectors.inference.internal.connection.types.VisionModelConnection;
 import com.mulesoft.connectors.inference.internal.dto.textgeneration.response.ChatCompletionResponse;
 import com.mulesoft.connectors.inference.internal.dto.vision.VisionRequestPayloadDTO;
 import com.mulesoft.connectors.inference.internal.error.InferenceErrorType;
@@ -47,7 +47,7 @@ public class VisionModelService implements BaseService{
         var response = httpRequestHelper.executeVisionRestRequest(connection,connection.getApiURL(),visionPayload);
 
         ChatCompletionResponse chatResponse = responseHandler.processChatResponse(response, InferenceErrorType.READ_IMAGE_OPERATION_FAILURE);
-        logger.debug("Response of vision REST request: {}",chatResponse.toString());
+        logger.debug("Response of vision REST request: {}",chatResponse);
 
         var chatRespFirstChoice = chatResponse.choices().get(0);
 
