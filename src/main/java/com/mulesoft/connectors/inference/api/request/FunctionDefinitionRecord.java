@@ -7,7 +7,4 @@ import java.io.Serializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record FunctionDefinitionRecord(String type,Function function) implements Serializable {
-    @ConstructorProperties({"type", "function"})
-    public FunctionDefinitionRecord {
-    }
 }
