@@ -6,6 +6,7 @@ import com.mulesoft.connectors.inference.internal.helpers.McpHelper;
 import com.mulesoft.connectors.inference.internal.helpers.payload.RequestPayloadHelper;
 import com.mulesoft.connectors.inference.internal.helpers.request.HttpRequestHelper;
 import com.mulesoft.connectors.inference.internal.helpers.response.HttpResponseHelper;
+import com.mulesoft.connectors.inference.internal.helpers.response.mapper.DefaultResponseMapper;
 import com.mulesoft.connectors.inference.internal.service.BaseService;
 
 import java.util.Collections;
@@ -57,12 +58,16 @@ public class BaseConnection {
     return mcpHelper;
   }
 
-  protected HttpRequestHelper getHttpRequestHandler() {
+  protected HttpRequestHelper getHttpRequestHelper() {
     return new HttpRequestHelper(this.getHttpClient(), this.getObjectMapper());
   }
 
-  protected HttpResponseHelper getResponseHandler() {
+  protected HttpResponseHelper getResponseHelper() {
     return new HttpResponseHelper(this.getObjectMapper());
+  }
+
+  protected DefaultResponseMapper getResponseMapper() {
+    return new DefaultResponseMapper(this.getObjectMapper());
   }
 
   public Map<String, String> getAdditionalHeaders() {
