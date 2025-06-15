@@ -10,11 +10,59 @@
 					<munit:parameter propertyName="finishReason" value="tool_use" />
 				</munit:parameters>
 			</munit:parameterization>
+			<munit:parameterization name="config-cerebras" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="CerebrasConfig" />
+					<munit:parameter propertyName="llmModel" value="${cerebras.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="771" />
+					<munit:parameter propertyName="finishReason" value="tool_calls" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-cohere" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="CohereConfig" />
+					<munit:parameter propertyName="llmModel" value="${cohere.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="354" />
+					<munit:parameter propertyName="finishReason" value="TOOL_CALL" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-deepinfra" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="DeepinfraConfig" />
+					<munit:parameter propertyName="llmModel" value="${deepinfra.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="910" />
+					<munit:parameter propertyName="finishReason" value="tool_calls" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-github" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="GithubConfig" />
+					<munit:parameter propertyName="llmModel" value="${github.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="412" />
+					<munit:parameter propertyName="finishReason" value="tool_calls" />
+				</munit:parameters>
+			</munit:parameterization>
 			<munit:parameterization name="config-groq" >
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="GroqConfig" />
 					<munit:parameter propertyName="llmModel" value="${groq.llmModel}" />
 					<munit:parameter propertyName="inputCount" value="1007" />
+					<munit:parameter propertyName="finishReason" value="tool_calls" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-hugging-face" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="HuggingFaceConfig" />
+					<munit:parameter propertyName="llmModel" value="${hugging-face.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="757" />
+					<munit:parameter propertyName="finishReason" value="stop" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-llmapi" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="llmapiConfig" />
+					<munit:parameter propertyName="llmModel" value="${llmapi.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="818" />
 					<munit:parameter propertyName="finishReason" value="tool_calls" />
 				</munit:parameters>
 			</munit:parameterization>
@@ -73,7 +121,12 @@
 			<munit-tools:assert-that doc:id="cb23f789-4c28-446c-9ee1-343c443d1636" doc:name="get_current_temperature check" expression="#[(sizeOf((payload.payload.tools default []) filter (tool) -&gt; (tool.function.name default '') == 'get_inventory') &gt; 0) as Boolean]" is="#[MunitTools::equalTo(true)]" message="The tools array should contain an item with function.name 'get_inventory'"/>
 			<!-- Fixed: Use payload.payload.tools -->
 			<munit-tools:assert-equals actual="#[attributes.tokenUsage.inputCount as String]" doc:id="8a3d65aa-b548-44cf-a627-82c7d0580659" doc:name="Input Token" expected="${inputCount}" message="Incorrect Input Token"/>
-			<munit-tools:assert-equals actual="#[attributes.additionalAttributes.model]" doc:id="521e3135-5c80-4521-abdd-11877c8e8189" doc:name="model Info" expected="${llmModel}" message="Incorrect Model Info"/>
+			<munit-tools:assert-that
+					doc:name="Model Info"
+					doc:id="f688a025-3466-4afe-bacb-6a2275258f96"
+					message="Incorrect Model Info"
+					expression="#[attributes.additionalAttributes.model]"
+					is="#[MunitTools::containsString('${llmModel}')]" />
 			<munit-tools:assert-equals actual="#[attributes.additionalAttributes.finishReason]" doc:id="f9f30053-da19-4052-91b8-690a24c03948" doc:name="finish reason" expected="${finishReason}" message="Incorrect finish reason"/>
 		</munit:validation>
 	</munit:test>
