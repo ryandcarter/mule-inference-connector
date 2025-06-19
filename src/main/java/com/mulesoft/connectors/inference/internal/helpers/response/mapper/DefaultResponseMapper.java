@@ -38,7 +38,7 @@ public class DefaultResponseMapper {
   public TextGenerationResponse mapMcpExecuteToolsResponse(TextResponseDTO responseDTO, List<ToolResult> toolExecutionResult) {
     var chatCompletionResponse = (ChatCompletionResponse) responseDTO;
     var chatRespFirstChoice = chatCompletionResponse.choices().get(0);
-    return new TextGenerationResponse(null,
+    return new TextGenerationResponse(chatCompletionResponse.choices().get(0).message().content(),
                                       chatRespFirstChoice
                                           .message().toolCalls(),
                                       toolExecutionResult);
