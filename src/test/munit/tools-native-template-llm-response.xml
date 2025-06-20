@@ -10,14 +10,22 @@
 					<munit:parameter propertyName="finishReason" value="end_turn" />
 				</munit:parameters>
 			</munit:parameterization>
-			<!--<munit:parameterization name="config-azure-ai-foundry" >
+			<munit:parameterization name="config-azure-ai-foundry" >
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="azureAiFoundryConfig" />
 					<munit:parameter propertyName="llmModel" value="${azure-ai-foundry.llmModel}" />
 					<munit:parameter propertyName="inputCount" value="423" />
-					<munit:parameter propertyName="finishReason" value="tool_calls" />
+					<munit:parameter propertyName="finishReason" value="stop" />
 				</munit:parameters>
-			</munit:parameterization>-->
+			</munit:parameterization>
+			<munit:parameterization name="config-azure-openai" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="AzureOpenAIConfig" />
+					<munit:parameter propertyName="llmModel" value="${azure-openai.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="198" />
+					<munit:parameter propertyName="finishReason" value="stop" />
+				</munit:parameters>
+			</munit:parameterization>
 			<munit:parameterization name="config-cerebras" >
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="CerebrasConfig" />
@@ -39,6 +47,14 @@
 					<munit:parameter propertyName="config" value="DeepinfraConfig" />
 					<munit:parameter propertyName="llmModel" value="${deepinfra.llmModel}" />
 					<munit:parameter propertyName="inputCount" value="640" />
+					<munit:parameter propertyName="finishReason" value="stop" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-fireworks" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="FireworksConfig" />
+					<munit:parameter propertyName="llmModel" value="${fireworks.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="466" />
 					<munit:parameter propertyName="finishReason" value="stop" />
 				</munit:parameters>
 			</munit:parameterization>
@@ -82,6 +98,14 @@
 					<munit:parameter propertyName="finishReason" value="stop" />
 				</munit:parameters>
 			</munit:parameterization>
+			<munit:parameterization name="config-nvidia">
+				<munit:parameters>
+					<munit:parameter propertyName="config" value="NvidiaConfig"/>
+					<munit:parameter propertyName="llmModel" value="${nvidia.llmModel}"/>
+					<munit:parameter propertyName="inputCount" value="567"/>
+					<munit:parameter propertyName="finishReason" value="stop" />
+				</munit:parameters>
+			</munit:parameterization>
 			<munit:parameterization name="config-openai">
 				<munit:parameters>
 					<munit:parameter propertyName="config" value="OpenAIConfig"/>
@@ -106,11 +130,36 @@
 					<munit:parameter propertyName="finishReason" value="stop" />
 				</munit:parameters>
 			</munit:parameterization>
-			<munit:parameterization name="config-nvidia">
-				<munit:parameters>
-					<munit:parameter propertyName="config" value="NvidiaConfig"/>
-					<munit:parameter propertyName="llmModel" value="${nvidia.llmModel}"/>
-					<munit:parameter propertyName="inputCount" value="567"/>
+			<munit:parameterization name="config-portkey" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="PortkeyConfig" />
+					<munit:parameter propertyName="llmModel" value="${portkey.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="339" />
+					<munit:parameter propertyName="finishReason" value="stop" />
+				</munit:parameters>
+			</munit:parameterization>
+<!--		Fix issues with these - to be analysed further on difference in responses
+			<munit:parameterization name="config-together" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="TogetherConfig" />
+					<munit:parameter propertyName="llmModel" value="${together.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="53" />
+					<munit:parameter propertyName="finishReason" value="stop" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-xai" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="XAiConfig" />
+					<munit:parameter propertyName="llmModel" value="${xai.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="24" />
+					<munit:parameter propertyName="finishReason" value="stop" />
+				</munit:parameters>
+			</munit:parameterization>-->
+			<munit:parameterization name="config-zhipu" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="ZhipuConfig" />
+					<munit:parameter propertyName="llmModel" value="${zhipu.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="439" />
 					<munit:parameter propertyName="finishReason" value="stop" />
 				</munit:parameters>
 			</munit:parameterization>
