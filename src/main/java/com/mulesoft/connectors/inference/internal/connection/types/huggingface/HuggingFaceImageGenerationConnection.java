@@ -13,8 +13,8 @@ public class HuggingFaceImageGenerationConnection extends ImageGenerationConnect
   private HuggingFaceRequestPayloadHelper requestPayloadHelper;
 
   public HuggingFaceImageGenerationConnection(HttpClient httpClient, ObjectMapper objectMapper, String modelName, String apiKey,
-                                              int timeout, String apiURL, String inferenceType) {
-    super(httpClient, objectMapper, modelName, apiKey, timeout, apiURL, inferenceType);
+                                              int timeout, String apiURL) {
+    super(httpClient, objectMapper, modelName, apiKey, timeout, apiURL);
   }
 
   @Override

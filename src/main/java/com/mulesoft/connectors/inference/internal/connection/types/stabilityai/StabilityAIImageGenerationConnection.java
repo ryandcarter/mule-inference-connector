@@ -14,8 +14,8 @@ public class StabilityAIImageGenerationConnection extends ImageGenerationConnect
   private StabilityAIRequestPayloadHelper requestPayloadHelper;
 
   public StabilityAIImageGenerationConnection(HttpClient httpClient, ObjectMapper objectMapper, String modelName, String apiKey,
-                                              int timeout, String apiURL, String inferenceType) {
-    super(httpClient, objectMapper, modelName, apiKey, timeout, apiURL, inferenceType);
+                                              int timeout, String apiURL) {
+    super(httpClient, objectMapper, modelName, apiKey, timeout, apiURL);
   }
 
   @Override
