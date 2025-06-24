@@ -13,13 +13,8 @@ import java.util.Base64;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HuggingFaceHttpResponseHelper extends HttpResponseHelper {
-
-  private static final Logger logger = LoggerFactory.getLogger(HuggingFaceHttpResponseHelper.class);
 
   public HuggingFaceHttpResponseHelper(ObjectMapper objectMapper) {
     super(objectMapper);
@@ -32,16 +27,11 @@ public class HuggingFaceHttpResponseHelper extends HttpResponseHelper {
     int statusCode = response.getStatusCode();
 
     if (statusCode == 200) {
-      if (StringUtils.isNotBlank(response.getHeaderValue("Content-Type")) &&
-          response.getHeaderValue("Content-Type").startsWith("image/")) {
+      String base64Image = encodeImageToBase64(response.getEntity().getBytes());
 
-        String base64Image = encodeImageToBase64(response.getEntity().getBytes());
+      HugginFaceImageRequestPayloadRecord payload = (HugginFaceImageRequestPayloadRecord) requestPayloadDTO;
 
-        HugginFaceImageRequestPayloadRecord payload = (HugginFaceImageRequestPayloadRecord) requestPayloadDTO;
-
-        return new ImageGenerationRestResponse(null, List.of(new ImageData(base64Image, payload.inputs())));
-      }
-      logger.debug("Response is not an image.");
+      return new ImageGenerationRestResponse(null, List.of(new ImageData(base64Image, payload.inputs())));
     }
     throw handleErrorResponse(response, statusCode, InferenceErrorType.IMAGE_GENERATION_FAILURE);
   }
