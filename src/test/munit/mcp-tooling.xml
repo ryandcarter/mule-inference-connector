@@ -2,6 +2,14 @@
 
 	<munit:config name="mcp-tooling.xml">
 		<munit:parameterizations>
+			<munit:parameterization name="config-ai21labs" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="Ai21labsConfig" />
+					<munit:parameter propertyName="llmModel" value="${ai21labs.llmModel}" />
+					<munit:parameter propertyName="inputCount" value="774" />
+					<munit:parameter propertyName="finishReason" value="tool_calls" />
+				</munit:parameters>
+			</munit:parameterization>
 			<munit:parameterization name="config-anthropic" >
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="AnthropicConfig" />
@@ -152,6 +160,14 @@
 					<munit:parameter propertyName="llmModel" value="${xai.llmModel}" />
 					<munit:parameter propertyName="inputCount" value="721" />
 					<munit:parameter propertyName="finishReason" value="stop" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-xinference" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="XInferenceConfig" />
+					<munit:parameter propertyName="llmModel" value="${xinference.modelResponse}" />
+					<munit:parameter propertyName="inputCount" value="920" />
+					<munit:parameter propertyName="finishReason" value="tool_calls" />
 				</munit:parameters>
 			</munit:parameterization>
 			<munit:parameterization name="config-zhipu" >
