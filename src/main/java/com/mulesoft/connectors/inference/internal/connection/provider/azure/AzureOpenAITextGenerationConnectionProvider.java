@@ -49,7 +49,7 @@ public class AzureOpenAITextGenerationConnectionProvider extends TextGenerationC
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Optional
-  @DisplayName("[Azure OpenAI] User")
+  @DisplayName("[Azure OpenAI] Username")
   @Summary("A unique identifier representing your end-user, which can help to monitor and detect abuse.")
   @Placement(tab = ADVANCED_TAB, order = 1)
   private String azureOpenaiUser;
